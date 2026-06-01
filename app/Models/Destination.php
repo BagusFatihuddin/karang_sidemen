@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Booking;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Destination extends Model
 {
@@ -78,6 +79,25 @@ class Destination extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+        /**
+     * Destination review tokens relation.
+     */
+    public function reviewTokens(): HasMany
+    {
+        return $this->hasMany(ReviewToken::class);
+    }
+
+    /**
+     * Destination reviews relation.
+     */
+    public function reviews(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Review::class,
+            ReviewToken::class
+        );
     }
 
     /**

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+
 class Visitor extends Model
 {
     /** @use HasFactory<VisitorFactory> */
@@ -66,6 +67,14 @@ class Visitor extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+        /**
+     * Visitor review tokens relation.
+     */
+    public function reviewTokens(): HasMany
+    {
+        return $this->hasMany(ReviewToken::class);
     }
 
     /**
