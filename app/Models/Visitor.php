@@ -69,13 +69,21 @@ class Visitor extends Model
         return $this->hasMany(Booking::class);
     }
 
-        /**
-     * Visitor review tokens relation.
-     */
-    public function reviewTokens(): HasMany
-    {
-        return $this->hasMany(ReviewToken::class);
-    }
+/**
+ * Visitor review tokens relation.
+ */
+public function reviewTokens(): HasMany
+{
+    return $this->hasMany(ReviewToken::class);
+}
+
+/**
+ * Visitor reviews relation.
+ */
+public function reviews(): HasMany
+{
+    return $this->hasMany(Review::class);
+}
 
     /**
      * Create a new factory instance for the model.

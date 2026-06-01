@@ -28,14 +28,21 @@ class ReviewTokenFactory extends Factory
     public function definition(): array
     {
         return [
+            'token' => ReviewToken::generateToken(),
+
             'visitor_id' => Visitor::factory(),
+
             'destination_id' => Destination::factory(),
 
-            'token' => ReviewToken::generateToken(),
+            'generated_by' => User::factory(),
+
+            'is_used' => false,
 
             'expires_at' => ReviewToken::generateExpiry(),
 
-            'created_by' => User::factory(),
+            'used_at' => null,
+
+            'created_at' => now(),
         ];
     }
 }

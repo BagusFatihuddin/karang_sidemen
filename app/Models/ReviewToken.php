@@ -15,16 +15,24 @@ class ReviewToken extends Model
     use HasFactory;
 
     /**
+     * Indicates if the model should be timestamped.
+     */
+    public $timestamps = false;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
+        'token',
         'visitor_id',
         'destination_id',
-        'token',
+        'generated_by',
+        'is_used',
         'expires_at',
-        'created_by',
+        'used_at',
+        'created_at',
     ];
 
     /**
@@ -36,6 +44,9 @@ class ReviewToken extends Model
     {
         return [
             'expires_at' => 'datetime',
+            'is_used' => 'boolean',
+            'used_at' => 'datetime',
+            'created_at' => 'datetime',
         ];
     }
 
@@ -56,11 +67,11 @@ class ReviewToken extends Model
     }
 
     /**
-     * User who created this review token.
+     * User who generated this review token.
      */
-    public function createdBy(): BelongsTo
+    public function generatedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'generated_by');
     }
 
     /**

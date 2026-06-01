@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('review_tokens', function (Blueprint $table) {
             $table->id();
 
+            $table->string('token', 100)
+                ->unique();
+
             $table->foreignId('visitor_id')
                 ->constrained()
                 ->restrictOnDelete();
@@ -22,16 +25,20 @@ return new class extends Migration
                 ->constrained()
                 ->restrictOnDelete();
 
-            $table->string('token', 255)
-                ->unique();
-
-            $table->timestamp('expires_at');
-
-            $table->foreignId('created_by')
+            $table->foreignId('generated_by')
                 ->constrained('users')
                 ->restrictOnDelete();
 
-            $table->timestamps();
+            $table->boolean('is_used')
+                ->default(false);
+
+            $table->timestamp('expires_at');
+
+            $table->timestamp('used_at')
+                ->nullable();
+
+            $table->timestamp('created_at')
+                ->useCurrent();
         });
     }
 

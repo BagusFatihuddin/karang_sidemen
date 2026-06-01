@@ -2,8 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Destination;
 use App\Models\Review;
 use App\Models\ReviewToken;
+use App\Models\Visitor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,15 +30,35 @@ class ReviewFactory extends Factory
         return [
             'review_token_id' => ReviewToken::factory(),
 
-            'visitor_name' => fake()->name(),
+            'visitor_id' => Visitor::factory(),
+
+            'destination_id' => Destination::factory(),
+
+            'reviewer_name' => fake()->name(),
+
+            'reviewer_city' => fake()->city(),
 
             'rating' => fake()->numberBetween(1, 5),
 
-            'review' => fake()->paragraph(),
+            'review_text' => fake()->optional()->paragraph(),
 
-            'is_approved' => false,
-            'is_pinned' => false,
-            'is_pinned_homepage' => false,
+            'photo_url' => fake()->optional()->imageUrl(),
+
+            'photo_public_id' => fake()->optional()->uuid(),
+
+            'status' => fake()->randomElement([
+                'pending',
+                'approved',
+                'rejected',
+            ]),
+
+            'is_pinned_destination' => false,
+
+            'is_pinned_global' => false,
+
+            'approved_by' => null,
+
+            'approved_at' => null,
         ];
     }
 }

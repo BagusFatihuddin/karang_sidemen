@@ -81,24 +81,23 @@ class Destination extends Model
         return $this->hasMany(Booking::class);
     }
 
-        /**
-     * Destination review tokens relation.
-     */
-    public function reviewTokens(): HasMany
-    {
-        return $this->hasMany(ReviewToken::class);
-    }
 
-    /**
-     * Destination reviews relation.
-     */
-    public function reviews(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            Review::class,
-            ReviewToken::class
-        );
-    }
+/**
+ * Destination review tokens relation.
+ */
+public function reviewTokens(): HasMany
+{
+    return $this->hasMany(ReviewToken::class);
+}
+
+/**
+ * Destination reviews relation.
+ */
+public function reviews(): HasMany
+{
+    return $this->hasMany(Review::class);
+}
+
 
     /**
      * Scope only active destinations.
