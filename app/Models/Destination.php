@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Booking;
 
 class Destination extends Model
 {
@@ -69,6 +70,14 @@ class Destination extends Model
     public function dailyVisits(): HasMany
     {
         return $this->hasMany(DailyVisit::class);
+    }
+
+        /**
+     * Destination bookings relation.
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
     }
 
     /**
