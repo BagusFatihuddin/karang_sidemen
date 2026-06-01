@@ -1,0 +1,42 @@
+import { createBrowserRouter } from "react-router-dom";
+
+import HomePage from "../pages/HomePage";
+import DestinationsPage from "../pages/DestinationsPage";
+import DestinationDetailPage from "../pages/DestinationDetailPage";
+import PackagesPage from "../pages/PackagesPage";
+import ReviewsPage from "../pages/ReviewsPage";
+import ReviewTokenPage from "../pages/ReviewTokenPage";
+import AboutPage from "../pages/AboutPage";
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <HomePage />,
+    },
+    {
+        path: "/destinasi",
+        element: <DestinationsPage />,
+    },
+    {
+        path: "/destinasi/:id",
+        element: <DestinationDetailPage />,
+    },
+    {
+        path: "/paket",
+        element: <PackagesPage />,
+    },
+    {
+        path: "/reviews",
+        element: <ReviewsPage />,
+    },
+    {
+        path: "/review/:token",
+        element: <ReviewTokenPage />,
+    },
+    {
+        path: "/tentang",
+        element: <AboutPage />,
+    },
+]);
+
+export default router;
