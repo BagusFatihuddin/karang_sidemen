@@ -55,6 +55,22 @@ class Destination extends Model
         return $this->hasMany(DestinationImage::class);
     }
 
+        /**
+     * Destination visitors relation.
+     */
+    public function visitors(): HasMany
+    {
+        return $this->hasMany(Visitor::class);
+    }
+
+    /**
+     * Destination daily visits relation.
+     */
+    public function dailyVisits(): HasMany
+    {
+        return $this->hasMany(DailyVisit::class);
+    }
+
     /**
      * Scope only active destinations.
      */
