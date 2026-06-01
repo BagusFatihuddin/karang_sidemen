@@ -25,11 +25,12 @@ class Booking extends Model
         'guest_phone',
         'guest_city',
         'destination_id',
-        'booking_date',
-        'total_person',
-        'notes',
+        'checkin_date',
+        'checkout_date',
+        'total_price',
         'status',
-        'recorded_by',
+        'created_by',
+        'arrived_at',
     ];
 
     /**
@@ -40,7 +41,10 @@ class Booking extends Model
     protected function casts(): array
     {
         return [
-            'booking_date' => 'date',
+            'checkin_date' => 'date',
+            'checkout_date' => 'date',
+            'total_price' => 'decimal:2',
+            'arrived_at' => 'datetime',
         ];
     }
 
@@ -105,11 +109,11 @@ class Booking extends Model
     }
 
     /**
-     * User who recorded this booking.
+     * User who created this booking.
      */
-    public function recordedBy(): BelongsTo
+    public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'recorded_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /**

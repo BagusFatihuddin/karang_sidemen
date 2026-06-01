@@ -9,55 +9,58 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+
     public function up(): void
-    {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
+{
+    Schema::create('bookings', function (Blueprint $table) {
+        $table->id();
 
-            $table->string('booking_code', 20)
-                ->unique();
+        $table->string('booking_code', 10)
+            ->unique();
 
-            $table->foreignId('visitor_id')
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete();
+        $table->foreignId('visitor_id')
+            ->nullable()
+            ->constrained()
+            ->nullOnDelete();
 
-            $table->string('guest_name', 100)
-                ->nullable();
+        $table->string('guest_name', 100)
+            ->nullable();
 
-            $table->string('guest_phone', 20)
-                ->nullable();
+        $table->string('guest_phone', 20)
+            ->nullable();
 
-            $table->string('guest_city', 100)
-                ->nullable();
+        $table->string('guest_city', 100)
+            ->nullable();
 
-            $table->foreignId('destination_id')
-                ->constrained()
-                ->restrictOnDelete();
+        $table->foreignId('destination_id')
+            ->constrained()
+            ->restrictOnDelete();
 
-            $table->date('booking_date');
+        $table->date('checkin_date');
 
-            $table->unsignedInteger('total_person')
-                ->default(1);
+        $table->date('checkout_date')
+            ->nullable();
 
-            $table->text('notes')
-                ->nullable();
+        $table->decimal('total_price', 12, 2)
+            ->nullable();
 
-            $table->enum('status', [
-                'pending',
-                'confirmed',
-                'cancelled',
-                'completed',
-            ])->default('pending');
+        $table->enum('status', [
+            'pending',
+            'confirmed',
+            'cancelled',
+            'completed',
+        ]);
 
-            $table->foreignId('recorded_by')
-                ->constrained('users')
-                ->restrictOnDelete();
+        $table->foreignId('created_by')
+            ->constrained('users')
+            ->restrictOnDelete();
 
-            $table->timestamps();
-        });
-    }
+        $table->timestamp('arrived_at')
+            ->nullable();
 
+        $table->timestamps();
+    });
+}
     /**
      * Reverse the migrations.
      */
