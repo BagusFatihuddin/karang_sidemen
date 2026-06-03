@@ -1,0 +1,292 @@
+@startuml POKDARWIS_V1_ERD
+' ============================================================
+' POKDARWIS – Sistem Informasi Wisata Karang Sidemen
+' ERD V1 – Senior Architect Output
+' Generated: 2026-05-31
+' ============================================================
+
+!define PK <b><color:DarkGoldenRod>PK</color></b>
+!define FK <color:DarkBlue>FK</color>
+!define NOTNULL <color:DarkRed>NN</color>
+
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam entity {
+  BackgroundColor WhiteSmoke
+  BorderColor #534AB7
+  FontColor #2C2C2A
+}
+skinparam arrow {
+  Color #73726c
+}
+
+' ============================================================
+' AUTHENTICATION & USERS
+' ============================================================
+entity "users" as users {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL name : VARCHAR(100)
+  NOTNULL email : VARCHAR(150) UNIQUE
+  NOTNULL password : VARCHAR(255)
+  NOTNULL role : ENUM('super_admin','admin_konten','pimpinan','anggota_pokdarwis','petugas_lapangan')
+  is_active : TINYINT(1) DEFAULT 1
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+}
+
+' ============================================================
+' DESTINASI
+' ============================================================
+entity "destinations" as destinations {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL name : VARCHAR(150)
+  NOTNULL description : TEXT
+  facilities : TEXT
+  entry_fee : DECIMAL(10,2) NULL
+  parking_fee : DECIMAL(10,2) NULL
+  rental_price : DECIMAL(10,2) NULL
+  NOTNULL destination_type : ENUM('camping','air','edukasi','alam','kuliner','lainnya')
+  whatsapp_number : VARCHAR(20) NULL
+  maps_url : VARCHAR(500) NULL
+  cloudinary_folder : VARCHAR(100) NULL
+  is_active : TINYINT(1) DEFAULT 1
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+}
+
+entity "destination_images" as destination_images {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  FK destination_id : BIGINT UNSIGNED
+  NOTNULL cloudinary_public_id : VARCHAR(255)
+  NOTNULL url : VARCHAR(500)
+  sort_order : INT UNSIGNED DEFAULT 0
+  NOTNULL created_at : TIMESTAMP
+}
+
+' ============================================================
+' WISATAWAN (DATA MASTER INTERNAL)
+' ============================================================
+entity "visitors" as visitors {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL name : VARCHAR(100)
+  NOTNULL whatsapp_number : VARCHAR(20)
+  NOTNULL origin_category : ENUM('lombok_tengah','lombok_lainnya','luar_lombok','mancanegara')
+  NOTNULL origin_city : VARCHAR(100)
+  NOTNULL visit_type : ENUM('sendiri','pasangan','keluarga','rombongan')
+  group_size : INT UNSIGNED DEFAULT 1
+  NOTNULL referral_source : ENUM('instagram','whatsapp','teman','google','lainnya')
+  referral_other : VARCHAR(100) NULL
+  FK destination_id : BIGINT UNSIGNED
+  FK recorded_by : BIGINT UNSIGNED
+  visited_at : TIMESTAMP NULL
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+  ' NOTE: whatsapp_number & name TIDAK tampil di publik
+}
+
+' ============================================================
+' BOOKING (MANUAL BY ADMIN)
+' ============================================================
+entity "bookings" as bookings {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL booking_code : VARCHAR(10) UNIQUE
+  FK visitor_id : BIGINT UNSIGNED NULL
+  guest_name : VARCHAR(100) NULL
+  guest_phone : VARCHAR(20) NULL
+  guest_city : VARCHAR(100) NULL
+  FK destination_id : BIGINT UNSIGNED
+  NOTNULL checkin_date : DATE
+  checkout_date : DATE NULL
+  total_price : DECIMAL(12,2) NULL
+  NOTNULL status : ENUM('pending','confirmed','cancelled','completed')
+  FK created_by : BIGINT UNSIGNED
+  arrived_at : TIMESTAMP NULL
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+  ' NOTE: booking_code format = KS-XXXXX
+}
+
+' ============================================================
+' REVIEW SYSTEM (TOKEN-BASED)
+' ============================================================
+entity "review_tokens" as review_tokens {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL token : VARCHAR(100) UNIQUE
+  FK visitor_id : BIGINT UNSIGNED
+  FK destination_id : BIGINT UNSIGNED
+  FK generated_by : BIGINT UNSIGNED
+  is_used : TINYINT(1) DEFAULT 0
+  NOTNULL expires_at : TIMESTAMP
+  used_at : TIMESTAMP NULL
+  NOTNULL created_at : TIMESTAMP
+  ' BUSINESS RULE: expires_at = created_at + 7 days
+  ' BUSINESS RULE: is_used = true setelah review submit
+}
+
+entity "reviews" as reviews {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  FK review_token_id : BIGINT UNSIGNED
+  FK visitor_id : BIGINT UNSIGNED
+  FK destination_id : BIGINT UNSIGNED
+  NOTNULL reviewer_name : VARCHAR(100)
+  NOTNULL reviewer_city : VARCHAR(100)
+  NOTNULL rating : TINYINT UNSIGNED
+  review_text : TEXT NULL
+  photo_url : VARCHAR(500) NULL
+  photo_public_id : VARCHAR(255) NULL
+  NOTNULL status : ENUM('pending','approved','rejected')
+  is_pinned_destination : TINYINT(1) DEFAULT 0
+  is_pinned_global : TINYINT(1) DEFAULT 0
+  FK approved_by : BIGINT UNSIGNED NULL
+  approved_at : TIMESTAMP NULL
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+  ' NOTE: reviewer_name & reviewer_city = SNAPSHOT
+  ' (tidak mengubah visitors.name / visitors.origin_city / origin_category)
+  ' BUSINESS RULE: max 10 is_pinned_destination per destination
+  ' BUSINESS RULE: max 10 is_pinned_global total
+  ' Enforcement di Application Layer (Laravel Policy / Filament)
+  ' CONSTRAINT: UNIQUE(review_token_id)
+' 1 token = maksimal 1 review
+}
+
+' ============================================================
+' DATA HARIAN
+' ============================================================
+entity "daily_visits" as daily_visits {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  FK destination_id : BIGINT UNSIGNED
+  NOTNULL date : DATE
+  visitor_count : INT UNSIGNED DEFAULT 0
+  revenue : DECIMAL(12,2) DEFAULT 0
+  expense : DECIMAL(12,2) DEFAULT 0
+  FK recorded_by : BIGINT UNSIGNED
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+  ' CONSTRAINT: UNIQUE (destination_id, date)
+  ' Jika ada = UPDATE, tidak ada = INSERT
+}
+
+' ============================================================
+' PROMO & EVENT
+' ============================================================
+entity "promos" as promos {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL title : VARCHAR(150)
+  description : TEXT NULL
+  image_url : VARCHAR(500) NULL
+  image_public_id : VARCHAR(255) NULL
+  external_url : VARCHAR(500) NULL
+  is_active : TINYINT(1) DEFAULT 1
+  start_date : DATE NULL
+  end_date : DATE NULL
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+  ' Aktif jika: is_active=1 AND NOW() BETWEEN start_date AND end_date
+}
+
+' ============================================================
+' CUSTOM TRIP & GUIDE
+' ============================================================
+entity "trip_packages" as trip_packages {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL name : VARCHAR(150)
+  description : TEXT NULL
+  price : DECIMAL(12,2) NULL
+  image_url : VARCHAR(500) NULL
+  image_public_id : VARCHAR(255) NULL
+  is_active : TINYINT(1) DEFAULT 1
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+}
+
+entity "trip_package_destinations" as tp_destinations {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  FK trip_package_id : BIGINT UNSIGNED
+  FK destination_id : BIGINT UNSIGNED
+  sort_order : INT UNSIGNED DEFAULT 0
+}
+
+entity "guides" as guides {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL name : VARCHAR(100)
+  bio : TEXT NULL
+  experience : VARCHAR(255) NULL
+  photo_url : VARCHAR(500) NULL
+  photo_public_id : VARCHAR(255) NULL
+  is_active : TINYINT(1) DEFAULT 1
+  NOTNULL created_at : TIMESTAMP
+  NOTNULL updated_at : TIMESTAMP
+}
+
+entity "trip_package_guides" as tp_guides {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  FK trip_package_id : BIGINT UNSIGNED
+  FK guide_id : BIGINT UNSIGNED
+}
+
+' ============================================================
+' SETTINGS (KEY-VALUE CONFIG)
+' ============================================================
+entity "settings" as settings {
+  PK id : BIGINT UNSIGNED AUTO_INCREMENT
+  --
+  NOTNULL key : VARCHAR(100) UNIQUE
+  value : TEXT NULL
+  NOTNULL updated_at : TIMESTAMP
+  ' Contoh keys:
+  ' cloudinary_api_key, cloudinary_api_secret
+  ' cloudinary_cloud_name
+  ' global_whatsapp, village_name, tagline
+  ' social_instagram, social_facebook, social_tiktok
+  ' google_maps_embed_url
+}
+
+' ============================================================
+' RELATIONSHIPS
+' ============================================================
+
+' Destinations
+destinations ||--o{ destination_images : "has images"
+destinations ||--o{ visitors : "visited at"
+destinations ||--o{ bookings : "booked for"
+destinations ||--o{ review_tokens : "reviewed for"
+destinations ||--o{ reviews : "about"
+destinations ||--o{ daily_visits : "tracks"
+destinations ||--o{ tp_destinations : "included in"
+
+' Visitors
+visitors ||--o{ review_tokens : "receives"
+visitors ||--o{ reviews : "writes"
+visitors ||--o{ bookings : "has booking"
+
+' Review flow
+review_tokens ||--o| reviews : "used for one review"
+
+' Trip packages
+trip_packages ||--o{ tp_destinations : "contains destinations"
+trip_packages ||--o{ tp_guides : "has guides"
+guides ||--o{ tp_guides : "assigned to"
+
+' Users as actors (audit trail)
+users ||--o{ visitors : "records (petugas lapangan)"
+users ||--o{ bookings : "creates (admin)"
+users ||--o{ review_tokens : "generates (admin)"
+users ||--o{ reviews : "approves (admin)"
+users ||--o{ daily_visits : "records (admin)"
+
+@enduml

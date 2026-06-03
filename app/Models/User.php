@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Database\Factories\UserFactory;
+use App\Support\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,9 +43,13 @@ class User extends Authenticatable implements FilamentUser
      * Role logic will be implemented
      * in the auth/role issue.
      */
+/**
+ * Determine if the user can access Filament panel.
+ */
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return $this->is_active
+            && in_array($this->role, UserRole::all(), true);
     }
 
     /**
