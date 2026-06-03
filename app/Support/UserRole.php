@@ -29,4 +29,29 @@ final class UserRole
             self::PETUGAS_LAPANGAN,
         ];
     }
+
+    /**
+     * Get user role options
+     * with human-friendly labels.
+     *
+     * @return array<string, string>
+     */
+    public static function values(): array
+    {
+        return [
+            self::SUPER_ADMIN => 'Super Admin',
+            self::ADMIN_KONTEN => 'Admin Konten',
+            self::PIMPINAN => 'Pimpinan',
+            self::ANGGOTA_POKDARWIS => 'Anggota Pokdarwis',
+            self::PETUGAS_LAPANGAN => 'Petugas Lapangan',
+        ];
+    }
+
+    /**
+     * Get role label.
+     */
+    public static function label(string $role): string
+    {
+        return self::values()[$role] ?? $role;
+    }
 }
