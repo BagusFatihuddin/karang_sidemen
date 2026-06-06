@@ -31,113 +31,105 @@ class CreateDestination extends CreateRecord
         return $data;
     }
 
-protected function afterCreate(): void
-{
-    $uploadState =
-        $this->data['destination_upload']
-        ?? null;
+    protected function afterCreate(): void
+    {
+        $uploadState =
+            $this->data['destination_upload']
+            ?? null;
 
-    if (! is_array($uploadState)) {
-        return;
-    }
-
-    $path =
-        reset($uploadState);
-
-    if (! $path) {
-        return;
-    }
-
-    try {
-        $existingImage =
-            $this->record
-                ->images()
-                ->latest('id')
-                ->first();
-
-        if ($existingImage) {
-            try {
-                app(
-                    CloudinaryService::class
-                )->delete(
-                    $existingImage
-                        ->cloudinary_public_id
-                );
-            } catch (\Throwable $e) {
-                Log::warning(
-                    'Destination image replace delete failed on create',
-                    [
-                        'destination_id' =>
-                            $this->record->id,
-
-                        'public_id' =>
-                            $existingImage
-                                ->cloudinary_public_id,
-
-                        'message' =>
-                            $e->getMessage(),
-                    ]
-                );
-            }
-
-            $existingImage->delete();
+        if (! is_array($uploadState)) {
+            return;
         }
 
-        $fullPath =
-            Storage::disk('local')
-                ->path($path);
+        $path =
+            reset($uploadState);
 
-        $uploadedFile =
-            new UploadedFile(
-                $fullPath,
-                basename($fullPath),
-                mime_content_type(
-                    $fullPath
-                ),
-                test: true
+        if (! $path) {
+            return;
+        }
+
+        try {
+            $currentImageCount =
+                $this->record
+                    ->images()
+                    ->count();
+
+            if ($currentImageCount >= 10) {
+                Notification::make()
+                    ->title(
+                        'Batas maksimal gambar tercapai'
+                    )
+                    ->body(
+                        'Maksimal 10 gambar per destinasi.'
+                    )
+                    ->danger()
+                    ->send();
+
+                return;
+            }
+
+            $fullPath =
+                Storage::disk('local')
+                    ->path($path);
+
+            $uploadedFile =
+                new UploadedFile(
+                    $fullPath,
+                    basename($fullPath),
+                    mime_content_type(
+                        $fullPath
+                    ),
+                    test: true
+                );
+
+            $result = app(
+                CloudinaryService::class
+            )->upload(
+                $uploadedFile,
+                'destinations/general'
             );
 
-        $result = app(
-            CloudinaryService::class
-        )->upload(
-            $uploadedFile,
-            'destinations/general'
-        );
-
-        DestinationImage::create([
-            'destination_id' =>
-                $this->record->id,
-
-            'cloudinary_public_id' =>
-                $result['public_id'],
-
-            'url' =>
-                $result['url'],
-
-            'sort_order' => 0,
-        ]);
-    } catch (\Throwable $e) {
-        Log::warning(
-            'Destination image upload failed on create',
-            [
+            DestinationImage::create([
                 'destination_id' =>
                     $this->record->id,
 
-                'message' =>
-                    $e->getMessage(),
-            ]
-        );
+                'cloudinary_public_id' =>
+                    $result['public_id'],
 
-        Notification::make()
-            ->title(
-                'Upload gambar gagal'
-            )
-            ->body(
-                $e->getMessage()
-            )
-            ->danger()
-            ->send();
+                'url' =>
+                    $result['url'],
+
+                'sort_order' =>
+                    $currentImageCount === 0
+                        ? 0
+                        : (
+                            ($this->record
+                                ->images()
+                                ->max('sort_order') ?? 0)
+                            + 1
+                        ),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning(
+                'Destination image upload failed on create',
+                [
+                    'destination_id' =>
+                        $this->record->id,
+
+                    'message' =>
+                        $e->getMessage(),
+                ]
+            );
+
+            Notification::make()
+                ->title(
+                    'Upload gambar gagal'
+                )
+                ->body(
+                    $e->getMessage()
+                )
+                ->danger()
+                ->send();
+        }
     }
-}
-
 }

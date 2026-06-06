@@ -75,22 +75,110 @@ class DestinationForm
                 )
                     ->schema([
                         Placeholder::make(
-                            'current_destination_image'
+                            'destination_gallery'
                         )
                             ->label(
-                                'Gambar Saat Ini'
+                                'Gallery Gambar'
                             )
                             ->content(
                                 fn ($record) => new HtmlString(
-                                    $record?->images()
-                                        ->latest('id')
-                                        ->value('url')
+                                    $record?->images()->exists()
                                         ? sprintf(
-                                            '<img src="%s" style="max-width: 300px; border-radius: 12px;">',
+                                            '<div style="display:flex;flex-wrap:wrap;gap:16px;">%s</div>',
                                             $record
                                                 ->images()
-                                                ->latest('id')
-                                                ->value('url')
+                                                ->orderBy(
+                                                    'sort_order'
+                                                )
+                                                ->get()
+                                                ->map(
+                                                    fn ($image) =>
+                                                        sprintf(
+                                                            '
+                                                            <div style="
+                                                                border:1px solid #ddd;
+                                                                border-radius:12px;
+                                                                padding:10px;
+                                                                width:180px;
+                                                            ">
+                                                                <img
+                                                                    src="%s"
+                                                                    style="
+                                                                        width:100%%;
+                                                                        height:140px;
+                                                                        object-fit:cover;
+                                                                        border-radius:8px;
+                                                                    "
+                                                                >
+
+                                                                <div style="
+                                                                    margin-top:8px;
+                                                                    text-align:center;
+                                                                    font-size:12px;
+                                                                    font-weight:bold;
+                                                                ">
+                                                                    %s
+                                                                </div>
+
+                                                                <div style="margin-top:8px;">
+                                                                    <button
+                                                                        type="button"
+                                                                        wire:click="setCoverImage(%d)"
+                                                                        wire:loading.attr="disabled"
+                                                                        wire:target="setCoverImage"
+                                                                        style="
+                                                                            width:100%%;
+                                                                            padding:8px;
+                                                                            border:1px solid #666;
+                                                                            border-radius:8px;
+                                                                            cursor:pointer;
+                                                                        "
+                                                                    >
+                                                                        Set as Cover
+                                                                    </button>
+                                                                </div>
+
+                                                                <div style="margin-top:8px;">
+                                                                    <button
+                                                                        type="button"
+                                                                        wire:confirm="Yakin ingin menghapus gambar ini?"
+                                                                        wire:click="deleteImage(%d)"
+                                                                        wire:loading.attr="disabled"
+                                                                        wire:target="deleteImage"
+                                                                        style="
+                                                                            width:100%%;
+                                                                            padding:8px;
+                                                                            border:1px solid #cc0000;
+                                                                            border-radius:8px;
+                                                                            cursor:pointer;
+                                                                        "
+                                                                    >
+                                                                        <span
+                                                                            wire:loading.remove
+                                                                            wire:target="deleteImage"
+                                                                        >
+                                                                            Delete
+                                                                        </span>
+
+                                                                        <span
+                                                                            wire:loading
+                                                                            wire:target="deleteImage"
+                                                                        >
+                                                                            Deleting...
+                                                                        </span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            ',
+                                                            $image->url,
+                                                            $image->sort_order === 0
+                                                                ? '⭐ Cover Image'
+                                                                : 'Gallery Image',
+                                                            $image->id,
+                                                            $image->id
+                                                        )
+                                                )
+                                                ->implode('')
                                         )
                                         : '<span>Belum ada gambar</span>'
                                 )
