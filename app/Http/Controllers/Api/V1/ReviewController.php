@@ -8,6 +8,7 @@ use App\Models\Review;
 use App\Models\ReviewToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
@@ -98,23 +99,25 @@ class ReviewController extends Controller
 
         $data = $validator->validated();
 
-        Review::create([
-            'review_token_id' => $reviewToken->id,
-            'visitor_id' => $reviewToken->visitor_id,
-            'destination_id' => $reviewToken->destination_id,
-            'reviewer_name' => $data['reviewer_name'] ?? $reviewToken->visitor->name,
-            'reviewer_city' => $data['reviewer_city'] ?? $reviewToken->visitor->origin_city,
-            'rating' => $data['rating'],
-            'review_text' => $data['review_text'],
-            'status' => 'pending',
-        ]);
-
-        ReviewToken::query()
-            ->where('id', $reviewToken->id)
-            ->update([
-                'is_used' => true,
-                'used_at' => now(),
+        DB::transaction(function () use ($data, $reviewToken) {
+            Review::create([
+                'review_token_id' => $reviewToken->id,
+                'visitor_id' => $reviewToken->visitor_id,
+                'destination_id' => $reviewToken->destination_id,
+                'reviewer_name' => $data['reviewer_name'] ?? $reviewToken->visitor->name,
+                'reviewer_city' => $data['reviewer_city'] ?? $reviewToken->visitor->origin_city,
+                'rating' => $data['rating'],
+                'review_text' => $data['review_text'],
+                'status' => 'pending',
             ]);
+
+            ReviewToken::query()
+                ->where('id', $reviewToken->id)
+                ->update([
+                    'is_used' => true,
+                    'used_at' => now(),
+                ]);
+        });
 
         return ApiResponse::success((object) [], 'review submitted');
     }
