@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage";
 import DestinationsPage from "../pages/DestinationsPage";
 import DestinationDetailPage from "../pages/DestinationDetailPage";
 import PackagesPage from "../pages/PackagesPage";
+import GuidesPage from "../pages/GuidesPage";
 import ReviewsPage from "../pages/ReviewsPage";
 import ReviewTokenPage from "../pages/ReviewTokenPage";
 import AboutPage from "../pages/AboutPage";
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
     {
         path: "/paket",
         element: <PackagesPage />,
+    },
+    {
+        path: "/panduan",
+        element: <GuidesPage />,
     },
     {
         path: "/reviews",
