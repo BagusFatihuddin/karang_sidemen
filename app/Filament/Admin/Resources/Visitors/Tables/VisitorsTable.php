@@ -3,14 +3,19 @@
 namespace App\Filament\Admin\Resources\Visitors\Tables;
 
 use App\Filament\Admin\Resources\Visitors\Exporters\VisitorExporter;
+use App\Models\ReviewToken;
+use App\Models\Visitor;
+use Filament\Actions\Action;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class VisitorsTable
 {
@@ -141,7 +146,99 @@ class VisitorsTable
                     ->exporter(VisitorExporter::class),
             ])
             ->recordActions([
+                Action::make('sendReviewLink')
+                    ->label('Kirim Link Review')
+                    ->action(
+                        fn (Visitor $record) =>
+                        static::openReviewWhatsApp($record)
+                    ),
+
                 ViewAction::make(),
             ]);
+    }
+
+    protected static function openReviewWhatsApp(
+        Visitor $visitor
+    ) {
+        $phone = static::normalizePhone(
+            $visitor->whatsapp_number
+        );
+
+        if ($phone === null) {
+            Notification::make()
+                ->title('Nomor WhatsApp tidak valid.')
+                ->danger()
+                ->send();
+
+            return null;
+        }
+
+        $reviewToken = static::getOrCreateReviewToken(
+            $visitor
+        );
+
+        $reviewUrl = url(
+            '/review/' . $reviewToken->token
+        );
+
+        $message = sprintf(
+            'Halo %s, terima kasih telah berkunjung. Silakan beri review di sini: %s',
+            $visitor->name,
+            $reviewUrl
+        );
+
+        return redirect()->away(
+            'https://wa.me/' . $phone .
+            '?text=' . urlencode($message)
+        );
+    }
+
+    protected static function getOrCreateReviewToken(
+        Visitor $visitor
+    ): ReviewToken {
+        $usableToken = $visitor
+            ->reviewTokens()
+            ->where('destination_id', $visitor->destination_id)
+            ->latest('created_at')
+            ->get()
+            ->first(
+                fn (ReviewToken $token): bool =>
+                $token->isUsable()
+            );
+
+        if ($usableToken) {
+            return $usableToken;
+        }
+
+        return ReviewToken::create([
+            'token' => ReviewToken::generateToken(),
+            'visitor_id' => $visitor->id,
+            'destination_id' => $visitor->destination_id,
+            'generated_by' => Auth::id(),
+            'is_used' => false,
+            'expires_at' => ReviewToken::generateExpiry(),
+            'created_at' => now(),
+        ]);
+    }
+
+    protected static function normalizePhone(
+        string $phone
+    ): ?string {
+        $phone = trim($phone);
+        $phone = str_replace([' ', '-'], '', $phone);
+
+        if (str_starts_with($phone, '+628')) {
+            return substr($phone, 1);
+        }
+
+        if (str_starts_with($phone, '628')) {
+            return $phone;
+        }
+
+        if (str_starts_with($phone, '08')) {
+            return '62' . substr($phone, 1);
+        }
+
+        return null;
     }
 }
