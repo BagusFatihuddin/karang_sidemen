@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
 use App\Models\Review;
 use App\Models\ReviewToken;
+use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class ReviewController extends Controller
 {
@@ -61,6 +64,7 @@ class ReviewController extends Controller
             'review_text' => ['required', 'string', 'max:2000'],
             'reviewer_name' => ['nullable', 'string', 'max:100'],
             'reviewer_city' => ['nullable', 'string', 'max:100'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         if ($validator->fails()) {
@@ -98,8 +102,27 @@ class ReviewController extends Controller
         }
 
         $data = $validator->validated();
+        $photoUrl = null;
+        $photoPublicId = null;
 
-        DB::transaction(function () use ($data, $reviewToken) {
+        if ($request->hasFile('photo')) {
+            try {
+                $upload = app(CloudinaryService::class)->upload(
+                    $request->file('photo'),
+                    'reviews'
+                );
+
+                $photoUrl = $upload['url'] ?? null;
+                $photoPublicId = $upload['public_id'] ?? null;
+            } catch (Throwable $e) {
+                Log::warning('Review photo upload failed', [
+                    'review_token_id' => $reviewToken->id,
+                    'message' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        DB::transaction(function () use ($data, $reviewToken, $photoUrl, $photoPublicId) {
             Review::create([
                 'review_token_id' => $reviewToken->id,
                 'visitor_id' => $reviewToken->visitor_id,
@@ -108,6 +131,8 @@ class ReviewController extends Controller
                 'reviewer_city' => $data['reviewer_city'] ?? $reviewToken->visitor->origin_city,
                 'rating' => $data['rating'],
                 'review_text' => $data['review_text'],
+                'photo_url' => $photoUrl,
+                'photo_public_id' => $photoPublicId,
                 'status' => 'pending',
             ]);
 
