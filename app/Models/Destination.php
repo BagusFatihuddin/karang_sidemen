@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Booking;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Destination extends Model
 {
@@ -35,6 +36,15 @@ class Destination extends Model
     ];
 
     /**
+     * Appended attributes.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'thumbnail_url',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -57,6 +67,20 @@ class Destination extends Model
         return $this->hasMany(
             DestinationImage::class
         )->orderBy('sort_order');
+    }
+
+
+        /**
+     * Thumbnail URL accessor.
+     *
+     * Uses first image from ordered relation.
+     * Returns null if destination has no image.
+     */
+    protected function thumbnailUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->images->first()?->url
+        );
     }
 
         /**
