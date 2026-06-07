@@ -13,6 +13,16 @@ class CreateBooking extends CreateRecord
     protected function mutateFormDataBeforeCreate(
         array $data
     ): array {
+        if (($data['booking_mode'] ?? 'visitor') === 'guest') {
+            $data['visitor_id'] = null;
+        } else {
+            $data['guest_name'] = null;
+            $data['guest_phone'] = null;
+            $data['guest_city'] = null;
+        }
+
+        unset($data['booking_mode']);
+
         $data['created_by'] = Auth::id();
 
         return $data;
