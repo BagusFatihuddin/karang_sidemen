@@ -45,7 +45,10 @@ class TripPackage extends Model
     public function destinations(): BelongsToMany
     {
         return $this->belongsToMany(
-            Destination::class
+            Destination::class,
+            'trip_package_destinations',
+            'trip_package_id',
+            'destination_id'
         )
         ->withPivot('sort_order');
     }
@@ -56,7 +59,10 @@ class TripPackage extends Model
     public function guides(): BelongsToMany
     {
         return $this->belongsToMany(
-            Guide::class
+            Guide::class,
+            'trip_package_guides',
+            'trip_package_id',
+            'guide_id'
         );
     }
 

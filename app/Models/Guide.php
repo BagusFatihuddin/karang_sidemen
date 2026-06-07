@@ -44,7 +44,10 @@ class Guide extends Model
     public function tripPackages(): BelongsToMany
     {
         return $this->belongsToMany(
-            TripPackage::class
+            TripPackage::class,
+            'trip_package_guides',
+            'guide_id',
+            'trip_package_id'
         );
     }
 
