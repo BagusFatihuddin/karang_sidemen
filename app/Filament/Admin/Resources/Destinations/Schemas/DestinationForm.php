@@ -86,103 +86,171 @@ class DestinationForm
                                         ? sprintf(
                                             '<div style="display:flex;flex-wrap:wrap;gap:16px;">%s</div>',
                                             $record
-                                                ->images()
-                                                ->orderBy(
-                                                    'sort_order'
-                                                )
-                                                ->get()
-                                                ->map(
-                                                    fn ($image) =>
-                                                        sprintf(
-                                                            '
+                                                ->images
+                                                ->map(function ($image) use ($record) {
+
+                                                    $minOrder = $record
+                                                        ->images
+                                                        ->min('sort_order');
+
+                                                    $maxOrder = $record
+                                                        ->images
+                                                        ->max('sort_order');
+
+                                                    $canMoveUp =
+                                                        $image->sort_order > 1;
+
+                                                    $canMoveDown =
+                                                        $image->sort_order <
+                                                        $maxOrder;
+
+                                                    return sprintf(
+                                                        '
+                                                        <div style="
+                                                            border:1px solid #ddd;
+                                                            border-radius:12px;
+                                                            padding:10px;
+                                                            width:180px;
+                                                        ">
+                                                            <img
+                                                                src="%s"
+                                                                style="
+                                                                    width:100%%;
+                                                                    height:140px;
+                                                                    object-fit:cover;
+                                                                    border-radius:8px;
+                                                                "
+                                                            >
+
                                                             <div style="
-                                                                border:1px solid #ddd;
-                                                                border-radius:12px;
-                                                                padding:10px;
-                                                                width:180px;
+                                                                margin-top:8px;
+                                                                text-align:center;
+                                                                font-size:12px;
+                                                                font-weight:bold;
                                                             ">
-                                                                <img
-                                                                    src="%s"
+                                                                %s
+                                                            </div>
+
+                                                            %s
+
+                                                            %s
+
+                                                            <div style="margin-top:8px;">
+                                                                <button
+                                                                    type="button"
+                                                                    wire:click.prevent.stop="setCoverImage(%d)"
+                                                                    wire:loading.attr="disabled"
+                                                                    wire:target="setCoverImage"
                                                                     style="
                                                                         width:100%%;
-                                                                        height:140px;
-                                                                        object-fit:cover;
+                                                                        padding:8px;
+                                                                        border:1px solid #666;
                                                                         border-radius:8px;
+                                                                        cursor:pointer;
                                                                     "
                                                                 >
-
-                                                                <div style="
-                                                                    margin-top:8px;
-                                                                    text-align:center;
-                                                                    font-size:12px;
-                                                                    font-weight:bold;
-                                                                ">
-                                                                    %s
-                                                                </div>
-
-                                                                <div style="margin-top:8px;">
-                                                                    <button
-                                                                        type="button"
-                                                                        wire:click="setCoverImage(%d)"
-                                                                        wire:loading.attr="disabled"
-                                                                        wire:target="setCoverImage"
-                                                                        style="
-                                                                            width:100%%;
-                                                                            padding:8px;
-                                                                            border:1px solid #666;
-                                                                            border-radius:8px;
-                                                                            cursor:pointer;
-                                                                        "
-                                                                    >
-                                                                        Set as Cover
-                                                                    </button>
-                                                                </div>
-
-                                                                <div style="margin-top:8px;">
-                                                                    <button
-                                                                        type="button"
-                                                                        wire:confirm="Yakin ingin menghapus gambar ini?"
-                                                                        wire:click="deleteImage(%d)"
-                                                                        wire:loading.attr="disabled"
-                                                                        wire:target="deleteImage"
-                                                                        style="
-                                                                            width:100%%;
-                                                                            padding:8px;
-                                                                            border:1px solid #cc0000;
-                                                                            border-radius:8px;
-                                                                            cursor:pointer;
-                                                                        "
-                                                                    >
-                                                                        <span
-                                                                            wire:loading.remove
-                                                                            wire:target="deleteImage"
-                                                                        >
-                                                                            Delete
-                                                                        </span>
-
-                                                                        <span
-                                                                            wire:loading
-                                                                            wire:target="deleteImage"
-                                                                        >
-                                                                            Deleting...
-                                                                        </span>
-                                                                    </button>
-                                                                </div>
+                                                                    Set as Cover
+                                                                </button>
                                                             </div>
-                                                            ',
-                                                            $image->url,
-                                                            $image->sort_order === 0
-                                                                ? '⭐ Cover Image'
-                                                                : 'Gallery Image',
-                                                            $image->id,
-                                                            $image->id
-                                                        )
-                                                )
+
+                                                            <div style="margin-top:8px;">
+                                                                <button
+                                                                    type="button"
+                                                                    wire:confirm="Yakin ingin menghapus gambar ini?"
+                                                                    wire:click.prevent.stop="deleteImage(%d)"
+                                                                    wire:loading.attr="disabled"
+                                                                    wire:target="deleteImage"
+                                                                    style="
+                                                                        width:100%%;
+                                                                        padding:8px;
+                                                                        border:1px solid #cc0000;
+                                                                        border-radius:8px;
+                                                                        cursor:pointer;
+                                                                    "
+                                                                >
+                                                                    <span
+                                                                        wire:loading.remove
+                                                                        wire:target="deleteImage"
+                                                                    >
+                                                                        Delete
+                                                                    </span>
+
+                                                                    <span
+                                                                        wire:loading
+                                                                        wire:target="deleteImage"
+                                                                    >
+                                                                        Deleting...
+                                                                    </span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        ',
+                                                        $image->url,
+
+                                                        $image->sort_order === 0
+                                                            ? '⭐ Cover Image'
+                                                            : 'Gallery Image',
+
+                                                        $canMoveUp
+                                                            ? sprintf(
+                                                                '
+                                                                <div style="margin-top:8px;">
+                                                                    <button
+                                                                        type="button"
+                                                                        wire:click.prevent.stop="moveImageUp(%d)"
+                                                                        wire:loading.attr="disabled"
+                                                                        wire:target="moveImageUp"
+                                                                        style="
+                                                                            width:100%%;
+                                                                            padding:8px;
+                                                                            border:1px solid #ddd;
+                                                                            border-radius:8px;
+                                                                            cursor:pointer;
+                                                                        "
+                                                                    >
+                                                                        ↑ Naik
+                                                                    </button>
+                                                                </div>
+                                                                ',
+                                                                $image->id
+                                                            )
+                                                            : '',
+
+                                                        $canMoveDown
+                                                            ? sprintf(
+                                                                '
+                                                                <div style="margin-top:8px;">
+                                                                    <button
+                                                                        type="button"
+                                                                        wire:click.prevent.stop="moveImageDown(%d)"
+                                                                        wire:loading.attr="disabled"
+                                                                        wire:target="moveImageDown"
+                                                                        style="
+                                                                            width:100%%;
+                                                                            padding:8px;
+                                                                            border:1px solid #ddd;
+                                                                            border-radius:8px;
+                                                                            cursor:pointer;
+                                                                        "
+                                                                    >
+                                                                        ↓ Turun
+                                                                    </button>
+                                                                </div>
+                                                                ',
+                                                                $image->id
+                                                            )
+                                                            : '',
+
+                                                        $image->id,
+                                                        $image->id
+                                                    );
+                                                })
                                                 ->implode('')
                                         )
                                         : '<span>Belum ada gambar</span>'
                                 )
                             )
+
                             ->visible(
                                 fn (
                                     string $operation

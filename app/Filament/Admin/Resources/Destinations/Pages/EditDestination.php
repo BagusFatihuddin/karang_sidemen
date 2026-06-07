@@ -168,6 +168,115 @@ class EditDestination extends EditRecord
         );
     }
 
+
+        public function moveImageUp(
+        int $imageId
+    ): void {
+        $image = $this->record
+            ->images()
+            ->find($imageId);
+
+        if (! $image) {
+            return;
+        }
+
+        $target = $this->record
+            ->images()
+            ->where(
+                'sort_order',
+                $image->sort_order - 1
+            )
+            ->first();
+
+        if (! $target) {
+            return;
+        }
+
+        $currentOrder =
+            $image->sort_order;
+
+        $image->update([
+            'sort_order' =>
+                $target->sort_order,
+        ]);
+
+        $target->update([
+            'sort_order' =>
+                $currentOrder,
+        ]);
+
+        Notification::make()
+            ->title(
+                'Urutan gambar diperbarui'
+            )
+            ->success()
+            ->send();
+
+        $this->redirect(
+            static::getResource()::getUrl(
+                'edit',
+                [
+                    'record' =>
+                        $this->record,
+                ]
+            )
+        );
+    }
+
+    public function moveImageDown(
+        int $imageId
+    ): void {
+        $image = $this->record
+            ->images()
+            ->find($imageId);
+
+        if (! $image) {
+            return;
+        }
+
+        $target = $this->record
+            ->images()
+            ->where(
+                'sort_order',
+                $image->sort_order + 1
+            )
+            ->first();
+
+        if (! $target) {
+            return;
+        }
+
+        $currentOrder =
+            $image->sort_order;
+
+        $image->update([
+            'sort_order' =>
+                $target->sort_order,
+        ]);
+
+        $target->update([
+            'sort_order' =>
+                $currentOrder,
+        ]);
+
+        Notification::make()
+            ->title(
+                'Urutan gambar diperbarui'
+            )
+            ->success()
+            ->send();
+
+        $this->redirect(
+            static::getResource()::getUrl(
+                'edit',
+                [
+                    'record' =>
+                        $this->record,
+                ]
+            )
+        );
+    }
+
     protected function afterSave(): void
     {
         $uploadState =

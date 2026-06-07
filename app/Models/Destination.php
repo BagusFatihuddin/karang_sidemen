@@ -52,9 +52,11 @@ class Destination extends Model
     /**
      * Destination images relation.
      */
-    public function images(): HasMany
+    public function images()
     {
-        return $this->hasMany(DestinationImage::class);
+        return $this->hasMany(
+            DestinationImage::class
+        )->orderBy('sort_order');
     }
 
         /**
