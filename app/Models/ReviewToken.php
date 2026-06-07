@@ -123,6 +123,15 @@ class ReviewToken extends Model
     }
 
     /**
+     * Determine whether token can still be used.
+     */
+    public function isUsable(): bool
+    {
+        return ! $this->is_used
+            && ! $this->isExpired();
+    }
+
+    /**
      * Create a new factory instance for the model.
      */
     protected static function newFactory(): ReviewTokenFactory
