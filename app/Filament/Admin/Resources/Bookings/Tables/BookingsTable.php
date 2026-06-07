@@ -2,8 +2,11 @@
 
 namespace App\Filament\Admin\Resources\Bookings\Tables;
 
+use App\Models\Booking;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -18,10 +21,18 @@ class BookingsTable
                 TextColumn::make('booking_code')
                     ->label('Kode Booking')
                     ->searchable()
+                    ->copyable()
+                    ->copyMessage('Kode booking disalin.')
                     ->sortable(),
 
-                TextColumn::make('visitor.name')
+                TextColumn::make('guest_name')
                     ->label('Wisatawan')
+                    ->state(
+                        fn (Booking $record): string =>
+                        $record->visitor?->name
+                            ?? $record->guest_name
+                            ?? '-'
+                    )
                     ->searchable()
                     ->sortable(),
 
@@ -89,6 +100,67 @@ class BookingsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('confirm')
+                    ->label('Confirm')
+                    ->visible(
+                        fn (Booking $record): bool =>
+                        $record->status === 'pending'
+                    )
+                    ->requiresConfirmation()
+                    ->action(function (Booking $record): void {
+                        $record->update([
+                            'status' => 'confirmed',
+                        ]);
+
+                        Notification::make()
+                            ->title('Booking confirmed.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('complete')
+                    ->label('Complete')
+                    ->visible(
+                        fn (Booking $record): bool =>
+                        $record->status === 'confirmed'
+                    )
+                    ->requiresConfirmation()
+                    ->action(function (Booking $record): void {
+                        $record->update([
+                            'status' => 'completed',
+                            'arrived_at' => now(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Booking completed.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('cancel')
+                    ->label('Cancel')
+                    ->color('danger')
+                    ->visible(
+                        fn (Booking $record): bool => in_array(
+                            $record->status,
+                            [
+                                'pending',
+                                'confirmed',
+                            ],
+                            true
+                        )
+                    )
+                    ->requiresConfirmation()
+                    ->action(function (Booking $record): void {
+                        $record->update([
+                            'status' => 'cancelled',
+                        ]);
+
+                        Notification::make()
+                            ->title('Booking cancelled.')
+                            ->success()
+                            ->send();
+                    }),
             ]);
     }
 }

@@ -15,6 +15,19 @@ class BookingForm
     {
         return $schema
             ->components([
+                TextInput::make('booking_code')
+                    ->label('Kode Booking')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->copyable(
+                        copyMessage: 'Kode booking disalin.'
+                    )
+                    ->helperText('Otomatis dibuat sistem')
+                    ->visible(
+                        fn (string $operation): bool =>
+                        $operation === 'edit'
+                    ),
+
                 Select::make('booking_mode')
                     ->label('Mode Booking')
                     ->options([

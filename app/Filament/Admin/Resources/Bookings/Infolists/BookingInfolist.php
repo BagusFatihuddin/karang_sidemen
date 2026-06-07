@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Bookings\Infolists;
 
+use App\Models\Booking;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -15,10 +16,18 @@ class BookingInfolist
                 Section::make('Detail Booking')
                     ->schema([
                         TextEntry::make('booking_code')
-                            ->label('Kode Booking'),
+                            ->label('Kode Booking')
+                            ->copyable()
+                            ->copyMessage('Kode booking disalin.'),
 
-                        TextEntry::make('visitor.name')
+                        TextEntry::make('guest_name')
                             ->label('Wisatawan')
+                            ->state(
+                                fn (Booking $record): string =>
+                                $record->visitor?->name
+                                    ?? $record->guest_name
+                                    ?? '-'
+                            )
                             ->placeholder('-'),
 
                         TextEntry::make('destination.name')
