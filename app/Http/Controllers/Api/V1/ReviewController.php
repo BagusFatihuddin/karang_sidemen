@@ -109,6 +109,13 @@ class ReviewController extends Controller
             'status' => 'pending',
         ]);
 
+        ReviewToken::query()
+            ->where('id', $reviewToken->id)
+            ->update([
+                'is_used' => true,
+                'used_at' => now(),
+            ]);
+
         return ApiResponse::success((object) [], 'review submitted');
     }
 }
