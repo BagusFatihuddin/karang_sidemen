@@ -87,28 +87,6 @@ class EditDestination extends EditRecord
         $wasCover =
             $image->sort_order === 0;
 
-        try {
-            app(
-                CloudinaryService::class
-            )->delete(
-                $image->cloudinary_public_id
-            );
-        } catch (\Throwable $e) {
-            Log::warning(
-                'Destination image delete failed',
-                [
-                    'destination_id' =>
-                        $this->record->id,
-
-                    'public_id' =>
-                        $image->cloudinary_public_id,
-
-                    'message' =>
-                        $e->getMessage(),
-                ]
-            );
-        }
-
         $image->delete();
 
         if ($wasCover) {
