@@ -11,6 +11,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -50,6 +51,14 @@ class ReviewsTable
                     ->label('Foto')
                     ->boolean()
                     ->state(fn (Review $record): bool => filled($record->photo_url)),
+
+                IconColumn::make('is_pinned_destination')
+                    ->label('Pin Dest.')
+                    ->boolean(),
+
+                IconColumn::make('is_pinned_global')
+                    ->label('Pin Global')
+                    ->boolean(),
 
                 TextColumn::make('status')
                     ->label('Status')
@@ -144,6 +153,76 @@ class ReviewsTable
 
                         Notification::make()
                             ->title('Review rejected.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('toggleDestinationPin')
+                    ->label(
+                        fn (Review $record): string =>
+                            $record->is_pinned_destination
+                                ? 'Unpin Destinasi'
+                                : 'Pin Destinasi'
+                    )
+                    ->icon(
+                        fn (Review $record): Heroicon =>
+                            $record->is_pinned_destination
+                                ? Heroicon::OutlinedBookmarkSlash
+                                : Heroicon::OutlinedBookmark
+                    )
+                    ->color(
+                        fn (Review $record): string =>
+                            $record->is_pinned_destination
+                                ? 'gray'
+                                : 'warning'
+                    )
+                    ->visible(fn (Review $record): bool => $record->status === 'approved')
+                    ->action(function (Review $record): void {
+                        $record->update([
+                            'is_pinned_destination' => ! $record->is_pinned_destination,
+                        ]);
+
+                        Notification::make()
+                            ->title(
+                                $record->is_pinned_destination
+                                    ? 'Review pinned to destination.'
+                                    : 'Review unpinned from destination.'
+                            )
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('toggleGlobalPin')
+                    ->label(
+                        fn (Review $record): string =>
+                            $record->is_pinned_global
+                                ? 'Unpin Global'
+                                : 'Pin Global'
+                    )
+                    ->icon(
+                        fn (Review $record): Heroicon =>
+                            $record->is_pinned_global
+                                ? Heroicon::OutlinedBookmarkSlash
+                                : Heroicon::OutlinedGlobeAlt
+                    )
+                    ->color(
+                        fn (Review $record): string =>
+                            $record->is_pinned_global
+                                ? 'gray'
+                                : 'info'
+                    )
+                    ->visible(fn (Review $record): bool => $record->status === 'approved')
+                    ->action(function (Review $record): void {
+                        $record->update([
+                            'is_pinned_global' => ! $record->is_pinned_global,
+                        ]);
+
+                        Notification::make()
+                            ->title(
+                                $record->is_pinned_global
+                                    ? 'Review pinned globally.'
+                                    : 'Review unpinned globally.'
+                            )
                             ->success()
                             ->send();
                     }),

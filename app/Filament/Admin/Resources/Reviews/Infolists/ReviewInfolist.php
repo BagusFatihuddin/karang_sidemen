@@ -45,6 +45,18 @@ class ReviewInfolist
                                 }
                             ),
 
+                        TextEntry::make('is_pinned_destination')
+                            ->label('Pinned Destinasi')
+                            ->badge()
+                            ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
+                            ->color(fn (bool $state): string => $state ? 'warning' : 'gray'),
+
+                        TextEntry::make('is_pinned_global')
+                            ->label('Pinned Global')
+                            ->badge()
+                            ->formatStateUsing(fn (bool $state): string => $state ? 'Yes' : 'No')
+                            ->color(fn (bool $state): string => $state ? 'info' : 'gray'),
+
                         ImageEntry::make('photo_url')
                             ->label('Foto')
                             ->visible(fn ($record): bool => filled($record->photo_url))
