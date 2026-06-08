@@ -127,13 +127,38 @@ export default function AboutPage() {
         return (
             <main style={pageStyle}>
                 <section style={heroStyle}>
-                    <div style={{ ...skeletonStyle, height: "50px", marginBottom: "16px" }} />
-                    <div style={{ ...skeletonStyle, height: "24px", width: "70%", margin: "0 auto 40px" }} />
+                    <div
+                        style={{
+                            ...skeletonStyle,
+                            height: "50px",
+                            marginBottom: "16px",
+                        }}
+                    />
+                    <div
+                        style={{
+                            ...skeletonStyle,
+                            height: "24px",
+                            width: "70%",
+                            margin: "0 auto 40px",
+                        }}
+                    />
                 </section>
 
                 <section style={sectionStyle}>
-                    <div style={{ ...skeletonStyle, height: "180px", marginBottom: "24px" }} />
-                    <div style={{ ...skeletonStyle, height: "180px", marginBottom: "24px" }} />
+                    <div
+                        style={{
+                            ...skeletonStyle,
+                            height: "180px",
+                            marginBottom: "24px",
+                        }}
+                    />
+                    <div
+                        style={{
+                            ...skeletonStyle,
+                            height: "180px",
+                            marginBottom: "24px",
+                        }}
+                    />
                     <div style={{ ...skeletonStyle, height: "400px" }} />
                 </section>
             </main>
@@ -144,7 +169,9 @@ export default function AboutPage() {
         <main style={pageStyle}>
             {/* Hero Section */}
             <section style={heroStyle}>
-                <h1 style={titleStyle}>{settings.village_name || "Tentang Desa Wisata"}</h1>
+                <h1 style={titleStyle}>
+                    {settings.village_name || "Tentang Desa Wisata"}
+                </h1>
                 {settings.tagline && (
                     <p style={taglineStyle}>{settings.tagline}</p>
                 )}
@@ -156,11 +183,12 @@ export default function AboutPage() {
                     <div style={cardStyle}>
                         <h2 style={cardTitleStyle}>Hubungi Kami</h2>
                         <p style={textStyle}>
-                            Tertarik untuk mengetahui lebih lanjut? Hubungi kami melalui WhatsApp.
+                            Tertarik untuk mengetahui lebih lanjut? Hubungi kami
+                            melalui WhatsApp.
                         </p>
                         <a
                             href={buildWhatsAppUrl(
-                                "Halo, saya ingin mengetahui informasi tentang desa wisata."
+                                "Halo, saya ingin mengetahui informasi tentang desa wisata.",
                             )}
                             target="_blank"
                             rel="noreferrer"
@@ -176,7 +204,8 @@ export default function AboutPage() {
                     <div style={cardStyle}>
                         <h2 style={cardTitleStyle}>Ikuti Kami</h2>
                         <p style={textStyle}>
-                            Dapatkan update terbaru dari desa wisata melalui media sosial kami.
+                            Dapatkan update terbaru dari desa wisata melalui
+                            media sosial kami.
                         </p>
                         <div style={linkWrapStyle}>
                             {socialLinks.map((item) => (

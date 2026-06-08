@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     commands: __DIR__.'/../routes/console.php',
     health: '/up',
     then: function () {
-    Route::middleware('force.json')
+    Route::middleware(['force.json', 'api.security.headers', 'throttle:60,1'])
         ->prefix('api/v1')
         ->group(base_path('routes/api_v1.php'));
     }
@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
     $middleware->alias([
         'force.json' => \App\Http\Middleware\ForceJsonResponse::class,
+        'api.security.headers' => \App\Http\Middleware\ApiSecurityHeaders::class,
     ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

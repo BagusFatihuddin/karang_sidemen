@@ -20,4 +20,6 @@ Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/pinned', [ReviewController::class, 'pinned']);
 Route::get('/settings/public', [SettingController::class, 'publicSettings']);
 Route::get('/review/{token}', [ReviewController::class, 'show']);
-Route::post('/review/{token}', [ReviewController::class, 'store']);
+Route::post('/review/{token}', [ReviewController::class, 'store'])
+    ->middleware('throttle:3,10');
+
