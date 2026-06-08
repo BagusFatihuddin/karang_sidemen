@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePublicSettings } from "../hooks/usePublicSettings";
 import { getDestinations } from "../services/api/destinations";
 import { getPromos } from "../services/api/promos";
+import { getPinnedReviews } from "../services/api/reviewsPinned";
 import { buildWhatsAppUrl } from "../services/whatsapp";
 
 const pageStyle = {
@@ -104,6 +105,63 @@ const cardBodyStyle = {
     padding: "12px",
 };
 
+const testimonialStyle = {
+    border: "1px solid #e5e7eb",
+    borderRadius: "8px",
+    padding: "18px",
+    background: "#ffffff",
+};
+
+const testimonialHeaderStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "12px",
+};
+
+const avatarStyle = {
+    width: "48px",
+    height: "48px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    background: "#dcfce7",
+    color: "#166534",
+    display: "grid",
+    placeItems: "center",
+    fontWeight: 700,
+};
+
+const testimonialControlsStyle = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "12px",
+    marginTop: "16px",
+};
+
+const navButtonStyle = {
+    border: "1px solid #d1d5db",
+    borderRadius: "6px",
+    background: "#ffffff",
+    color: "#374151",
+    padding: "8px 10px",
+    cursor: "pointer",
+};
+
+const dotsStyle = {
+    display: "flex",
+    gap: "6px",
+};
+
+const dotStyle = (isActive) => ({
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    border: "1px solid #166534",
+    background: isActive ? "#166534" : "#ffffff",
+    cursor: "pointer",
+});
+
 const badgeStyle = {
     display: "inline-block",
     marginBottom: "8px",
@@ -126,6 +184,16 @@ const sectionTitleStyle = {
 };
 
 const getPayload = (response) => response?.data?.data ?? response?.data ?? {};
+
+const getInitials = (name) => {
+    return name
+        ?.split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase();
+};
 
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(false);
@@ -154,7 +222,12 @@ export default function HomePage() {
         queryKey: ["destinations"],
         queryFn: getDestinations,
     });
+    const { data: reviewsData, isLoading: reviewsLoading } = useQuery({
+        queryKey: ["reviews", "pinned"],
+        queryFn: getPinnedReviews,
+    });
     const [activePromoIndex, setActivePromoIndex] = useState(0);
+    const [activeReviewIndex, setActiveReviewIndex] = useState(0);
 
     const settings = getPayload(settingsData);
     const promos = getPayload(promosData);
@@ -163,6 +236,8 @@ export default function HomePage() {
     const destinationItems = Array.isArray(destinations)
         ? destinations.slice(0, 6)
         : [];
+    const reviews = getPayload(reviewsData);
+    const reviewItems = Array.isArray(reviews) ? reviews : [];
 
     useEffect(() => {
         if (promoItems.length <= 1) {
@@ -182,7 +257,26 @@ export default function HomePage() {
         }
     }, [activePromoIndex, promoItems.length]);
 
+    useEffect(() => {
+        if (reviewItems.length <= 1) {
+            return undefined;
+        }
+
+        const interval = window.setInterval(() => {
+            setActiveReviewIndex((current) => (current + 1) % reviewItems.length);
+        }, 4000);
+
+        return () => window.clearInterval(interval);
+    }, [reviewItems.length]);
+
+    useEffect(() => {
+        if (activeReviewIndex >= reviewItems.length) {
+            setActiveReviewIndex(0);
+        }
+    }, [activeReviewIndex, reviewItems.length]);
+
     const activePromo = promoItems[activePromoIndex];
+    const activeReview = reviewItems[activeReviewIndex];
 
     return (
         <main style={pageStyle}>
@@ -284,6 +378,96 @@ export default function HomePage() {
                     </div>
                 )}
             </section>
+
+            {reviewsLoading && (
+                <section style={sectionStyle}>
+                    <div style={{ ...skeletonStyle, height: "220px" }} />
+                </section>
+            )}
+
+            {!reviewsLoading && activeReview && (
+                <section style={sectionStyle}>
+                    <h2 style={sectionTitleStyle}>Ulasan Pengunjung</h2>
+                    <article style={testimonialStyle}>
+                        <div style={testimonialHeaderStyle}>
+                            {activeReview.photo_url ? (
+                                <img
+                                    src={activeReview.photo_url}
+                                    alt={activeReview.reviewer_name}
+                                    style={avatarStyle}
+                                />
+                            ) : (
+                                <div style={avatarStyle}>
+                                    {getInitials(activeReview.reviewer_name) || "?"}
+                                </div>
+                            )}
+                            <div>
+                                <h3 style={{ margin: 0 }}>
+                                    {activeReview.reviewer_name}
+                                </h3>
+                                <p style={{ ...textStyle, margin: 0 }}>
+                                    Rating {activeReview.rating}/5
+                                    {activeReview.origin_city
+                                        ? ` - ${activeReview.origin_city}`
+                                        : ""}
+                                </p>
+                            </div>
+                        </div>
+
+                        <p style={textStyle}>{activeReview.review_text}</p>
+                        {activeReview.destination?.name && (
+                            <p style={textStyle}>
+                                Destinasi: {activeReview.destination.name}
+                            </p>
+                        )}
+
+                        <div style={testimonialControlsStyle}>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setActiveReviewIndex((current) =>
+                                        current === 0
+                                            ? reviewItems.length - 1
+                                            : current - 1,
+                                    )
+                                }
+                                style={navButtonStyle}
+                            >
+                                Sebelumnya
+                            </button>
+
+                            <div style={dotsStyle}>
+                                {reviewItems.map((review, index) => (
+                                    <button
+                                        key={review.id}
+                                        type="button"
+                                        aria-label={`Ulasan ${index + 1}`}
+                                        onClick={() => setActiveReviewIndex(index)}
+                                        style={dotStyle(index === activeReviewIndex)}
+                                    />
+                                ))}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setActiveReviewIndex((current) =>
+                                        (current + 1) % reviewItems.length,
+                                    )
+                                }
+                                style={navButtonStyle}
+                            >
+                                Berikutnya
+                            </button>
+                        </div>
+                    </article>
+                    <div style={{ marginTop: "16px" }}>
+                        <Link to="/reviews" style={outlineButtonStyle}>
+                            Lihat Semua Ulasan
+                        </Link>
+                    </div>
+                </section>
+            )}
 
             {settings?.global_whatsapp && (
                 <section style={sectionStyle}>

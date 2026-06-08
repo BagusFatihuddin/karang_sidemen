@@ -83,6 +83,48 @@ class ReviewController extends Controller
         return response()->json($result);
     }
 
+    /**
+     * Get public pinned reviews for landing page testimonials.
+     */
+    public function pinned(): JsonResponse
+    {
+        $result = Cache::remember('reviews:pinned', 30 * 60, function () {
+            $reviews = Review::with([
+                'destination:id,name',
+                'visitor:id,origin_city',
+            ])
+                ->where('status', 'approved')
+                ->where('is_pinned_global', true)
+                ->latest()
+                ->limit(10)
+                ->get([
+                    'id',
+                    'destination_id',
+                    'visitor_id',
+                    'reviewer_name',
+                    'reviewer_city',
+                    'review_text',
+                    'rating',
+                    'photo_url',
+                    'created_at',
+                ]);
+
+            return $reviews->map(fn (Review $review): array => [
+                'id' => $review->id,
+                'reviewer_name' => $review->reviewer_name,
+                'review_text' => $review->review_text,
+                'rating' => $review->rating,
+                'photo_url' => $review->photo_url,
+                'destination' => [
+                    'name' => $review->destination?->name,
+                ],
+                'origin_city' => $review->visitor?->origin_city ?? $review->reviewer_city,
+            ])->values()->all();
+        });
+
+        return ApiResponse::success($result);
+    }
+
     public function show(string $token): JsonResponse
     {
         $reviewToken = ReviewToken::with([

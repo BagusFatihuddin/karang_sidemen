@@ -17,6 +17,7 @@ Route::get('/trip-packages', [TripPackageController::class, 'index']);
 Route::get('/trip-packages/{id}', [TripPackageController::class, 'show']);
 Route::get('/guides', [GuideController::class, 'index']);
 Route::get('/reviews', [ReviewController::class, 'index']);
+Route::get('/reviews/pinned', [ReviewController::class, 'pinned']);
 Route::get('/settings/public', [SettingController::class, 'publicSettings']);
 Route::get('/review/{token}', [ReviewController::class, 'show']);
 Route::post('/review/{token}', [ReviewController::class, 'store']);
