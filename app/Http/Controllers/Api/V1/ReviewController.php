@@ -9,6 +9,7 @@ use App\Models\ReviewToken;
 use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -16,6 +17,72 @@ use Throwable;
 
 class ReviewController extends Controller
 {
+    /**
+     * Get public approved reviews.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $destinationId = $request->query('destination_id');
+        $rating = $request->query('rating');
+        $sort = $request->query('sort', 'latest');
+        $page = (int) $request->query('page', 1);
+        
+        $cacheKey = "reviews:public:" . md5(json_encode([
+            'destination_id' => $destinationId,
+            'rating' => $rating,
+            'sort' => $sort,
+            'page' => $page,
+        ]));
+
+        $result = Cache::remember($cacheKey, 30 * 60, function () use ($destinationId, $rating, $sort, $page) {
+            $query = Review::where('status', 'approved');
+
+            if ($destinationId) {
+                $query->where('destination_id', $destinationId);
+            }
+
+            if ($rating) {
+                $query->where('rating', $rating);
+            }
+
+            if ($sort === 'highest_rating') {
+                $query->orderByDesc('rating')->orderByDesc('created_at');
+            } else {
+                $query->orderByDesc('created_at');
+            }
+
+            $paginated = $query->paginate(15, ['*'], 'page', $page);
+
+            $items = [];
+            foreach ($paginated->items() as $review) {
+                $items[] = [
+                    'id' => $review->id,
+                    'reviewer_name' => $review->reviewer_name,
+                    'reviewer_city' => $review->reviewer_city,
+                    'rating' => $review->rating,
+                    'review_text' => $review->review_text,
+                    'photo_url' => $review->photo_url,
+                    'destination_id' => $review->destination_id,
+                    'created_at' => $review->created_at->toIso8601String(),
+                ];
+            }
+
+            return [
+                'data' => $items,
+                'pagination' => [
+                    'total' => $paginated->total(),
+                    'per_page' => $paginated->perPage(),
+                    'current_page' => $paginated->currentPage(),
+                    'last_page' => $paginated->lastPage(),
+                    'from' => $paginated->firstItem(),
+                    'to' => $paginated->lastItem(),
+                ],
+            ];
+        });
+
+        return response()->json($result);
+    }
+
     public function show(string $token): JsonResponse
     {
         $reviewToken = ReviewToken::with([
