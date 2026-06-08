@@ -8,6 +8,7 @@ import GuidesPage from "../pages/GuidesPage";
 import ReviewsPage from "../pages/ReviewsPage";
 import ReviewTokenPage from "../pages/ReviewTokenPage";
 import AboutPage from "../pages/AboutPage";
+import NotFoundPage from "../pages/NotFoundPage";
 import PublicLayout from "../layouts/PublicLayout";
 
 const router = createBrowserRouter([
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
                 element: <AboutPage />,
             },
         ],
+    },
+    {
+        path: "*",
+        element: <NotFoundPage />,
     },
 ]);
 
