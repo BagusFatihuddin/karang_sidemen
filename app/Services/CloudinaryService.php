@@ -34,7 +34,7 @@ class CloudinaryService
                     'folder' => trim($folder, '/'),
 
                     // optimization default
-                    'quality' => 'auto:good',
+                    'quality' => 80,
                     'fetch_format' => 'auto',
                 ]
             );
