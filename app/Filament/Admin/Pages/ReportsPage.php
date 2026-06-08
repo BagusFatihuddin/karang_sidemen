@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Exports\VisitReportExport;
+use App\Exports\VisitReportPdf;
 use App\Models\DailyVisit;
 use App\Models\Destination;
 use App\Models\Visitor;
@@ -17,6 +19,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportsPage extends Page implements HasForms
 {
@@ -267,5 +270,47 @@ class ReportsPage extends Page implements HasForms
             'date_from' => now()->startOfMonth()->toDateString(),
             'date_until' => now()->endOfMonth()->toDateString(),
         ];
+    }
+
+    public function exportToExcel(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $filename = $this->generateFilename('xlsx');
+
+        return Excel::download(
+            new VisitReportExport(
+                $this->dailyVisits,
+                $this->destinationSummary,
+                $this->originBreakdown,
+                $this->referralBreakdown
+            ),
+            $filename
+        );
+    }
+
+    public function exportToPdf()
+    {
+        $data = $this->form->getState();
+        $filename = $this->generateFilename('pdf');
+
+        $pdf = new VisitReportPdf(
+            $this->dailyVisits,
+            $this->destinationSummary,
+            $this->originBreakdown,
+            $this->referralBreakdown,
+            $data['date_from'],
+            $data['date_until']
+        );
+
+        return $pdf->download($filename);
+    }
+
+    protected function generateFilename(string $format): string
+    {
+        $data = $this->form->getState();
+        $dateFrom = \Carbon\Carbon::parse($data['date_from']);
+        $month = $dateFrom->format('m');
+        $year = $dateFrom->format('Y');
+
+        return "laporan-kunjungan-{$month}-{$year}.{$format}";
     }
 }
