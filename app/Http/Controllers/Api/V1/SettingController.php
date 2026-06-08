@@ -15,7 +15,15 @@ class SettingController extends Controller
     public function publicSettings(): JsonResponse
     {
         $cacheKey = 'settings:public:whitelist';
-        $whitelist = ['village_name', 'tagline', 'global_whatsapp', 'social_links', 'maps_url'];
+        $whitelist = [
+            'village_name',
+            'tagline',
+            'global_whatsapp',
+            'social_instagram',
+            'social_facebook',
+            'social_tiktok',
+            'google_maps_embed_url',
+        ];
 
         $settings = Cache::remember($cacheKey, 60 * 60, function () use ($whitelist) {
             return Setting::whereIn('key', $whitelist)
