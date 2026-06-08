@@ -1,5 +1,11 @@
 const GLOBAL_WHATSAPP = "6287861842770";
 
-export const buildWhatsAppUrl = (message) => {
-    return `https://wa.me/${GLOBAL_WHATSAPP}?text=${encodeURIComponent(message)}`;
+const normalizeWhatsAppNumber = (number) => {
+    return String(number || "").replace(/[^\d]/g, "");
+};
+
+export const buildWhatsAppUrl = (message, number = GLOBAL_WHATSAPP) => {
+    const whatsappNumber = normalizeWhatsAppNumber(number);
+
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 };

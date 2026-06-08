@@ -8,39 +8,46 @@ import GuidesPage from "../pages/GuidesPage";
 import ReviewsPage from "../pages/ReviewsPage";
 import ReviewTokenPage from "../pages/ReviewTokenPage";
 import AboutPage from "../pages/AboutPage";
+import PublicLayout from "../layouts/PublicLayout";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <HomePage />,
-    },
-    {
-        path: "/destinasi",
-        element: <DestinationsPage />,
-    },
-    {
-        path: "/destinasi/:id",
-        element: <DestinationDetailPage />,
-    },
-    {
-        path: "/paket",
-        element: <PackagesPage />,
-    },
-    {
-        path: "/panduan",
-        element: <GuidesPage />,
-    },
-    {
-        path: "/reviews",
-        element: <ReviewsPage />,
-    },
-    {
-        path: "/review/:token",
-        element: <ReviewTokenPage />,
-    },
-    {
-        path: "/tentang",
-        element: <AboutPage />,
+        element: <PublicLayout />,
+        children: [
+            {
+                index: true,
+                element: <HomePage />,
+            },
+            {
+                path: "destinasi",
+                element: <DestinationsPage />,
+            },
+            {
+                path: "destinasi/:id",
+                element: <DestinationDetailPage />,
+            },
+            {
+                path: "paket",
+                element: <PackagesPage />,
+            },
+            {
+                path: "panduan",
+                element: <GuidesPage />,
+            },
+            {
+                path: "reviews",
+                element: <ReviewsPage />,
+            },
+            {
+                path: "review/:token",
+                element: <ReviewTokenPage />,
+            },
+            {
+                path: "tentang",
+                element: <AboutPage />,
+            },
+        ],
     },
 ]);
 
