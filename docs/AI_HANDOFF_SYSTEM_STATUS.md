@@ -29,21 +29,21 @@ Yang sudah berjalan:
 - Route `/` memakai homepage cinematic dari `ExperienceConceptPage`.
 - Route `/experience-concept` tetap tersedia sebagai backup/preview.
 - Route publik utama:
-  - `/destinasi`
-  - `/destinasi/:id`
-  - `/paket`
-  - `/panduan`
-  - `/reviews`
-  - `/review/:token`
-  - `/tentang`
-  - `/event/:id`
+    - `/destinasi`
+    - `/destinasi/:id`
+    - `/paket`
+    - `/panduan`
+    - `/reviews`
+    - `/review/:token`
+    - `/tentang`
+    - `/event/:id`
 - Halaman publik sudah punya layout, navbar, footer, dan floating WhatsApp.
 - Floating WhatsApp muncul di halaman utama publik, tetapi disembunyikan di detail destinasi dan halaman token review.
 - Footer sudah memuat identitas pengembang yang dikunci di kode:
-  - Bagus Fatihuddin Abul Yasin
-  - Muhammad Said
-  - Universitas Bumogora
-  - 2026
+    - Bagus Fatihuddin Abul Yasin
+    - Muhammad Said
+    - Universitas Bumogora
+    - 2026
 
 Homepage cinematic:
 
@@ -71,31 +71,31 @@ Yang sudah ada:
 
 - Brand panel: `POKDARWIS Karang Sidemen`.
 - Navigation group:
-  - Konten Wisata
-  - Pengunjung
-  - Operasional
-  - Laporan
-  - Sistem
+    - Konten Wisata
+    - Pengunjung
+    - Operasional
+    - Laporan
+    - Sistem
 - Dashboard stats dibuat lebih operasional.
 - Dashboard Quick Actions tersedia sesuai role.
 - Resource utama:
-  - Destinasi
-  - Paket Wisata
-  - Guide Lokal
-  - Event (masih memakai tabel/model `promos`)
-  - Wisatawan
-  - Review
-  - Booking
-  - Daily Visit
-  - User
+    - Destinasi
+    - Paket Wisata
+    - Guide Lokal
+    - Event (masih memakai tabel/model `promos`)
+    - Wisatawan
+    - Review
+    - Booking
+    - Daily Visit
+    - User
 - Review admin sudah punya:
-  - approve
-  - approve + pin destinasi
-  - approve + pin global
-  - pin/unpin destinasi
-  - pin/unpin global
-  - reject otomatis melepas pin
-  - filter status, pinned global, pinned destinasi
+    - approve
+    - approve + pin destinasi
+    - approve + pin global
+    - pin/unpin destinasi
+    - pin/unpin global
+    - reject otomatis melepas pin
+    - filter status, pinned global, pinned destinasi
 
 Settings admin sudah dipisah menjadi hub:
 
@@ -305,11 +305,11 @@ Untuk hosting, siapkan environment production:
 - `SESSION_DRIVER=database` atau `redis`
 - `QUEUE_CONNECTION=database` atau `redis`
 - Jalankan:
-  - `php artisan config:cache`
-  - `php artisan route:cache`
-  - `php artisan view:cache`
-  - `php artisan event:cache`
-  - command cache Filament/icons jika tersedia di versi yang dipakai
+    - `php artisan config:cache`
+    - `php artisan route:cache`
+    - `php artisan view:cache`
+    - `php artisan event:cache`
+    - command cache Filament/icons jika tersedia di versi yang dipakai
 
 ### 2. Queue Worker
 
@@ -375,27 +375,6 @@ Penting:
 - MySQL user production sebaiknya tidak bisa melihat database lain.
 - Gunakan HTTPS.
 - Pastikan CORS/API frontend URL production benar.
-
-## Rekomendasi Hosting
-
-Rekomendasi aman:
-
-- VPS kecil 1-2 GB RAM.
-- Nginx atau Apache.
-- PHP 8.4 sesuai local, atau PHP stabil yang kompatibel dengan Laravel 13.
-- MySQL/MariaDB.
-- Redis opsional tapi disarankan jika traffic naik.
-- Queue worker aktif.
-- Scheduler aktif.
-- Cloudinary untuk media.
-
-Shared hosting mungkin bisa, tetapi kurang ideal untuk:
-
-- Filament admin
-- queue worker
-- upload media
-- React build/static delivery
-- cache/worker/scheduler yang stabil
 
 ## Perintah Verifikasi yang Pernah Dipakai
 

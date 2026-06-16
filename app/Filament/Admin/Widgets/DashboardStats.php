@@ -2,16 +2,16 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Filament\Admin\Resources\Bookings\BookingResource;
+use App\Filament\Admin\Resources\Destinations\DestinationResource;
+use App\Filament\Admin\Resources\Reviews\ReviewResource;
+use App\Filament\Admin\Resources\TripPackages\TripPackageResource;
 use App\Models\Booking;
 use App\Models\DailyVisit;
 use App\Models\Destination;
 use App\Models\Review;
 use App\Models\TripPackage;
 use App\Models\Visitor;
-use App\Filament\Admin\Resources\Bookings\BookingResource;
-use App\Filament\Admin\Resources\Destinations\DestinationResource;
-use App\Filament\Admin\Resources\Reviews\ReviewResource;
-use App\Filament\Admin\Resources\TripPackages\TripPackageResource;
 use App\Support\UserRole;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Cache;
 
 class DashboardStats extends StatsOverviewWidget
 {
+    protected ?string $pollingInterval = '60s';
+
+    protected int|string|array $columnSpan = 'full';
+
     public static function canView(): bool
     {
         return Auth::user()?->role !== UserRole::PETUGAS_LAPANGAN;
@@ -28,6 +32,7 @@ class DashboardStats extends StatsOverviewWidget
     protected function getStats(): array
     {
         $role = Auth::user()?->role;
+
         $dashboardStats = Cache::remember(
             'admin:dashboard-stats:' . ($role ?? 'guest') . ':' . now()->format('Y-m-d-H-i'),
             now()->addSeconds(75),
@@ -39,10 +44,15 @@ class DashboardStats extends StatsOverviewWidget
                 'Pengunjung Hari Ini',
                 number_format($dashboardStats['today_visitors'], 0, ',', '.')
             )
-                ->description($dashboardStats['month_visitors'] . ' pengunjung bulan ini')
-                ->descriptionIcon('heroicon-m-users')
+                ->description('Bulan ini: ' . $dashboardStats['month_visitors'] . ' pengunjung')
+                ->descriptionIcon('heroicon-m-calendar')
                 ->color('success')
-                ->icon('heroicon-o-user-group'),
+                ->icon('heroicon-o-user-group')
+                ->chart([$dashboardStats['today_visitors']])
+                ->extraAttributes([
+                    'class' =>
+                        'rounded-[24px] border border-white/8 bg-gradient-to-br from-emerald-950/80 to-black/30 shadow-lg transition hover:-translate-y-1 hover:shadow-emerald-900/20',
+                ]),
         ];
 
         if (
@@ -65,21 +75,45 @@ class DashboardStats extends StatsOverviewWidget
                 'Booking Pending',
                 number_format($pendingBookings, 0, ',', '.')
             )
-                ->description('Perlu dikonfirmasi admin')
-                ->descriptionIcon('heroicon-m-clock')
+                ->description(
+                    $pendingBookings > 0
+                        ? 'Menunggu konfirmasi'
+                        : 'Semua terkonfirmasi'
+                )
+                ->descriptionIcon(
+                    $pendingBookings > 0
+                        ? 'heroicon-m-exclamation-circle'
+                        : 'heroicon-m-check-circle'
+                )
                 ->color($pendingBookings > 0 ? 'warning' : 'success')
                 ->icon('heroicon-o-clipboard-document-list')
-                ->url(BookingResource::getUrl());
+                ->url(BookingResource::getUrl())
+                ->extraAttributes([
+                    'class' =>
+                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-amber-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+                ]);
 
             $stats[] = Stat::make(
                 'Review Pending',
                 number_format($pendingReviews, 0, ',', '.')
             )
-                ->description('Approve agar tampil di website')
-                ->descriptionIcon('heroicon-m-chat-bubble-left-right')
+                ->description(
+                    $pendingReviews > 0
+                        ? 'Tunggu persetujuan'
+                        : 'Semua disetujui'
+                )
+                ->descriptionIcon(
+                    $pendingReviews > 0
+                        ? 'heroicon-m-exclamation-circle'
+                        : 'heroicon-m-check-circle'
+                )
                 ->color($pendingReviews > 0 ? 'warning' : 'success')
                 ->icon('heroicon-o-star')
-                ->url(ReviewResource::getUrl());
+                ->url(ReviewResource::getUrl())
+                ->extraAttributes([
+                    'class' =>
+                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-rose-950/40 to-black/30 shadow-lg transition hover:-translate-y-1',
+                ]);
 
             $stats[] = Stat::make(
                 'Destinasi Aktif',
@@ -87,8 +121,8 @@ class DashboardStats extends StatsOverviewWidget
             )
                 ->description(
                     $destinationsWithoutImages > 0
-                        ? "{$destinationsWithoutImages} belum punya gambar"
-                        : 'Semua punya media dasar'
+                        ? "{$destinationsWithoutImages} masih perlu media"
+                        : 'Semua memiliki media'
                 )
                 ->descriptionIcon(
                     $destinationsWithoutImages > 0
@@ -97,7 +131,11 @@ class DashboardStats extends StatsOverviewWidget
                 )
                 ->color($destinationsWithoutImages > 0 ? 'warning' : 'success')
                 ->icon('heroicon-o-map-pin')
-                ->url(DestinationResource::getUrl());
+                ->url(DestinationResource::getUrl())
+                ->extraAttributes([
+                    'class' =>
+                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-sky-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+                ]);
 
             $stats[] = Stat::make(
                 'Paket Aktif',
@@ -105,17 +143,21 @@ class DashboardStats extends StatsOverviewWidget
             )
                 ->description(
                     $activePackages > 0
-                        ? 'Siap ditampilkan di halaman publik'
-                        : 'Belum ada paket aktif'
+                        ? 'Siap tersedia untuk wisatawan'
+                        : 'Tidak ada paket aktif'
                 )
                 ->descriptionIcon(
                     $activePackages > 0
                         ? 'heroicon-m-check-circle'
-                        : 'heroicon-m-plus-circle'
+                        : 'heroicon-m-exclamation-circle'
                 )
                 ->color($activePackages > 0 ? 'success' : 'warning')
                 ->icon('heroicon-o-map')
-                ->url(TripPackageResource::getUrl());
+                ->url(TripPackageResource::getUrl())
+                ->extraAttributes([
+                    'class' =>
+                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-indigo-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+                ]);
         }
 
         $stats[] = Stat::make(
@@ -127,51 +169,56 @@ class DashboardStats extends StatsOverviewWidget
                 '.'
             )
         )
-            ->description('Berdasarkan input harian')
-            ->descriptionIcon('heroicon-m-banknotes')
+            ->description('Dari input kunjungan harian')
+            ->descriptionIcon('heroicon-m-arrow-trending-up')
             ->color('info')
-            ->icon('heroicon-o-chart-bar');
+            ->icon('heroicon-o-banknotes')
+            ->extraAttributes([
+                'class' =>
+                    'rounded-[24px] border border-white/8 bg-gradient-to-br from-cyan-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+            ]);
 
         return $stats;
     }
 
-    /**
-     * @return array<string, int|float>
-     */
     private function resolveDashboardStats(): array
     {
         return [
             'today_visitors' => Visitor::query()
                 ->where('visited_at', '>=', today())
                 ->count(),
+
             'month_visitors' => Visitor::query()
                 ->whereBetween('visited_at', [
                     now()->startOfMonth(),
                     now()->endOfMonth(),
                 ])
                 ->count(),
+
             'month_revenue' => (float) DailyVisit::query()
-                ->whereBetween(
-                    'date',
-                    [
-                        now()->startOfMonth()->toDateString(),
-                        now()->endOfMonth()->toDateString(),
-                    ]
-                )
+                ->whereBetween('date', [
+                    now()->startOfMonth()->toDateString(),
+                    now()->endOfMonth()->toDateString(),
+                ])
                 ->sum('revenue'),
+
             'pending_bookings' => Booking::query()
                 ->where('status', 'pending')
                 ->count(),
+
             'pending_reviews' => Review::query()
                 ->where('status', 'pending')
                 ->count(),
+
             'active_destinations' => Destination::query()
                 ->where('is_active', true)
                 ->count(),
+
             'destinations_without_images' => Destination::query()
                 ->where('is_active', true)
                 ->whereDoesntHave('images')
                 ->count(),
+
             'active_packages' => TripPackage::query()
                 ->where('is_active', true)
                 ->count(),
