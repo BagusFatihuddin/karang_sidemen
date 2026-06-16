@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Pages\Settings;
 
+use App\Filament\Admin\Components\BrandLogoPreview;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -41,6 +42,8 @@ class BrandSettingsPage extends BaseSettingsPage
                 ->description('Logo yang akan muncul di navbar (bagian atas) dan footer (bagian bawah) halaman website publik.')
                 ->icon('heroicon-m-squares-2x2')
                 ->schema([
+                    BrandLogoPreview::make(),
+
                     TextInput::make('brand_logo_alt')
                         ->label('Deskripsi Logo')
                         ->placeholder('Contoh: Logo Karang Sidemen')
