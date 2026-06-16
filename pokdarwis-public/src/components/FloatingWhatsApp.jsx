@@ -42,10 +42,7 @@ export default function FloatingWhatsApp() {
             rel="noreferrer"
             aria-label="Chat WhatsApp POKDARWIS Karang Sidemen"
         >
-            <span className="floating-whatsapp__bubble">
-                <WhatsAppIcon />
-            </span>
-            <strong>Chat WA</strong>
+            <WhatsAppIcon />
         </a>
     );
 }

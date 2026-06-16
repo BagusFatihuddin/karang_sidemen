@@ -465,6 +465,7 @@ export default function ExperienceConceptPage() {
                             "Karang Sidemen punya beberapa pengalaman alam yang saling nyambung.",
                         )}
                     </h2>
+                    <span className="concept-swipe-hint">Geser</span>
                 </div>
                 {destinationsLoading ? (
                     <div className="concept-loading">Memuat destinasi...</div>
@@ -564,6 +565,7 @@ export default function ExperienceConceptPage() {
                                     "Scroll down to move sideways",
                                 )}
                             </span>
+                            <span className="concept-swipe-hint">Geser</span>
                         </div>
                         <div
                             className="concept-horizontal__track"
@@ -616,6 +618,7 @@ export default function ExperienceConceptPage() {
                             "Setiap kartu datang dari data destinasi yang bisa dikelola admin.",
                         )}
                     </h2>
+                    <span className="concept-swipe-hint">Geser</span>
                 </div>
                 <div className="concept-experience-grid">
                     {featuredDestinations.slice(0, 8).map((destination, index) => (
@@ -698,6 +701,7 @@ export default function ExperienceConceptPage() {
                                 "Review dibuat pendek, lokal, dan masuk akal.",
                             )}
                         </h2>
+                        <span className="concept-swipe-hint">Geser</span>
                     </div>
                     <div className="concept-review-grid">
                         {reviewItems.slice(0, 3).map((review) => (

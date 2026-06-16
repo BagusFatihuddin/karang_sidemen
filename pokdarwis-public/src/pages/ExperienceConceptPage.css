@@ -216,10 +216,10 @@
 .concept-event-card {
     position: absolute;
     left: max(24px, calc((100vw - 1120px) / 2));
-    bottom: 9vh;
+    bottom: 26px;
     z-index: 5;
-    width: min(420px, calc(100% - 48px));
-    min-height: 138px;
+    width: min(380px, calc(100% - 48px));
+    min-height: 128px;
     padding: 10px;
     border: 1px solid rgba(250, 255, 239, 0.28);
     border-radius: 12px;
@@ -251,7 +251,7 @@
 .concept-event-card img {
     width: 100%;
     height: 100%;
-    min-height: 118px;
+    min-height: 108px;
     border-radius: 9px;
     display: block;
     object-fit: cover;
@@ -276,7 +276,7 @@
     overflow: hidden;
     color: #fff3d7;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 24px;
+    font-size: 22px;
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -308,6 +308,10 @@
 .concept-section-title {
     width: min(1120px, calc(100% - 40px));
     margin: 0 auto 34px;
+}
+
+.concept-swipe-hint {
+    display: none;
 }
 
 .concept-section-title h2,
@@ -1108,59 +1112,138 @@
 
 @media (max-width: 760px) {
     .concept-nav {
-        top: 14px;
-        width: calc(100% - 28px);
-        min-height: 52px;
-        padding: 8px 14px;
+        top: 10px;
+        width: calc(100% - 20px);
+        min-height: 54px;
+        padding: 7px 8px 7px 14px;
+        border-color: rgba(255, 243, 215, 0.26);
+        background: rgba(6, 28, 20, 0.58);
+        box-shadow: 0 18px 54px rgba(0, 0, 0, 0.26);
     }
 
     .concept-nav__brand {
-        max-width: 100%;
+        max-width: 44%;
         font-size: 12px;
     }
 
     .concept-nav__links {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .concept-nav__links::-webkit-scrollbar {
         display: none;
     }
 
+    .concept-nav__links a {
+        flex: 0 0 auto;
+        padding: 9px 10px;
+        font-size: 11px;
+        color: rgba(250, 255, 239, 0.82);
+        background: rgba(250, 255, 239, 0.08);
+    }
+
     .concept-hero {
-        min-height: 108vh;
+        min-height: 116svh;
+        overflow: hidden;
+    }
+
+    .concept-hero__image {
+        background-position: 54% center;
+        transform: scale(calc(1.18 - (var(--page-progress) * 0.05)))
+            translateY(calc(var(--page-progress) * -46px));
+    }
+
+    .concept-hero__shade {
+        background:
+            radial-gradient(circle at 70% 24%, rgba(51, 226, 189, 0.22), transparent 15rem),
+            linear-gradient(180deg, rgba(7, 24, 18, 0.12), rgba(7, 24, 18, 0.58) 46%, rgba(7, 24, 18, 0.9) 100%),
+            linear-gradient(90deg, rgba(7, 24, 18, 0.88), rgba(7, 24, 18, 0.2) 62%, rgba(7, 24, 18, 0.7));
     }
 
     .concept-hero__content {
-        width: calc(100% - 28px);
-        padding: 132px 0 132px;
+        width: calc(100% - 24px);
+        padding: 122px 0 246px;
+    }
+
+    .concept-hero__content > p,
+    .concept-kicker {
+        font-size: 11px;
+        letter-spacing: 0.16em;
     }
 
     .concept-hero h1 {
-        font-size: clamp(66px, 22vw, 104px);
+        max-width: 96vw;
+        font-size: clamp(64px, 23vw, 112px);
+        line-height: 0.76;
     }
 
     .concept-hero h1 span:last-child {
-        margin-left: 24px;
+        margin-left: 16px;
+        transform: translateX(calc(var(--page-progress) * -24px));
     }
 
     .concept-hero__bottom {
+        width: min(100%, 360px);
+        margin-top: 26px;
         display: grid;
         align-items: start;
+        gap: 18px;
+    }
+
+    .concept-hero__bottom p {
+        font-size: 17px;
+        line-height: 1.52;
     }
 
     .concept-hero__bottom a,
     .concept-final a {
         width: fit-content;
+        min-height: 46px;
+        padding: 13px 16px;
     }
 
     .concept-floating-card {
-        display: none;
+        display: grid;
+        width: 118px;
+        padding: 7px;
+        border-radius: 9px;
+        background: rgba(250, 255, 239, 0.13);
+        backdrop-filter: blur(16px);
+    }
+
+    .concept-floating-card img {
+        aspect-ratio: 4 / 5.2;
+    }
+
+    .concept-floating-card span {
+        font-size: 11px;
+        line-height: 1.15;
+    }
+
+    .concept-floating-card--one {
+        right: 14px;
+        bottom: 35vh;
+    }
+
+    .concept-floating-card--two {
+        right: auto;
+        left: 16px;
+        bottom: 22vh;
     }
 
     .concept-event-card {
-        position: relative;
-        left: auto;
-        bottom: auto;
-        width: calc(100% - 28px);
-        margin: -122px auto 70px;
-        grid-template-columns: 96px minmax(0, 1fr);
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 28px;
+        width: auto;
+        min-height: 118px;
+        margin: 0;
+        grid-template-columns: 104px minmax(0, 1fr);
+        background: rgba(12, 38, 29, 0.72);
         transform: none;
     }
 
@@ -1169,11 +1252,16 @@
     }
 
     .concept-event-card img {
-        min-height: 104px;
+        min-height: 98px;
     }
 
     .concept-event-card strong {
-        font-size: 21px;
+        display: -webkit-box;
+        overflow: hidden;
+        font-size: 20px;
+        white-space: normal;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
     }
 
     .concept-section-title,
@@ -1181,39 +1269,99 @@
     .concept-split,
     .concept-final,
     .concept-review-grid {
-        width: calc(100% - 28px);
+        width: calc(100% - 24px);
+    }
+
+    .concept-swipe-hint {
+        width: fit-content;
+        min-height: 34px;
+        margin-top: 18px;
+        padding: 9px 12px;
+        border: 1px solid rgba(16, 34, 27, 0.14);
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(16, 34, 27, 0.72);
+        background: rgba(255, 255, 255, 0.54);
+        box-shadow: 0 14px 38px rgba(16, 34, 27, 0.08);
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .concept-swipe-hint::after {
+        content: "";
+        width: 34px;
+        height: 1px;
+        display: block;
+        background: linear-gradient(90deg, currentColor, transparent);
+    }
+
+    .concept-horizontal .concept-swipe-hint,
+    .concept-reviews .concept-swipe-hint {
+        border-color: rgba(250, 255, 239, 0.18);
+        color: rgba(250, 255, 239, 0.78);
+        background: rgba(250, 255, 239, 0.08);
     }
 
     .concept-section-title h2,
     .concept-portal__copy h2,
     .concept-split h2,
     .concept-final h2 {
-        font-size: clamp(38px, 12vw, 58px);
-        line-height: 0.98;
+        font-size: clamp(40px, 13vw, 64px);
+        line-height: 0.94;
     }
 
     .concept-reel {
-        padding: 72px 0;
+        padding: 86px 0 78px;
+        background:
+            radial-gradient(circle at 16% 0%, rgba(51, 226, 189, 0.22), transparent 15rem),
+            #edf8e7;
+    }
+
+    .concept-reel__track {
+        left: auto;
+        gap: 12px;
+        width: auto;
+        overflow-x: auto;
+        padding: 0 12px 18px;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        animation: none;
+        mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 42px), transparent);
     }
 
     .concept-reel figure {
-        flex-basis: 220px;
-        height: 340px;
+        flex-basis: 68vw;
+        height: 54svh;
+        min-height: 390px;
+        max-height: 520px;
+        box-shadow: 0 24px 82px rgba(28, 76, 55, 0.22);
+        scroll-snap-align: center;
     }
 
     .concept-portal-section {
-        height: 210vh;
+        height: 230vh;
     }
 
     .concept-portal__copy {
-        top: 12vh;
-        left: 14px;
-        width: calc(100% - 28px);
+        top: 10vh;
+        left: 12px;
+        width: calc(100% - 24px);
+    }
+
+    .concept-portal__copy p:last-child {
+        max-width: 330px;
+        font-size: 15px;
+        line-height: 1.55;
     }
 
     .concept-portal__frame {
-        width: 86vw;
-        aspect-ratio: 4 / 5;
+        width: 90vw;
+        aspect-ratio: 3.8 / 5;
+        box-shadow: 0 34px 118px rgba(0, 0, 0, 0.48);
     }
 
     .concept-portal__next {
@@ -1222,9 +1370,35 @@
         max-width: calc(100% - 28px);
     }
 
+    .concept-breathing {
+        min-height: 92svh;
+    }
+
+    .concept-breathing__image {
+        background-position: center;
+    }
+
+    .concept-breathing__content {
+        width: calc(100% - 24px);
+        padding-bottom: 86px;
+    }
+
+    .concept-breathing__content h2 {
+        font-size: clamp(54px, 17vw, 84px);
+    }
+
+    .concept-breathing__content p:last-child {
+        max-width: 340px;
+        font-size: 16px;
+    }
+
     .concept-horizontal {
         height: auto;
-        padding: 78px 0;
+        padding: 92px 0 84px;
+        background:
+            radial-gradient(circle at 80% 12%, rgba(255, 227, 139, 0.16), transparent 15rem),
+            radial-gradient(circle at 18% 24%, rgba(51, 226, 189, 0.2), transparent 17rem),
+            linear-gradient(180deg, #10221b 0%, #123b2d 78%, #e4f4ef 100%);
     }
 
     .concept-horizontal__sticky {
@@ -1236,23 +1410,36 @@
 
     .concept-horizontal__intro,
     .concept-horizontal__meter {
-        width: calc(100% - 28px);
+        width: calc(100% - 24px);
+    }
+
+    .concept-horizontal__intro h2 {
+        font-size: clamp(40px, 12.5vw, 62px);
+        line-height: 0.95;
+    }
+
+    .concept-horizontal__hint {
+        display: none;
     }
 
     .concept-horizontal__track {
         width: auto;
-        gap: 14px;
+        gap: 12px;
         overflow-x: auto;
-        padding: 0 14px 12px;
+        padding: 0 12px 16px;
         overscroll-behavior-x: contain;
         scroll-snap-type: x mandatory;
         transform: none !important;
+        mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 42px), transparent);
     }
 
     .concept-horizontal__panel {
-        flex: 0 0 84vw;
-        height: 68vh;
-        min-height: 460px;
+        flex: 0 0 88vw;
+        height: 72svh;
+        min-height: 500px;
+        max-height: 620px;
+        border-color: rgba(250, 255, 239, 0.22);
+        box-shadow: 0 34px 104px rgba(0, 0, 0, 0.34);
         scroll-snap-align: center;
     }
 
@@ -1262,14 +1449,15 @@
     }
 
     .concept-horizontal__content {
-        left: 22px;
-        right: 22px;
+        left: 20px;
+        right: 20px;
         bottom: 24px;
         transform: none;
     }
 
     .concept-horizontal__content h3 {
-        font-size: clamp(42px, 14vw, 66px);
+        font-size: clamp(44px, 15vw, 72px);
+        line-height: 0.88;
     }
 
     .concept-horizontal__content p {
@@ -1282,7 +1470,7 @@
     }
 
     .concept-experiences {
-        padding: 78px 0;
+        padding: 88px 0;
     }
 
     .concept-experience-grid {
@@ -1292,26 +1480,43 @@
         padding-bottom: 12px;
         overscroll-behavior-x: contain;
         scroll-snap-type: x mandatory;
+        mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 42px), transparent);
     }
 
     .concept-experience-card {
-        flex: 0 0 78vw;
-        min-height: 450px;
-        scroll-snap-align: start;
+        flex: 0 0 84vw;
+        min-height: 62svh;
+        scroll-snap-align: center;
+    }
+
+    .concept-experience-card:nth-child(2n),
+    .concept-experience-card:nth-child(3n) {
+        transform: none;
+    }
+
+    .concept-experience-card h3 {
+        font-size: clamp(34px, 11vw, 48px);
+    }
+
+    .concept-experience-card p {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
     }
 
     .concept-split {
-        padding: 76px 0;
+        padding: 86px 0;
         gap: 34px;
     }
 
     .concept-split__visual {
-        min-height: 460px;
+        min-height: 500px;
     }
 
     .concept-split__visual img {
-        width: 68%;
-        min-height: 210px;
+        width: 72%;
+        min-height: 220px;
     }
 
     .concept-review-grid {
@@ -1322,6 +1527,7 @@
         overscroll-behavior-x: contain;
         scroll-snap-type: x mandatory;
         scrollbar-width: none;
+        mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 42px), transparent);
     }
 
     .concept-review-grid::-webkit-scrollbar {
@@ -1329,13 +1535,17 @@
     }
 
     .concept-review-grid article {
-        flex: 0 0 86vw;
-        min-height: 330px;
+        flex: 0 0 88vw;
+        min-height: 420px;
+        border-color: rgba(250, 255, 239, 0.18);
+        background:
+            linear-gradient(180deg, rgba(51, 226, 189, 0.14), transparent 38%),
+            rgba(250, 255, 239, 0.07);
         scroll-snap-align: center;
     }
 
     .concept-review-grid p {
-        font-size: clamp(26px, 8vw, 34px);
+        font-size: clamp(27px, 8.6vw, 38px);
     }
 
     .concept-review-card__meta strong {
@@ -1343,10 +1553,50 @@
     }
 
     .concept-final {
-        min-height: 72vh;
-        margin-bottom: 40px;
+        min-height: 78svh;
+        margin-bottom: 36px;
+        padding: 28px;
         align-items: end;
         flex-direction: column;
         justify-content: end;
+        box-shadow: 0 30px 92px rgba(28, 76, 55, 0.24);
+    }
+}
+
+@media (max-width: 420px) {
+    .concept-nav__brand {
+        max-width: 38%;
+    }
+
+    .concept-nav__links a {
+        padding-inline: 8px;
+    }
+
+    .concept-hero h1 {
+        font-size: clamp(58px, 22vw, 92px);
+    }
+
+    .concept-floating-card {
+        width: 106px;
+    }
+
+    .concept-floating-card--one {
+        bottom: 31vh;
+    }
+
+    .concept-floating-card--two {
+        bottom: 16vh;
+    }
+
+    .concept-event-card {
+        grid-template-columns: 92px minmax(0, 1fr);
+    }
+
+    .concept-horizontal__panel {
+        min-height: 480px;
+    }
+
+    .concept-horizontal__content h3 {
+        font-size: clamp(40px, 14vw, 62px);
     }
 }
