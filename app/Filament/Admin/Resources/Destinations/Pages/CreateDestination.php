@@ -18,6 +18,16 @@ class CreateDestination extends CreateRecord
     protected static string $resource =
         DestinationResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Tambah Destinasi Baru';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Buat destinasi wisata baru dengan informasi lengkap: deskripsi, harga, fasilitas, dan galeri foto.';
+    }
+
     protected function mutateFormDataBeforeCreate(
         array $data
     ): array {

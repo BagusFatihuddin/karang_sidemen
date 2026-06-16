@@ -21,85 +21,20 @@ class DestinationForm
         return $schema
             ->components([
                 Section::make('Konten Destinasi')
+                    ->icon('heroicon-m-document-text')
+                    ->description('Informasi dasar dan deskripsi destinasi wisata')
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama Destinasi')
+                            ->placeholder('Contoh: Danau Segara Anak')
                             ->required()
                             ->maxLength(150),
 
                         TextInput::make('slug')
-                            ->label('Slug')
+                            ->label('Slug (URL)')
                             ->helperText('Kosongkan saat membuat destinasi baru agar dibuat otomatis dari nama.')
                             ->maxLength(180),
 
-                        Textarea::make('short_description')
-                            ->label('Deskripsi Pendek')
-                            ->rows(2)
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-
-                        Textarea::make('description')
-                            ->label('Deskripsi Panjang')
-                            ->required()
-                            ->rows(5)
-                            ->columnSpanFull(),
-
-                        TextInput::make('tourism_vibe')
-                            ->label('Vibe Wisata')
-                            ->helperText('Contoh: tenang, sejuk, fotogenik, cocok untuk keluarga.')
-                            ->maxLength(255)
-                            ->columnSpanFull(),
-
-                        Textarea::make('facilities')
-                            ->label('Fasilitas')
-                            ->rows(4)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(2),
-
-                Section::make('Storytelling Homepage')
-                    ->schema([
-                        Toggle::make('is_featured_homepage')
-                            ->label('Tampilkan di Homepage Cinematic')
-                            ->helperText('Aktifkan untuk kartu reel, horizontal interruption, dan experience grid.')
-                            ->default(false),
-
-                        TextInput::make('homepage_sort_order')
-                            ->label('Urutan Homepage')
-                            ->numeric()
-                            ->minValue(1),
-
-                        TextInput::make('homepage_label')
-                            ->label('Label Pendek Homepage')
-                            ->helperText('Contoh: Blue Lake, Forest Escape, Hidden Camping.')
-                            ->maxLength(80),
-
-                        TagsInput::make('tags')
-                            ->label('Tags')
-                            ->separator(',')
-                            ->columnSpanFull(),
-
-                        TagsInput::make('highlights')
-                            ->label('Highlight Features')
-                            ->separator(',')
-                            ->columnSpanFull(),
-
-                        TagsInput::make('activity_keywords')
-                            ->label('Activity Keywords')
-                            ->separator(',')
-                            ->helperText('Contoh: swimming, camping, waterfall, river, photography.')
-                            ->columnSpanFull(),
-
-                        TagsInput::make('source_urls')
-                            ->label('Sumber Data Publik')
-                            ->separator(',')
-                            ->helperText('URL referensi agar konten tetap bisa dicek.')
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(3),
-
-                Section::make('Harga, Kontak, dan Lokasi')
-                    ->schema([
                         Select::make('destination_type')
                             ->label('Jenis Destinasi')
                             ->options([
@@ -113,27 +48,118 @@ class DestinationForm
                             ->required()
                             ->native(false),
 
+                        Textarea::make('short_description')
+                            ->label('Deskripsi Pendek')
+                            ->placeholder('Deskripsi singkat (max 255 karakter)')
+                            ->rows(2)
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+
+                        Textarea::make('description')
+                            ->label('Deskripsi Panjang')
+                            ->placeholder('Deskripsi lengkap tentang destinasi...')
+                            ->required()
+                            ->rows(5)
+                            ->columnSpanFull(),
+
+                        TextInput::make('tourism_vibe')
+                            ->label('Vibe Wisata')
+                            ->placeholder('Contoh: tenang, sejuk, fotogenik, cocok untuk keluarga.')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+
+                        Textarea::make('facilities')
+                            ->label('Fasilitas')
+                            ->placeholder('Daftar fasilitas yang tersedia...')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+
+                Section::make('Storytelling Homepage')
+                    ->icon('heroicon-m-sparkles')
+                    ->description('Pengaturan tampilan di homepage dan featured stories')
+                    ->schema([
+                        Toggle::make('is_featured_homepage')
+                            ->label('Tampilkan di Homepage Cinematic')
+                            ->helperText('Aktifkan untuk kartu reel, horizontal interruption, dan experience grid.')
+                            ->default(false),
+
+                        TextInput::make('homepage_sort_order')
+                            ->label('Urutan Homepage')
+                            ->helperText('Angka lebih kecil = posisi lebih depan')
+                            ->numeric()
+                            ->minValue(1),
+
+                        TextInput::make('homepage_label')
+                            ->label('Label Pendek Homepage')
+                            ->placeholder('Contoh: Blue Lake, Forest Escape, Hidden Camping.')
+                            ->helperText('Nama pendek untuk homepage (max 80 karakter)')
+                            ->maxLength(80),
+
+                        TagsInput::make('tags')
+                            ->label('Tags')
+                            ->placeholder('Tambah tag (pisahkan dengan koma)')
+                            ->separator(',')
+                            ->columnSpanFull(),
+
+                        TagsInput::make('highlights')
+                            ->label('Highlight Features')
+                            ->placeholder('Fitur unggulan (pisahkan dengan koma)')
+                            ->separator(',')
+                            ->columnSpanFull(),
+
+                        TagsInput::make('activity_keywords')
+                            ->label('Activity Keywords')
+                            ->placeholder('Contoh: swimming, camping, waterfall, river, photography.')
+                            ->separator(',')
+                            ->helperText('Keyword aktivitas yang bisa dilakukan di destinasi ini')
+                            ->columnSpanFull(),
+
+                        TagsInput::make('source_urls')
+                            ->label('Sumber Data Publik')
+                            ->placeholder('URL referensi (pisahkan dengan koma)')
+                            ->separator(',')
+                            ->helperText('URL referensi agar konten tetap bisa dicek.')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(3),
+
+                Section::make('Pricing & Kontak')
+                    ->icon('heroicon-m-building-storefront')
+                    ->description('Harga tiket, biaya tambahan, dan kontak')
+                    ->schema([
                         TextInput::make('entry_fee')
                             ->label('Biaya Masuk')
-                            ->numeric(),
+                            ->placeholder('Contoh: 25000')
+                            ->numeric()
+                            ->suffix('IDR'),
 
                         TextInput::make('parking_fee')
                             ->label('Biaya Parkir')
-                            ->numeric(),
+                            ->placeholder('Contoh: 5000')
+                            ->numeric()
+                            ->suffix('IDR'),
 
                         TextInput::make('rental_price')
-                            ->label('Harga Sewa')
-                            ->numeric(),
+                            ->label('Harga Sewa Perlengkapan')
+                            ->placeholder('Contoh: 50000')
+                            ->numeric()
+                            ->suffix('IDR'),
 
                         TextInput::make('whatsapp_number')
-                            ->label('WhatsApp')
+                            ->label('WhatsApp Contact')
+                            ->placeholder('Contoh: +62812345678')
                             ->tel()
-                            ->maxLength(20),
+                            ->maxLength(20)
+                            ->helperText('Nomor WhatsApp untuk kontak langsung'),
 
                         TextInput::make('maps_url')
                             ->label('Google Maps URL')
+                            ->placeholder('Paste Google Maps sharing link')
                             ->url()
                             ->maxLength(500)
+                            ->helperText('Link lokasi destinasi di Google Maps')
                             ->columnSpanFull(),
                     ])
                     ->columns(3),

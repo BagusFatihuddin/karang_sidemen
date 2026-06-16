@@ -17,6 +17,16 @@ class EditDestination extends EditRecord
     protected static string $resource =
         DestinationResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Edit Destinasi: ' . ($this->record?->name ?? 'Loading...');
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Perbarui informasi, galeri foto, harga, dan detail lainnya untuk destinasi wisata ini.';
+    }
+
     public function setCoverImage(
         int $imageId
     ): void {

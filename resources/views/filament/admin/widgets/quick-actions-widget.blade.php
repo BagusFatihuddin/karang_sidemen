@@ -9,7 +9,7 @@
         </x-slot>
 
         <div class="fi-not-prose">
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 text-sm">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 @foreach ($actions as $action)
                     @php
                         $icons = [
@@ -25,29 +25,59 @@
                             'Lihat Laporan' => '📊',
                         ];
 
+                        $colorMap = [
+                            'Registrasi Wisatawan' => '#10b981',
+                            'Verifikasi Booking' => '#f59e0b',
+                            'Tambah Destinasi' => '#0ea5e9',
+                            'Tambah Paket' => '#06b6d4',
+                            'Tambah Event' => '#a855f7',
+                            'Tambah Guide' => '#22c55e',
+                            'Moderasi Review' => '#f43f5e',
+                            'Website Media' => '#6366f1',
+                            'Laporan' => '#3b82f6',
+                            'Lihat Laporan' => '#3b82f6',
+                        ];
+
                         $emoji = $icons[$action['label']] ?? '→';
+                        $color = $colorMap[$action['label']] ?? '#6b7280';
                     @endphp
 
                     <a
                         href="{{ $action['url'] }}"
-                        class="group flex items-start gap-3 rounded-2xl border border-gray-800 bg-white/[0.03] p-4 transition hover:border-primary-500/30 hover:bg-white/[0.05]"
+                        class="group relative overflow-hidden rounded-2xl p-5 transition duration-300 ease-out hover:-translate-y-1.5"
+                        style="
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+                        "
                     >
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-500/10 text-base">
-                            {{ $emoji }}
-                        </div>
+                        <div
+                            class="absolute inset-0 -z-10 opacity-0 transition duration-300 group-hover:opacity-100"
+                            style="background: linear-gradient(to bottom right, {{ $color }}15, transparent);"
+                        ></div>
 
-                        <div class="min-w-0 flex-1">
-                            <div class="flex items-center justify-between gap-2">
-                                <h3 class="truncate text-sm font-semibold text-white">
-                                    {{ $action['label'] }}
-                                </h3>
-
-                                <span class="text-gray-500 transition group-hover:translate-x-1">
-                                    →
-                                </span>
+                        <div class="flex items-start justify-between gap-4">
+                            <div
+                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl ring-1 transition duration-300 group-hover:scale-110"
+                                style="
+                                    background-color: {{ $color }}25;
+                                    color: {{ $color }};
+                                    ring-color: {{ $color }}50;
+                                "
+                            >
+                                {{ $emoji }}
                             </div>
 
-                            <p class="mt-1 text-xs leading-relaxed text-gray-400">
+                            <span class="mt-1 text-lg leading-none text-gray-600 opacity-0 transition duration-300 group-hover:translate-x-1 group-hover:opacity-100">
+                                →
+                            </span>
+                        </div>
+
+                        <div class="mt-4">
+                            <h3 class="font-semibold text-white leading-snug">
+                                {{ $action['label'] }}
+                            </h3>
+
+                            <p class="mt-2 text-xs text-gray-400 leading-relaxed">
                                 {{ $action['description'] }}
                             </p>
                         </div>

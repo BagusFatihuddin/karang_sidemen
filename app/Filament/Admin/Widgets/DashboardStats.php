@@ -51,7 +51,7 @@ class DashboardStats extends StatsOverviewWidget
                 ->chart([$dashboardStats['today_visitors']])
                 ->extraAttributes([
                     'class' =>
-                        'rounded-[24px] border border-white/8 bg-gradient-to-br from-emerald-950/80 to-black/30 shadow-lg transition hover:-translate-y-1 hover:shadow-emerald-900/20',
+                        'cursor-pointer rounded-[24px] border border-emerald-600/30 bg-gradient-to-br from-emerald-950/60 via-emerald-900/30 to-black/40 shadow-xl shadow-emerald-900/20 transition duration-300 ease-out hover:-translate-y-2 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-900/40',
                 ]),
         ];
 
@@ -90,7 +90,7 @@ class DashboardStats extends StatsOverviewWidget
                 ->url(BookingResource::getUrl())
                 ->extraAttributes([
                     'class' =>
-                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-amber-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+                        'cursor-pointer rounded-[24px] border border-amber-600/30 bg-gradient-to-br from-amber-950/50 via-amber-900/20 to-black/40 shadow-xl shadow-amber-900/20 transition duration-300 ease-out hover:-translate-y-2 hover:border-amber-500/50 hover:shadow-2xl hover:shadow-amber-900/40',
                 ]);
 
             $stats[] = Stat::make(
@@ -112,7 +112,7 @@ class DashboardStats extends StatsOverviewWidget
                 ->url(ReviewResource::getUrl())
                 ->extraAttributes([
                     'class' =>
-                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-rose-950/40 to-black/30 shadow-lg transition hover:-translate-y-1',
+                        'cursor-pointer rounded-[24px] border border-rose-600/30 bg-gradient-to-br from-rose-950/50 via-rose-900/20 to-black/40 shadow-xl shadow-rose-900/20 transition duration-300 ease-out hover:-translate-y-2 hover:border-rose-500/50 hover:shadow-2xl hover:shadow-rose-900/40',
                 ]);
 
             $stats[] = Stat::make(
@@ -134,7 +134,7 @@ class DashboardStats extends StatsOverviewWidget
                 ->url(DestinationResource::getUrl())
                 ->extraAttributes([
                     'class' =>
-                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-sky-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+                        'cursor-pointer rounded-[24px] border border-sky-600/30 bg-gradient-to-br from-sky-950/50 via-sky-900/20 to-black/40 shadow-xl shadow-sky-900/20 transition duration-300 ease-out hover:-translate-y-2 hover:border-sky-500/50 hover:shadow-2xl hover:shadow-sky-900/40',
                 ]);
 
             $stats[] = Stat::make(
@@ -156,7 +156,7 @@ class DashboardStats extends StatsOverviewWidget
                 ->url(TripPackageResource::getUrl())
                 ->extraAttributes([
                     'class' =>
-                        'cursor-pointer rounded-[24px] border border-white/8 bg-gradient-to-br from-indigo-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+                        'cursor-pointer rounded-[24px] border border-indigo-600/30 bg-gradient-to-br from-indigo-950/50 via-indigo-900/20 to-black/40 shadow-xl shadow-indigo-900/20 transition duration-300 ease-out hover:-translate-y-2 hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-900/40',
                 ]);
         }
 
@@ -175,7 +175,7 @@ class DashboardStats extends StatsOverviewWidget
             ->icon('heroicon-o-banknotes')
             ->extraAttributes([
                 'class' =>
-                    'rounded-[24px] border border-white/8 bg-gradient-to-br from-cyan-950/50 to-black/30 shadow-lg transition hover:-translate-y-1',
+                    'rounded-[24px] border border-cyan-600/30 bg-gradient-to-br from-cyan-950/50 via-cyan-900/20 to-black/40 shadow-xl shadow-cyan-900/20 transition duration-300 ease-out hover:-translate-y-2 hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-900/40',
             ]);
 
         return $stats;
