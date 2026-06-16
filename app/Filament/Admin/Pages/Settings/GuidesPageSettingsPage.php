@@ -12,9 +12,19 @@ class GuidesPageSettingsPage extends BaseSettingsPage
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?string $title = 'Pengaturan Halaman Panduan';
+    protected static ?string $title = 'Halaman Panduan';
 
     protected static ?string $slug = 'settings/guides-page';
+
+    public function getTitle(): string
+    {
+        return '👥 Pengaturan Halaman Panduan (Guide Lokal)';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Atur gambar untuk halaman daftar panduan (guide lokal). Gambar fallback akan digunakan jika guide belum memiliki foto sendiri.';
+    }
 
     private const MEDIA_SETTINGS = [
         'media_guides_hero_fallback_image_url' => [
@@ -39,10 +49,11 @@ class GuidesPageSettingsPage extends BaseSettingsPage
     protected function schema(): array
     {
         return [
-            Section::make('Media Halaman Panduan')
-                ->description('Gambar global halaman panduan. Foto guide spesifik tetap diatur di resource Guide Lokal.')
+            Section::make('👨‍🏫 Gambar Halaman Panduan')
+                ->description('Kumpulkan semua gambar untuk halaman panduan: gambar pembuka, gambar fallback jika guide tidak punya foto, dan gambar untuk kartu \"Kenapa pakai guide?\".')
+                ->icon('heroicon-m-rectangle-stack')
                 ->schema($this->mediaSettingFields(self::MEDIA_SETTINGS))
-                ->columns(2),
+                ->columns(1),
         ];
     }
 

@@ -11,9 +11,19 @@ class BrandSettingsPage extends BaseSettingsPage
 {
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedSparkles;
 
-    protected static ?string $title = 'Brand Settings';
+    protected static ?string $title = 'Brand & Logo';
 
     protected static ?string $slug = 'settings/brand';
+
+    public function getTitle(): string
+    {
+        return '🎨 Brand & Logo';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Upload dan atur logo yang akan muncul di bagian atas website (navbar) dan bawah website (footer).';
+    }
 
     protected static function settingKeys(): array
     {
@@ -27,26 +37,18 @@ class BrandSettingsPage extends BaseSettingsPage
     protected function schema(): array
     {
         return [
-            Section::make('Logo dan Identitas Visual')
-                ->description('Kontrol icon KS/logo yang muncul di navbar dan footer publik.')
+            Section::make('📌 Logo Situs')
+                ->description('Logo yang akan muncul di navbar (bagian atas) dan footer (bagian bawah) halaman website publik.')
+                ->icon('heroicon-m-squares-2x2')
                 ->schema([
-                    TextInput::make('brand_mark_text')
-                        ->label('Teks Icon Jika Logo Kosong')
-                        ->helperText('Contoh: KS. Akan dipakai sebagai fallback kalau logo belum di-upload.')
-                        ->maxLength(12),
-
                     TextInput::make('brand_logo_alt')
-                        ->label('Alt Text Logo')
-                        ->helperText('Deskripsi singkat untuk aksesibilitas.')
+                        ->label('Deskripsi Logo')
+                        ->placeholder('Contoh: Logo Karang Sidemen')
+                        ->helperText('Deskripsi untuk membantu aksesibilitas. Tidak terlihat di website.')
                         ->maxLength(255),
 
-                    TextInput::make('brand_logo_url')
-                        ->label('Logo URL')
-                        ->url()
-                        ->maxLength(2048),
-
                     FileUpload::make($this->uploadFieldName('brand_logo_url'))
-                        ->label('Upload Logo')
+                        ->label('📤 Upload Logo Baru')
                         ->image()
                         ->disk('local')
                         ->directory('tmp/settings-media')
@@ -60,10 +62,22 @@ class BrandSettingsPage extends BaseSettingsPage
                             'image/svg+xml',
                         ])
                         ->maxSize(2048)
-                        ->helperText('Opsional. Upload baru akan mengganti Logo URL.')
+                        ->helperText('Format: JPG, PNG, WebP, atau SVG. Ukuran: max 2 MB. Ukuran yang direkomendasikan: 200x200 px.')
                         ->dehydrated(false),
                 ])
-                ->columns(2),
+                ->columns(1),
+
+            Section::make('📝 Pengaturan Lanjutan')
+                ->description('Jika logo belum diupload, teks ini akan ditampilkan sebagai pengganti.')
+                ->icon('heroicon-m-cog-6-tooth')
+                ->schema([
+                    TextInput::make('brand_mark_text')
+                        ->label('Teks Pengganti Logo')
+                        ->placeholder('Contoh: KS')
+                        ->helperText('Teks singkat jika logo tidak ada. Gunakan 2-3 huruf saja.')
+                        ->maxLength(12),
+                ])
+                ->columns(1),
         ];
     }
 

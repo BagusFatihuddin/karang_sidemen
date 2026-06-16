@@ -12,9 +12,19 @@ class ReviewsPageSettingsPage extends BaseSettingsPage
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeftRight;
 
-    protected static ?string $title = 'Pengaturan Halaman Review';
+    protected static ?string $title = 'Halaman Review';
 
     protected static ?string $slug = 'settings/reviews-page';
+
+    public function getTitle(): string
+    {
+        return '⭐ Pengaturan Halaman Review';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Atur gambar yang muncul di bagian atas halaman daftar review pengunjung. Gambar ini menunjukkan apa kata pengunjung tentang desa wisata Anda.';
+    }
 
     private const MEDIA_SETTINGS = [
         'media_reviews_hero_image_url' => [
@@ -31,10 +41,11 @@ class ReviewsPageSettingsPage extends BaseSettingsPage
     protected function schema(): array
     {
         return [
-            Section::make('Media Halaman Review')
-                ->description('Gambar global untuk halaman kumpulan review.')
+            Section::make('🖼️ Gambar Pembuka Halaman Review')
+                ->description('Gambar besar yang pengunjung lihat pertama kali saat masuk ke halaman review. Pilih gambar yang menunjukkan kebahagiaan dan kepuasan pengunjung.')
+                ->icon('heroicon-m-rectangle-stack')
                 ->schema($this->mediaSettingFields(self::MEDIA_SETTINGS))
-                ->columns(2),
+                ->columns(1),
         ];
     }
 

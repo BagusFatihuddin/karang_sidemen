@@ -12,9 +12,19 @@ class HomepageSettingsPage extends BaseSettingsPage
 {
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedHome;
 
-    protected static ?string $title = 'Homepage Cinematic Settings';
+    protected static ?string $title = 'Halaman Utama';
 
     protected static ?string $slug = 'settings/homepage';
+
+    public function getTitle(): string
+    {
+        return '🏠 Pengaturan Halaman Utama (Homepage)';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Atur teks dan gambar yang akan muncul di halaman depan website. Halaman ini adalah kesan pertama pengunjung terhadap desa wisata Anda.';
+    }
 
     protected static function settingKeys(): array
     {

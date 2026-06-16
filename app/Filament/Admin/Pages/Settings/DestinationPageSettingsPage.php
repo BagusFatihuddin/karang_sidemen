@@ -12,10 +12,18 @@ class DestinationPageSettingsPage extends BaseSettingsPage
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
 
-    protected static ?string $title = 'Pengaturan Halaman Destinasi';
+    protected static ?string $title = 'Halaman Destinasi';
 
     protected static ?string $slug = 'settings/destinations-page';
 
+    public function getTitle(): string
+    {
+        return '📍 Pengaturan Halaman Destinasi';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Atur gambar yang muncul di bagian atas halaman daftar destinasi. Ini adalah gambar \"sampul\" untuk halaman destinasi.';    }
     private const MEDIA_SETTINGS = [
         'media_destinations_hero_image_url' => [
             'label' => 'Hero Image Destinasi',
@@ -31,10 +39,11 @@ class DestinationPageSettingsPage extends BaseSettingsPage
     protected function schema(): array
     {
         return [
-            Section::make('Media Halaman Destinasi')
-                ->description('Gambar global untuk halaman daftar destinasi. Gambar tiap destinasi tetap diatur dari resource Destinasi.')
+            Section::make('🖼️ Gambar Pembuka Halaman Destinasi')
+                ->description('Gambar besar yang pengunjung lihat pertama kali saat masuk ke halaman daftar destinasi. Pilih gambar yang menarik dan representatif untuk desa wisata.')
+                ->icon('heroicon-m-rectangle-stack')
                 ->schema($this->mediaSettingFields(self::MEDIA_SETTINGS))
-                ->columns(2),
+                ->columns(1),
         ];
     }
 

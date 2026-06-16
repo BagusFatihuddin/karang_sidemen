@@ -12,10 +12,18 @@ class PackagesPageSettingsPage extends BaseSettingsPage
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedMap;
 
-    protected static ?string $title = 'Pengaturan Halaman Paket';
+    protected static ?string $title = 'Halaman Paket';
 
     protected static ?string $slug = 'settings/packages-page';
 
+    public function getTitle(): string
+    {
+        return '🛍️ Pengaturan Halaman Paket Wisata';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Atur gambar untuk halaman daftar paket wisata. Gambar \"sampul\" akan muncul di atas, dan gambar cadangan (fallback) akan digunakan jika paket belum memiliki foto sendiri.';    }
     private const MEDIA_SETTINGS = [
         'media_packages_hero_fallback_image_url' => [
             'label' => 'Hero Image Paket',
@@ -47,10 +55,11 @@ class PackagesPageSettingsPage extends BaseSettingsPage
     protected function schema(): array
     {
         return [
-            Section::make('Media Halaman Paket')
-                ->description('Gambar halaman paket dan fallback kartu. Gambar paket spesifik tetap diatur di resource Paket.')
+            Section::make('🎒 Gambar Halaman Paket')
+                ->description('Kumpulkan semua gambar yang berhubungan dengan halaman paket: gambar pembuka, gambar fallback jika paket tidak punya foto. Gunakan gambar landscape yang menarik.')
+                ->icon('heroicon-m-rectangle-stack')
                 ->schema($this->mediaSettingFields(self::MEDIA_SETTINGS))
-                ->columns(2),
+                ->columns(1),
         ];
     }
 

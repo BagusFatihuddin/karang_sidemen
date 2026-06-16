@@ -12,9 +12,19 @@ class AboutPageSettingsPage extends BaseSettingsPage
 {
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedInformationCircle;
 
-    protected static ?string $title = 'About Page Settings';
+    protected static ?string $title = 'Halaman Tentang';
 
     protected static ?string $slug = 'settings/about';
+
+    public function getTitle(): string
+    {
+        return 'ℹ️ Pengaturan Halaman Tentang';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Atur gambar, cerita, struktur organisasi, dan peta untuk halaman \"Tentang Kami\". Halaman ini membantu pengunjung memahami desa wisata Anda lebih baik.';
+    }
 
     protected static function settingKeys(): array
     {

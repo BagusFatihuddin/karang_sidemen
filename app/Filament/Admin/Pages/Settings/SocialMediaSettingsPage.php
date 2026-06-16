@@ -10,9 +10,19 @@ class SocialMediaSettingsPage extends BaseSettingsPage
 {
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedShare;
 
-    protected static ?string $title = 'Social Media Settings';
+    protected static ?string $title = 'Media Sosial';
 
     protected static ?string $slug = 'settings/social-media';
+
+    public function getTitle(): string
+    {
+        return '📱 Media Sosial Desa Wisata';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Masukkan link profil media sosial desa wisata. Jika belum memiliki akun, kosongkan field tersebut. Link ini akan ditampilkan di halaman website sehingga pengunjung dapat mengikuti dan membagikan konten Anda.';
+    }
 
     protected static function settingKeys(): array
     {
@@ -26,24 +36,32 @@ class SocialMediaSettingsPage extends BaseSettingsPage
     protected function schema(): array
     {
         return [
-            Section::make('Link Media Sosial')
-                ->description('Kosongkan field jika akun belum tersedia.')
+            Section::make('👥 Akun Media Sosial')
+                ->description('Salin dan tempel URL profil media sosial lengkap dari platform masing-masing.')
+                ->icon('heroicon-m-share')
                 ->schema([
                     TextInput::make('social_instagram')
-                        ->label('Instagram URL')
+                        ->label('📸 Link Instagram')
+                        ->placeholder('Contoh: https://instagram.com/karangsidemen')
                         ->url()
-                        ->maxLength(2048),
+                        ->maxLength(2048)
+                        ->helperText('Profil Instagram akan muncul di footer website. Kosongkan jika belum ada akun.'),
 
                     TextInput::make('social_facebook')
-                        ->label('Facebook URL')
+                        ->label('👍 Link Facebook')
+                        ->placeholder('Contoh: https://facebook.com/karangsidemen')
                         ->url()
-                        ->maxLength(2048),
+                        ->maxLength(2048)
+                        ->helperText('Profil Facebook akan muncul di footer website. Kosongkan jika belum ada akun.'),
 
                     TextInput::make('social_tiktok')
-                        ->label('TikTok URL')
+                        ->label('🎵 Link TikTok')
+                        ->placeholder('Contoh: https://tiktok.com/@karangsidemen')
                         ->url()
-                        ->maxLength(2048),
-                ]),
+                        ->maxLength(2048)
+                        ->helperText('Profil TikTok akan muncul di footer website. Kosongkan jika belum ada akun.'),
+                ])
+                ->columns(1),
         ];
     }
 }
