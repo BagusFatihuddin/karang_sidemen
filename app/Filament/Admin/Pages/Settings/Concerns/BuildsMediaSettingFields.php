@@ -20,7 +20,11 @@ trait BuildsMediaSettingFields
                 ->label($definition['label'])
                 ->helperText($definition['helper'])
                 ->url()
-                ->maxLength(2048);
+                ->maxLength(2048)
+                ->extraAttributes([
+                    'data-image-field' => $key,
+                    'autocomplete' => 'off',
+                ]);
 
             $fields[] = FileUpload::make($this->uploadFieldName($key))
                 ->label('Upload ' . $definition['label'])
@@ -32,7 +36,10 @@ trait BuildsMediaSettingFields
                 ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
                 ->maxSize(4096)
                 ->helperText('Opsional. Upload baru akan mengganti URL di field sebelahnya.')
-                ->dehydrated(false);
+                ->dehydrated(false)
+                ->extraAttributes([
+                    'data-file-field' => $key,
+                ]);
         }
 
         return $fields;
