@@ -33,11 +33,13 @@ class ReportsPage extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'Laporan';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Laporan';
+
     protected static ?string $title = 'Laporan';
 
     protected static ?string $slug = 'reports';
 
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 1;
 
     public ?array $data = [];
 

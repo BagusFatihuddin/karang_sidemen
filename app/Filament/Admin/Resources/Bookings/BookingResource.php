@@ -29,13 +29,13 @@ class BookingResource extends Resource
     protected static ?string $recordTitleAttribute =
         'booking_code';
 
-    protected static ?string $navigationLabel = 'Bookings';
+    protected static ?string $navigationLabel = 'Booking';
 
-    protected static ?string $modelLabel = 'Booking';
+    protected static string|\UnitEnum|null $navigationGroup = 'Operasional';
 
-    protected static ?string $pluralModelLabel = 'Bookings';
+    protected static ?string $pluralModelLabel = 'Booking';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 1;
 
     protected static function allowed(): bool
     {

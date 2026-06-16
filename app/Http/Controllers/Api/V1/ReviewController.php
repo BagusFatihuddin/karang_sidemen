@@ -9,6 +9,7 @@ use App\Models\ReviewToken;
 use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,8 +27,9 @@ class ReviewController extends Controller
         $rating = $request->query('rating');
         $sort = $request->query('sort', 'latest');
         $page = (int) $request->query('page', 1);
+        $version = (int) Cache::get('reviews:version', 1);
         
-        $cacheKey = "reviews:public:" . md5(json_encode([
+        $cacheKey = "reviews:v{$version}:public:" . md5(json_encode([
             'destination_id' => $destinationId,
             'rating' => $rating,
             'sort' => $sort,
@@ -88,7 +90,9 @@ class ReviewController extends Controller
      */
     public function pinned(): JsonResponse
     {
-        $result = Cache::remember('reviews:pinned', 30 * 60, function () {
+        $version = (int) Cache::get('reviews:version', 1);
+
+        $result = Cache::remember("reviews:v{$version}:pinned", 30 * 60, function () {
             $reviews = Review::with([
                 'destination:id,name',
                 'visitor:id,origin_city',
@@ -173,7 +177,48 @@ class ReviewController extends Controller
             'review_text' => ['required', 'string', 'max:2000'],
             'reviewer_name' => ['nullable', 'string', 'max:100'],
             'reviewer_city' => ['nullable', 'string', 'max:100'],
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'photo' => [
+                'nullable',
+                'file',
+                'max:2048',
+                function (string $attribute, mixed $value, callable $fail): void {
+                    if (! $value instanceof UploadedFile) {
+                        $fail('Foto review tidak valid.');
+
+                        return;
+                    }
+
+                    $extension = strtolower(
+                        $value->getClientOriginalExtension()
+                    );
+                    $mimeType = strtolower(
+                        (string) $value->getMimeType()
+                    );
+                    $allowedExtensions = [
+                        'jpg',
+                        'jpeg',
+                        'png',
+                        'webp',
+                    ];
+                    $allowedMimeTypes = [
+                        'image/jpeg',
+                        'image/png',
+                        'image/webp',
+                        'image/x-webp',
+                        'application/octet-stream',
+                    ];
+
+                    if (! in_array($extension, $allowedExtensions, true)) {
+                        $fail('Foto harus berformat JPG, PNG, atau WEBP.');
+
+                        return;
+                    }
+
+                    if (! in_array($mimeType, $allowedMimeTypes, true)) {
+                        $fail('Tipe file foto tidak didukung.');
+                    }
+                },
+            ],
         ]);
 
         if ($validator->fails()) {

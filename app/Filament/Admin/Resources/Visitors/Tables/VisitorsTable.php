@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Visitors\Tables;
 use App\Filament\Admin\Resources\Visitors\Exporters\VisitorExporter;
 use App\Models\ReviewToken;
 use App\Models\Visitor;
+use App\Support\AppSettings;
 use Filament\Actions\Action;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
@@ -177,8 +178,8 @@ class VisitorsTable
             $visitor
         );
 
-        $reviewUrl = url(
-            '/review/' . $reviewToken->token
+        $reviewUrl = static::buildFrontendReviewUrl(
+            $reviewToken->token
         );
 
         $message = sprintf(
@@ -240,5 +241,31 @@ class VisitorsTable
         }
 
         return null;
+    }
+
+    protected static function buildFrontendReviewUrl(
+        string $token
+    ): string {
+        $configuredUrl = AppSettings::get(
+            'public_frontend_url'
+        );
+
+        $frontendUrl = collect(
+            explode(
+                ',',
+                (string) ($configuredUrl ?: config(
+                    'app.frontend_url',
+                    config('app.url')
+                ))
+            )
+        )
+            ->map(fn (string $url): string => trim($url))
+            ->filter()
+            ->first();
+
+        return rtrim(
+            $frontendUrl ?: config('app.url'),
+            '/'
+        ) . '/review/' . $token;
     }
 }

@@ -2,155 +2,130 @@
 
 namespace App\Filament\Admin\Pages;
 
-use App\Support\AppSettings;
+use App\Filament\Admin\Pages\Settings\AboutPageSettingsPage;
+use App\Filament\Admin\Pages\Settings\BrandSettingsPage;
+use App\Filament\Admin\Pages\Settings\DestinationPageSettingsPage;
+use App\Filament\Admin\Pages\Settings\FooterSettingsPage;
+use App\Filament\Admin\Pages\Settings\GeneralSettingsPage;
+use App\Filament\Admin\Pages\Settings\GuidesPageSettingsPage;
+use App\Filament\Admin\Pages\Settings\HomepageSettingsPage;
+use App\Filament\Admin\Pages\Settings\IntegrationSettingsPage;
+use App\Filament\Admin\Pages\Settings\PackagesPageSettingsPage;
+use App\Filament\Admin\Pages\Settings\ReviewsPageSettingsPage;
+use App\Filament\Admin\Pages\Settings\SocialMediaSettingsPage;
 use App\Support\UserRole;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 
-class SettingsPage extends Page implements HasForms
+class SettingsPage extends Page
 {
-    use InteractsWithForms;
-
     protected string $view = 'filament.admin.pages.settings-page';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static ?string $navigationLabel = 'System Settings';
+    protected static ?string $navigationLabel = 'Pengaturan Website';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Sistem';
 
     protected static ?string $slug = 'settings';
 
-    protected static ?int $navigationSort = 3;
-
-    public ?array $data = [];
-
-    public function mount(): void
-    {
-        abort_unless(
-            Auth::user()?->role === UserRole::SUPER_ADMIN,
-            403
-        );
-
-        $this->form->fill([
-            'village_name' => AppSettings::get('village_name'),
-            'tagline' => AppSettings::get('tagline'),
-            'global_whatsapp' => AppSettings::get('global_whatsapp'),
-
-            'social_instagram' => AppSettings::get('social_instagram'),
-            'social_facebook' => AppSettings::get('social_facebook'),
-            'social_tiktok' => AppSettings::get('social_tiktok'),
-
-            'google_maps_embed_url' => AppSettings::get('google_maps_embed_url'),
-
-            'cloudinary_cloud_name' => AppSettings::get('cloudinary_cloud_name'),
-            'cloudinary_api_key' => AppSettings::get('cloudinary_api_key'),
-            'cloudinary_api_secret' => AppSettings::get('cloudinary_api_secret'),
-        ]);
-    }
+    protected static ?int $navigationSort = 2;
 
     public static function shouldRegisterNavigation(): bool
     {
-        return Auth::user()?->role === UserRole::SUPER_ADMIN;
+        return static::canAccess();
     }
 
     public static function canAccess(): bool
     {
-        return Auth::user()?->role === UserRole::SUPER_ADMIN;
+        return in_array(Auth::user()?->role, [
+            UserRole::SUPER_ADMIN,
+            UserRole::ADMIN_KONTEN,
+        ], true);
     }
 
-    public function form(Schema $schema): Schema
+    /**
+     * @return array<int, array{label: string, description: string, url: string, tone: string}>
+     */
+    public function cards(): array
     {
-        return $schema
-            ->statePath('data')
-            ->components([
-                Section::make('General Settings')
-                    ->schema([
-                        TextInput::make('village_name')
-                            ->label('Village Name')
-                            ->required()
-                            ->maxLength(255),
-
-                        TextInput::make('tagline')
-                            ->label('Tagline')
-                            ->required()
-                            ->maxLength(255),
-
-                        TextInput::make('global_whatsapp')
-                            ->label('Global WhatsApp')
-                            ->required()
-                            ->tel()
-                            ->rule('regex:/^(\+62|62|08)[0-9]{8,13}$/'),
-                    ]),
-
-                Section::make('Social Media')
-                    ->schema([
-                        TextInput::make('social_instagram')
-                            ->label('Instagram URL')
-                            ->url(),
-
-                        TextInput::make('social_facebook')
-                            ->label('Facebook URL')
-                            ->url(),
-
-                        TextInput::make('social_tiktok')
-                            ->label('TikTok URL')
-                            ->url(),
-                    ]),
-
-                Section::make('Google Maps')
-                    ->schema([
-                        Textarea::make('google_maps_embed_url')
-                            ->label('Google Maps Embed URL')
-                            ->rows(3),
-                    ]),
-
-                Section::make('Cloudinary')
-                    ->schema([
-                        TextInput::make('cloudinary_cloud_name')
-                            ->label('Cloud Name')
-                            ->maxLength(255),
-
-                        TextInput::make('cloudinary_api_key')
-                            ->label('API Key')
-                            ->password()
-                            ->revealable(),
-
-                        TextInput::make('cloudinary_api_secret')
-                            ->label('API Secret')
-                            ->password()
-                            ->revealable(),
-                    ]),
-            ]);
-    }
-
-    public function save(): void
-    {
-        $data = $this->form->getState();
-
-        foreach ($data as $key => $value) {
-            if (
-                in_array($key, [
-                    'cloudinary_api_key',
-                    'cloudinary_api_secret',
-                ], true)
-                && blank($value)
-            ) {
-                continue;
-            }
-
-            AppSettings::set($key, $value);
-        }
-
-        Notification::make()
-            ->title('Settings saved successfully.')
-            ->success()
-            ->send();
+        return collect([
+            [
+                'page' => GeneralSettingsPage::class,
+                'label' => 'General Settings',
+                'description' => 'Nama desa, tagline, WhatsApp utama, dan URL frontend publik.',
+                'tone' => 'emerald',
+            ],
+            [
+                'page' => BrandSettingsPage::class,
+                'label' => 'Brand / Logo',
+                'description' => 'Atur icon KS, logo, dan identitas visual navbar serta footer.',
+                'tone' => 'amber',
+            ],
+            [
+                'page' => SocialMediaSettingsPage::class,
+                'label' => 'Social Media',
+                'description' => 'Link Instagram, Facebook, dan TikTok publik.',
+                'tone' => 'sky',
+            ],
+            [
+                'page' => HomepageSettingsPage::class,
+                'label' => 'Homepage Cinematic',
+                'description' => 'Hero image dan copy homepage per section: hero, reel, portal, horizontal, review, dan final CTA.',
+                'tone' => 'violet',
+            ],
+            [
+                'page' => DestinationPageSettingsPage::class,
+                'label' => 'Halaman Destinasi',
+                'description' => 'Hero image khusus halaman /destinasi.',
+                'tone' => 'teal',
+            ],
+            [
+                'page' => PackagesPageSettingsPage::class,
+                'label' => 'Halaman Paket',
+                'description' => 'Hero, empty state, dan fallback gambar kartu paket.',
+                'tone' => 'emerald',
+            ],
+            [
+                'page' => GuidesPageSettingsPage::class,
+                'label' => 'Halaman Panduan',
+                'description' => 'Hero, empty state, dan gambar card kenapa pakai guide.',
+                'tone' => 'amber',
+            ],
+            [
+                'page' => ReviewsPageSettingsPage::class,
+                'label' => 'Halaman Review',
+                'description' => 'Hero image khusus halaman /reviews.',
+                'tone' => 'sky',
+            ],
+            [
+                'page' => AboutPageSettingsPage::class,
+                'label' => 'Halaman Tentang',
+                'description' => 'Hero, gambar cerita lokal, peta, dan struktur organisasi opsional.',
+                'tone' => 'lime',
+            ],
+            [
+                'page' => FooterSettingsPage::class,
+                'label' => 'Footer',
+                'description' => 'Gambar footer CTA. Identitas pengembang dikunci dari kode.',
+                'tone' => 'rose',
+            ],
+            [
+                'page' => IntegrationSettingsPage::class,
+                'label' => 'Integrasi Sistem',
+                'description' => 'Cloudinary dan pengaturan teknis upload gambar.',
+                'tone' => 'gray',
+            ],
+        ])
+            ->filter(fn (array $card): bool => $card['page']::canAccess())
+            ->map(fn (array $card): array => [
+                'label' => $card['label'],
+                'description' => $card['description'],
+                'url' => $card['page']::getUrl(),
+                'tone' => $card['tone'],
+            ])
+            ->values()
+            ->all();
     }
 }

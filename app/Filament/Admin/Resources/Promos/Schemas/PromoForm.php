@@ -20,17 +20,17 @@ class PromoForm
         return $schema
             ->components([
                 TextInput::make('title')
-                    ->label('Judul Promo')
+                    ->label('Judul Event')
                     ->required()
                     ->maxLength(150),
 
                 Textarea::make('description')
-                    ->label('Deskripsi')
+                    ->label('Deskripsi Event')
                     ->rows(5)
                     ->columnSpanFull(),
 
                 TextInput::make('external_url')
-                    ->label('External URL')
+                    ->label('Link Informasi / Pendaftaran')
                     ->url()
                     ->maxLength(500),
 
@@ -47,7 +47,7 @@ class PromoForm
                     ),
 
                 FileUpload::make('promo_upload')
-                    ->label('Upload Gambar')
+                    ->label('Upload Poster / Gambar Event')
                     ->image()
                     ->disk('local')
                     ->directory('tmp/promo-images')
@@ -61,13 +61,13 @@ class PromoForm
                     ])
                     ->maxSize(2048)
                     ->helperText(
-                        'Format: JPG, PNG, WEBP. Maksimal 2MB.'
+                        'Format: JPG, PNG, WEBP. Maksimal 2MB. Pakai poster event atau foto suasana.'
                     )
                     ->dehydrated(false)
                     ->columnSpanFull(),
 
                 Placeholder::make('promo_image_preview')
-                    ->label('Preview Gambar')
+                    ->label('Preview Gambar Event')
                     ->content(
                         fn ($record) => new HtmlString(
                             sprintf(

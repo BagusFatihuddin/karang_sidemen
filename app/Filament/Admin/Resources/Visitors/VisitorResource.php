@@ -25,13 +25,15 @@ class VisitorResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationLabel = 'Visitors';
+    protected static ?string $navigationLabel = 'Wisatawan';
 
-    protected static ?string $modelLabel = 'Visitor';
+    protected static string|\UnitEnum|null $navigationGroup = 'Pengunjung';
 
-    protected static ?string $pluralModelLabel = 'Visitors';
+    protected static ?string $modelLabel = 'Wisatawan';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?string $pluralModelLabel = 'Wisatawan';
+
+    protected static ?int $navigationSort = 1;
 
     protected static function allowed(): bool
     {

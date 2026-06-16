@@ -25,13 +25,15 @@ class PromoResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationLabel = 'Promos';
+    protected static ?string $navigationLabel = 'Events';
 
-    protected static ?string $modelLabel = 'Promo';
+    protected static string|\UnitEnum|null $navigationGroup = 'Konten Wisata';
 
-    protected static ?string $pluralModelLabel = 'Promos';
+    protected static ?string $modelLabel = 'Event';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?string $pluralModelLabel = 'Events';
+
+    protected static ?int $navigationSort = 3;
 
     protected static function allowed(): bool
     {

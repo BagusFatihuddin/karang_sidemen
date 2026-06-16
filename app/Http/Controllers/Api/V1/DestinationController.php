@@ -21,7 +21,8 @@ class DestinationController extends Controller
     {
         $type = $request->query('type');
         $page = (int) $request->query('page', 1);
-        $cacheKey = "destinations:list:" . ($type ? md5($type) : 'all') . ":page:{$page}";
+        $version = (int) Cache::get('destinations:version', 1);
+        $cacheKey = "destinations:v{$version}:list:" . ($type ? md5($type) : 'all') . ":page:{$page}";
 
         $result = Cache::remember($cacheKey, 15 * 60, function () use ($type, $page, $request) {
             $query = Destination::active()
@@ -59,7 +60,9 @@ class DestinationController extends Controller
      */
     public function show(int $id, Request $request): JsonResponse
     {
-        $result = Cache::remember("destinations:{$id}", 10 * 60, function () use ($id, $request) {
+        $version = (int) Cache::get('destinations:version', 1);
+
+        $result = Cache::remember("destinations:v{$version}:{$id}", 10 * 60, function () use ($id, $request) {
             $destination = Destination::active()
                 ->with('images', 'dailyVisits')
                 ->findOrFail($id);

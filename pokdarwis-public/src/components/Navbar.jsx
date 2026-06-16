@@ -1,101 +1,24 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
+import BrandMark from "./BrandMark";
 import { usePublicSettings } from "../hooks/usePublicSettings";
+import "./Navbar.css";
 
 const links = [
     { to: "/", label: "Beranda" },
     { to: "/destinasi", label: "Destinasi" },
     { to: "/paket", label: "Paket" },
+    { to: "/panduan", label: "Panduan" },
     { to: "/reviews", label: "Review" },
     { to: "/tentang", label: "Tentang" },
 ];
-
-const headerStyle = {
-    borderBottom: "1px solid #e5e7eb",
-    background: "#ffffff",
-};
-
-const innerStyle = {
-    maxWidth: "1120px",
-    margin: "0 auto",
-    padding: "14px 20px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "16px",
-    fontFamily: "system-ui, sans-serif",
-};
-
-const brandStyle = {
-    color: "#111827",
-    textDecoration: "none",
-};
-
-const titleStyle = {
-    margin: 0,
-    fontSize: "18px",
-    fontWeight: 700,
-};
-
-const taglineStyle = {
-    margin: "2px 0 0",
-    color: "#6b7280",
-    fontSize: "13px",
-};
-
-const navStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-};
-
-const navOpenMobileStyle = {
-    position: "absolute",
-    top: "66px",
-    left: 0,
-    right: 0,
-    display: "grid",
-    gap: "4px",
-    padding: "12px 20px",
-    borderBottom: "1px solid #e5e7eb",
-    background: "#ffffff",
-    zIndex: 10,
-};
-
-const linkStyle = ({ isActive }) => ({
-    padding: "8px 10px",
-    borderRadius: "6px",
-    color: isActive ? "#166534" : "#374151",
-    background: isActive ? "#dcfce7" : "transparent",
-    textDecoration: "none",
-    fontWeight: isActive ? 700 : 500,
-});
-
-const menuButtonStyle = {
-    border: "1px solid #d1d5db",
-    borderRadius: "6px",
-    background: "#ffffff",
-    padding: "8px",
-    cursor: "pointer",
-};
-
-const menuIconStyle = {
-    width: "20px",
-    display: "grid",
-    gap: "4px",
-};
-
-const menuBarStyle = {
-    height: "2px",
-    background: "#111827",
-};
 
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        const mediaQuery = window.matchMedia("(max-width: 720px)");
+        const mediaQuery = window.matchMedia("(max-width: 760px)");
         const update = () => setIsMobile(mediaQuery.matches);
 
         update();
@@ -107,55 +30,96 @@ const useIsMobile = () => {
     return isMobile;
 };
 
+const useHasScrolled = () => {
+    const [hasScrolled, setHasScrolled] = useState(false);
+
+    useEffect(() => {
+        const update = () => setHasScrolled(window.scrollY > 32);
+
+        update();
+        window.addEventListener("scroll", update, { passive: true });
+
+        return () => window.removeEventListener("scroll", update);
+    }, []);
+
+    return hasScrolled;
+};
+
 export default function Navbar() {
     const { data } = usePublicSettings();
     const settings = data?.data?.data ?? data?.data ?? {};
     const isMobile = useIsMobile();
+    const hasScrolled = useHasScrolled();
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        if (!isMobile) {
-            setIsOpen(false);
-        }
-    }, [isMobile]);
+    const headerClassName = [
+        "site-navbar",
+        hasScrolled || (isMobile && isOpen) ? "site-navbar--scrolled" : "",
+    ]
+        .filter(Boolean)
+        .join(" ");
 
     return (
-        <header style={headerStyle}>
-            <div style={{ ...innerStyle, position: "relative" }}>
-                <NavLink to="/" style={brandStyle}>
-                    <p style={titleStyle}>{settings.village_name || ""}</p>
-                    {settings.tagline && (
-                        <p style={taglineStyle}>{settings.tagline}</p>
-                    )}
+        <header className={headerClassName}>
+            <div className="site-navbar__inner">
+                <NavLink
+                    to="/"
+                    className="site-navbar__brand"
+                    onClick={() => setIsOpen(false)}
+                >
+                    <BrandMark
+                        settings={settings}
+                        className="site-navbar__brand-mark"
+                        imageClassName="site-navbar__brand-logo"
+                    />
+                    <span className="site-navbar__brand-copy">
+                        <span className="site-navbar__title">
+                            {settings.village_name || "Karang Sidemen"}
+                        </span>
+                        {settings.tagline && (
+                            <span className="site-navbar__tagline">
+                                {settings.tagline}
+                            </span>
+                        )}
+                    </span>
                 </NavLink>
 
                 {isMobile && (
                     <button
                         type="button"
+                        className="site-navbar__menu-button"
                         aria-label="Buka navigasi"
                         aria-expanded={isOpen}
                         onClick={() => setIsOpen((current) => !current)}
-                        style={menuButtonStyle}
                     >
-                        <span aria-hidden="true" style={menuIconStyle}>
-                            <span style={menuBarStyle} />
-                            <span style={menuBarStyle} />
-                            <span style={menuBarStyle} />
-                        </span>
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
                     </button>
                 )}
 
                 {(!isMobile || isOpen) && (
                     <nav
                         aria-label="Navigasi utama"
-                        style={isMobile ? navOpenMobileStyle : navStyle}
+                        className={
+                            isMobile
+                                ? "site-navbar__links site-navbar__links--mobile"
+                                : "site-navbar__links"
+                        }
                     >
                         {links.map((link) => (
                             <NavLink
                                 key={link.to}
                                 to={link.to}
                                 end={link.to === "/"}
-                                style={linkStyle}
+                                className={({ isActive }) =>
+                                    [
+                                        "site-navbar__link",
+                                        isActive ? "site-navbar__link--active" : "",
+                                    ]
+                                        .filter(Boolean)
+                                        .join(" ")
+                                }
                                 onClick={() => setIsOpen(false)}
                             >
                                 {link.label}

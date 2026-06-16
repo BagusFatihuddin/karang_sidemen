@@ -29,11 +29,13 @@ class DailyVisitResource extends Resource
 
     protected static ?string $navigationLabel = 'Input Harian';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Operasional';
+
     protected static ?string $modelLabel = 'Input Harian';
 
     protected static ?string $pluralModelLabel = 'Input Harian';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 2;
 
     protected static function allowed(): bool
     {

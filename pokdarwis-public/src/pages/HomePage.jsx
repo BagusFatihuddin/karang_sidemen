@@ -7,181 +7,12 @@ import { getDestinations } from "../services/api/destinations";
 import { getPromos } from "../services/api/promos";
 import { getPinnedReviews } from "../services/api/reviewsPinned";
 import { buildWhatsAppUrl } from "../services/whatsapp";
+import "./HomePage.css";
 
-const pageStyle = {
-    fontFamily: "system-ui, sans-serif",
-};
-
-const sectionStyle = {
-    maxWidth: "1120px",
-    margin: "0 auto",
-    padding: "36px 20px",
-};
-
-const heroStyle = {
-    ...sectionStyle,
-    paddingTop: "56px",
-    paddingBottom: "56px",
-};
-
-const titleStyle = {
-    margin: "0 0 10px",
-    fontSize: "36px",
-    color: "#111827",
-};
-
-const textStyle = {
-    margin: "0 0 18px",
-    color: "#4b5563",
-    lineHeight: 1.6,
-};
-
-const buttonStyle = {
-    display: "inline-block",
-    padding: "10px 14px",
-    borderRadius: "6px",
-    background: "#15803d",
-    color: "#ffffff",
-    textDecoration: "none",
-    fontWeight: 700,
-};
-
-const outlineButtonStyle = {
-    ...buttonStyle,
-    background: "#ffffff",
-    color: "#166534",
-    border: "1px solid #86efac",
-};
-
-const promoStyle = {
-    border: "1px solid #e5e7eb",
-    borderRadius: "8px",
-    overflow: "hidden",
-    background: "#ffffff",
-};
-
-const promoImageStyle = {
-    width: "100%",
-    maxHeight: "320px",
-    objectFit: "cover",
-    background: "#f3f4f6",
-    display: "block",
-};
-
-const promoBodyStyle = {
-    padding: "16px",
-};
-
-const gridStyle = (isMobile) => ({
-    display: "grid",
-    gridTemplateColumns: isMobile ? "repeat(2, minmax(0, 1fr))" : "repeat(3, minmax(0, 1fr))",
-    gap: "16px",
-});
-
-const cardStyle = {
-    border: "1px solid #e5e7eb",
-    borderRadius: "8px",
-    overflow: "hidden",
-    background: "#ffffff",
-};
-
-const imageStyle = {
-    width: "100%",
-    aspectRatio: "4 / 3",
-    objectFit: "cover",
-    background: "#f3f4f6",
-    display: "block",
-};
-
-const fallbackImageStyle = {
-    ...imageStyle,
-    display: "grid",
-    placeItems: "center",
-    color: "#6b7280",
-    fontWeight: 700,
-};
-
-const cardBodyStyle = {
-    padding: "12px",
-};
-
-const testimonialStyle = {
-    border: "1px solid #e5e7eb",
-    borderRadius: "8px",
-    padding: "18px",
-    background: "#ffffff",
-};
-
-const testimonialHeaderStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    marginBottom: "12px",
-};
-
-const avatarStyle = {
-    width: "48px",
-    height: "48px",
-    borderRadius: "50%",
-    objectFit: "cover",
-    background: "#dcfce7",
-    color: "#166534",
-    display: "grid",
-    placeItems: "center",
-    fontWeight: 700,
-};
-
-const testimonialControlsStyle = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "12px",
-    marginTop: "16px",
-};
-
-const navButtonStyle = {
-    border: "1px solid #d1d5db",
-    borderRadius: "6px",
-    background: "#ffffff",
-    color: "#374151",
-    padding: "8px 10px",
-    cursor: "pointer",
-};
-
-const dotsStyle = {
-    display: "flex",
-    gap: "6px",
-};
-
-const dotStyle = (isActive) => ({
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    border: "1px solid #166534",
-    background: isActive ? "#166534" : "#ffffff",
-    cursor: "pointer",
-});
-
-const badgeStyle = {
-    display: "inline-block",
-    marginBottom: "8px",
-    padding: "4px 8px",
-    borderRadius: "999px",
-    background: "#dcfce7",
-    color: "#166534",
-    fontSize: "12px",
-    fontWeight: 700,
-};
-
-const skeletonStyle = {
-    borderRadius: "8px",
-    background: "linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6)",
-};
-
-const sectionTitleStyle = {
-    margin: "0 0 16px",
-    color: "#111827",
-};
+const fallbackLandscape =
+    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2400&q=85";
+const fallbackTexture =
+    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=85";
 
 const getPayload = (response) => response?.data?.data ?? response?.data ?? {};
 
@@ -195,24 +26,32 @@ const getInitials = (name) => {
         .toUpperCase();
 };
 
-const useIsMobile = () => {
-    const [isMobile, setIsMobile] = useState(false);
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const useHeroProgress = () => {
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        const mediaQuery = window.matchMedia("(max-width: 720px)");
-        const update = () => setIsMobile(mediaQuery.matches);
+        const update = () => {
+            const viewport = Math.max(window.innerHeight, 1);
+            setProgress(clamp(window.scrollY / (viewport * 0.85), 0, 1));
+        };
 
         update();
-        mediaQuery.addEventListener("change", update);
+        window.addEventListener("scroll", update, { passive: true });
+        window.addEventListener("resize", update);
 
-        return () => mediaQuery.removeEventListener("change", update);
+        return () => {
+            window.removeEventListener("scroll", update);
+            window.removeEventListener("resize", update);
+        };
     }, []);
 
-    return isMobile;
+    return progress;
 };
 
 export default function HomePage() {
-    const isMobile = useIsMobile();
+    const heroProgress = useHeroProgress();
     const { data: settingsData, isLoading: settingsLoading } = usePublicSettings();
     const { data: promosData, isLoading: promosLoading } = useQuery({
         queryKey: ["promos"],
@@ -239,6 +78,24 @@ export default function HomePage() {
     const reviews = getPayload(reviewsData);
     const reviewItems = Array.isArray(reviews) ? reviews : [];
 
+    const heroDestination = destinationItems.find(
+        (destination) => destination.thumbnail_url,
+    );
+    const heroLandscape =
+        heroDestination?.thumbnail_url ||
+        settings.media_about_hero_fallback_image_url ||
+        fallbackLandscape;
+    const heroTexture =
+        promoItems.find((promo) => promo.image_url)?.image_url ||
+        settings.media_footer_cta_image_url ||
+        fallbackTexture;
+
+    const heroStyle = {
+        "--hero-progress": heroProgress,
+        "--hero-landscape": `url("${heroLandscape}")`,
+        "--hero-texture": `url("${heroTexture}")`,
+    };
+
     useEffect(() => {
         if (promoItems.length <= 1) {
             return undefined;
@@ -246,16 +103,10 @@ export default function HomePage() {
 
         const interval = window.setInterval(() => {
             setActivePromoIndex((current) => (current + 1) % promoItems.length);
-        }, 5000);
+        }, 5200);
 
         return () => window.clearInterval(interval);
     }, [promoItems.length]);
-
-    useEffect(() => {
-        if (activePromoIndex >= promoItems.length) {
-            setActivePromoIndex(0);
-        }
-    }, [activePromoIndex, promoItems.length]);
 
     useEffect(() => {
         if (reviewItems.length <= 1) {
@@ -264,66 +115,100 @@ export default function HomePage() {
 
         const interval = window.setInterval(() => {
             setActiveReviewIndex((current) => (current + 1) % reviewItems.length);
-        }, 4000);
+        }, 4400);
 
         return () => window.clearInterval(interval);
     }, [reviewItems.length]);
 
-    useEffect(() => {
-        if (activeReviewIndex >= reviewItems.length) {
-            setActiveReviewIndex(0);
-        }
-    }, [activeReviewIndex, reviewItems.length]);
-
-    const activePromo = promoItems[activePromoIndex];
-    const activeReview = reviewItems[activeReviewIndex];
+    const safePromoIndex =
+        promoItems.length > 0 ? activePromoIndex % promoItems.length : 0;
+    const safeReviewIndex =
+        reviewItems.length > 0 ? activeReviewIndex % reviewItems.length : 0;
+    const activePromo = promoItems[safePromoIndex];
+    const activeReview = reviewItems[safeReviewIndex];
+    const villageName = settings?.village_name || "Karang Sidemen";
+    const tagline =
+        settings?.tagline ||
+        "Hidden paradise di kaki Rinjani, tempat air biru, hutan, dan udara gunung bertemu.";
 
     return (
-        <main style={pageStyle}>
-            <section style={heroStyle}>
-                {settingsLoading ? (
-                    <div style={{ ...skeletonStyle, height: "156px" }} />
-                ) : (
-                    <>
-                        <h1 style={titleStyle}>{settings?.village_name}</h1>
-                        {settings?.tagline && (
-                            <p style={textStyle}>{settings?.tagline}</p>
-                        )}
-                        <Link to="/destinasi" style={buttonStyle}>
-                            Jelajahi Destinasi
-                        </Link>
-                    </>
-                )}
+        <main className="home-page">
+            <section className="home-hero" style={heroStyle}>
+                <div className="home-hero__landscape" aria-hidden="true" />
+                <div className="home-hero__texture" aria-hidden="true" />
+                <div className="home-hero__mist home-hero__mist--one" aria-hidden="true" />
+                <div className="home-hero__mist home-hero__mist--two" aria-hidden="true" />
+
+                <div className="home-hero__content">
+                    <p className="home-hero__eyebrow">Lombok hidden nature escape</p>
+                    {settingsLoading ? (
+                        <div className="home-skeleton home-skeleton--hero" />
+                    ) : (
+                        <>
+                            <h1>{villageName}</h1>
+                            <p className="home-hero__tagline">{tagline}</p>
+                            <div className="home-hero__actions">
+                                <Link to="/destinasi" className="home-button">
+                                    Jelajahi Destinasi
+                                </Link>
+                                <a href="#hidden-paradise" className="home-button home-button--ghost">
+                                    Lihat Reveal
+                                </a>
+                            </div>
+                        </>
+                    )}
+                </div>
+
+                <div className="home-hero__meta" aria-label="Ringkasan pengalaman">
+                    <span>Blue lake</span>
+                    <span>Waterfall</span>
+                    <span>Camping</span>
+                </div>
+
+                <a className="home-hero__scroll" href="#hidden-paradise">
+                    <span />
+                    Scroll
+                </a>
+            </section>
+
+            <section id="hidden-paradise" className="home-reveal">
+                <div className="home-reveal__copy">
+                    <p className="home-kicker">Hidden paradise reveal</p>
+                    <h2>Air biru. Batu sungai. Hutan dingin. Semuanya pelan-pelan kebuka.</h2>
+                </div>
+                <div className="home-reveal__words" aria-label="Sorotan pengalaman">
+                    <span>Waterfalls.</span>
+                    <span>Blue Lake.</span>
+                    <span>Forest Escape.</span>
+                    <span>Camping.</span>
+                </div>
             </section>
 
             {promosLoading && (
-                <section style={sectionStyle}>
-                    <div style={{ ...skeletonStyle, height: "280px" }} />
+                <section className="home-section">
+                    <div className="home-skeleton home-skeleton--promo" />
                 </section>
             )}
 
             {!promosLoading && activePromo && (
-                <section style={sectionStyle}>
-                    <h2 style={sectionTitleStyle}>Promo</h2>
-                    <article style={promoStyle}>
+                <section className="home-section">
+                    <div className="home-section__heading">
+                        <p className="home-kicker">Sedang menarik</p>
+                        <h2>Promo dan kabar terbaru</h2>
+                    </div>
+                    <article className="home-feature">
                         {activePromo.image_url && (
-                            <img
-                                src={activePromo.image_url}
-                                alt={activePromo.title}
-                                style={promoImageStyle}
-                            />
+                            <img src={activePromo.image_url} alt={activePromo.title} />
                         )}
-                        <div style={promoBodyStyle}>
+                        <div className="home-feature__body">
                             <h3>{activePromo.title}</h3>
-                            {activePromo.description && (
-                                <p style={textStyle}>{activePromo.description}</p>
-                            )}
+                            {activePromo.description && <p>{activePromo.description}</p>}
                             {activePromo.external_url && (
                                 <a
                                     href={activePromo.external_url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    style={outlineButtonStyle}
+                                    className="home-button home-button--light"
                                 >
                                     Lihat Promo
                                 </a>
@@ -333,43 +218,39 @@ export default function HomePage() {
                 </section>
             )}
 
-            <section style={sectionStyle}>
-                <h2 style={sectionTitleStyle}>Destinasi Pilihan</h2>
+            <section className="home-section">
+                <div className="home-section__heading">
+                    <p className="home-kicker">Destination experience</p>
+                    <h2>Spot yang bikin orang berhenti scroll.</h2>
+                </div>
                 {destinationsLoading ? (
-                    <div style={gridStyle(isMobile)}>
+                    <div className="home-destination-grid">
                         {[1, 2, 3, 4, 5, 6].map((item) => (
-                            <div
-                                key={item}
-                                style={{ ...skeletonStyle, height: "220px" }}
-                            />
+                            <div key={item} className="home-skeleton home-skeleton--card" />
                         ))}
                     </div>
                 ) : destinationItems.length === 0 ? (
-                    <p style={textStyle}>Belum ada destinasi tersedia.</p>
+                    <p className="home-empty">Belum ada destinasi tersedia.</p>
                 ) : (
-                    <div style={gridStyle(isMobile)}>
+                    <div className="home-destination-grid">
                         {destinationItems.map((destination) => (
-                            <article key={destination.id} style={cardStyle}>
+                            <article key={destination.id} className="home-destination-card">
                                 {destination.thumbnail_url ? (
                                     <img
                                         src={destination.thumbnail_url}
                                         alt={destination.name}
-                                        style={imageStyle}
                                     />
                                 ) : (
-                                    <div style={fallbackImageStyle}>Destinasi</div>
+                                    <div className="home-destination-card__fallback">
+                                        Destinasi
+                                    </div>
                                 )}
-                                <div style={cardBodyStyle}>
+                                <div className="home-destination-card__body">
                                     {destination.destination_type && (
-                                        <span style={badgeStyle}>
-                                            {destination.destination_type}
-                                        </span>
+                                        <span>{destination.destination_type}</span>
                                     )}
                                     <h3>{destination.name}</h3>
-                                    <Link
-                                        to={`/destinasi/${destination.id}`}
-                                        style={outlineButtonStyle}
-                                    >
+                                    <Link to={`/destinasi/${destination.id}`}>
                                         Detail
                                     </Link>
                                 </div>
@@ -380,32 +261,30 @@ export default function HomePage() {
             </section>
 
             {reviewsLoading && (
-                <section style={sectionStyle}>
-                    <div style={{ ...skeletonStyle, height: "220px" }} />
+                <section className="home-section">
+                    <div className="home-skeleton home-skeleton--testimonial" />
                 </section>
             )}
 
             {!reviewsLoading && activeReview && (
-                <section style={sectionStyle}>
-                    <h2 style={sectionTitleStyle}>Ulasan Pengunjung</h2>
-                    <article style={testimonialStyle}>
-                        <div style={testimonialHeaderStyle}>
+                <section className="home-section">
+                    <div className="home-section__heading">
+                        <p className="home-kicker">Travel notes</p>
+                        <h2>Kesan yang dibawa pulang.</h2>
+                    </div>
+                    <article className="home-testimonial">
+                        <div className="home-testimonial__header">
                             {activeReview.photo_url ? (
                                 <img
                                     src={activeReview.photo_url}
                                     alt={activeReview.reviewer_name}
-                                    style={avatarStyle}
                                 />
                             ) : (
-                                <div style={avatarStyle}>
-                                    {getInitials(activeReview.reviewer_name) || "?"}
-                                </div>
+                                <div>{getInitials(activeReview.reviewer_name) || "?"}</div>
                             )}
                             <div>
-                                <h3 style={{ margin: 0 }}>
-                                    {activeReview.reviewer_name}
-                                </h3>
-                                <p style={{ ...textStyle, margin: 0 }}>
+                                <h3>{activeReview.reviewer_name}</h3>
+                                <p>
                                     Rating {activeReview.rating}/5
                                     {activeReview.origin_city
                                         ? ` - ${activeReview.origin_city}`
@@ -413,15 +292,10 @@ export default function HomePage() {
                                 </p>
                             </div>
                         </div>
-
-                        <p style={textStyle}>{activeReview.review_text}</p>
-                        {activeReview.destination?.name && (
-                            <p style={textStyle}>
-                                Destinasi: {activeReview.destination.name}
-                            </p>
-                        )}
-
-                        <div style={testimonialControlsStyle}>
+                        <p className="home-testimonial__quote">
+                            "{activeReview.review_text}"
+                        </p>
+                        <div className="home-testimonial__controls">
                             <button
                                 type="button"
                                 onClick={() =>
@@ -431,23 +305,10 @@ export default function HomePage() {
                                             : current - 1,
                                     )
                                 }
-                                style={navButtonStyle}
                             >
                                 Sebelumnya
                             </button>
-
-                            <div style={dotsStyle}>
-                                {reviewItems.map((review, index) => (
-                                    <button
-                                        key={review.id}
-                                        type="button"
-                                        aria-label={`Ulasan ${index + 1}`}
-                                        onClick={() => setActiveReviewIndex(index)}
-                                        style={dotStyle(index === activeReviewIndex)}
-                                    />
-                                ))}
-                            </div>
-
+                            <Link to="/reviews">Lihat semua ulasan</Link>
                             <button
                                 type="button"
                                 onClick={() =>
@@ -455,32 +316,28 @@ export default function HomePage() {
                                         (current + 1) % reviewItems.length,
                                     )
                                 }
-                                style={navButtonStyle}
                             >
                                 Berikutnya
                             </button>
                         </div>
                     </article>
-                    <div style={{ marginTop: "16px" }}>
-                        <Link to="/reviews" style={outlineButtonStyle}>
-                            Lihat Semua Ulasan
-                        </Link>
-                    </div>
                 </section>
             )}
 
             {settings?.global_whatsapp && (
-                <section style={sectionStyle}>
+                <section className="home-final-cta">
+                    <p className="home-kicker">Ready when you are</p>
+                    <h2>Rencanakan kabur sebentar ke udara gunung.</h2>
                     <a
                         href={buildWhatsAppUrl(
-                            "Halo, saya butuh bantuan tentang wisata desa.",
+                            "Halo, saya ingin tanya tentang wisata Karang Sidemen.",
                             settings?.global_whatsapp,
                         )}
                         target="_blank"
                         rel="noreferrer"
-                        style={buttonStyle}
+                        className="home-button"
                     >
-                        Butuh bantuan? Hubungi kami via WhatsApp
+                        Chat via WhatsApp
                     </a>
                 </section>
             )}

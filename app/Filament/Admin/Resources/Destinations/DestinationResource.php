@@ -25,13 +25,15 @@ class DestinationResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationLabel = 'Destinations';
+    protected static ?string $navigationLabel = 'Destinasi';
 
-    protected static ?string $modelLabel = 'Destination';
+    protected static string|\UnitEnum|null $navigationGroup = 'Konten Wisata';
 
-    protected static ?string $pluralModelLabel = 'Destinations';
+    protected static ?string $modelLabel = 'Destinasi';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?string $pluralModelLabel = 'Destinasi';
+
+    protected static ?int $navigationSort = 1;
 
     protected static function allowed(): bool
     {

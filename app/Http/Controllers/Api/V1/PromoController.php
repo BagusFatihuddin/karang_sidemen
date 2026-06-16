@@ -27,4 +27,21 @@ class PromoController extends Controller
             $promos
         );
     }
+
+    public function show(int $id): JsonResponse
+    {
+        $promo = Promo::active()
+            ->whereKey($id)
+            ->firstOrFail([
+                'id',
+                'title',
+                'description',
+                'image_url',
+                'external_url',
+                'start_date',
+                'end_date',
+            ]);
+
+        return ApiResponse::success($promo);
+    }
 }

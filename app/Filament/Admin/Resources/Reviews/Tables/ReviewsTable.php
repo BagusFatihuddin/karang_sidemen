@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Reviews\Tables;
 
 use App\Models\Destination;
 use App\Models\Review;
+use App\Support\CacheVersion;
 use App\Support\UserRole;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -107,6 +108,28 @@ class ReviewsTable
                         5 => '5',
                     ]),
 
+                SelectFilter::make('status')
+                    ->label('Status Review')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ]),
+
+                Filter::make('is_pinned_global')
+                    ->label('Pinned Global')
+                    ->query(
+                        fn (Builder $query): Builder =>
+                            $query->where('is_pinned_global', true)
+                    ),
+
+                Filter::make('is_pinned_destination')
+                    ->label('Pinned Destinasi')
+                    ->query(
+                        fn (Builder $query): Builder =>
+                            $query->where('is_pinned_destination', true)
+                    ),
+
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from')
@@ -130,7 +153,7 @@ class ReviewsTable
                 ViewAction::make(),
 
                 Action::make('approve')
-                    ->label('Approve')
+                    ->label('Approve Saja')
                     ->color('success')
                     ->visible(fn (Review $record): bool => $record->status !== 'approved')
                     ->requiresConfirmation()
@@ -139,6 +162,54 @@ class ReviewsTable
 
                         Notification::make()
                             ->title('Review approved.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('approveAndPinDestination')
+                    ->label('Approve + Pin Destinasi')
+                    ->icon(Heroicon::OutlinedBookmark)
+                    ->color('warning')
+                    ->visible(
+                        fn (Review $record): bool =>
+                            $record->status !== 'approved'
+                            || ! $record->is_pinned_destination
+                    )
+                    ->requiresConfirmation()
+                    ->action(function (Review $record): void {
+                        static::approve($record);
+
+                        $record->update([
+                            'is_pinned_destination' => true,
+                        ]);
+                        static::clearReviewCache();
+
+                        Notification::make()
+                            ->title('Review approved dan dipin ke destinasi.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('approveAndPinGlobal')
+                    ->label('Approve + Pin Global')
+                    ->icon(Heroicon::OutlinedGlobeAlt)
+                    ->color('info')
+                    ->visible(
+                        fn (Review $record): bool =>
+                            $record->status !== 'approved'
+                            || ! $record->is_pinned_global
+                    )
+                    ->requiresConfirmation()
+                    ->action(function (Review $record): void {
+                        static::approve($record);
+
+                        $record->update([
+                            'is_pinned_global' => true,
+                        ]);
+                        static::clearReviewCache();
+
+                        Notification::make()
+                            ->title('Review approved dan dipin global.')
                             ->success()
                             ->send();
                     }),
@@ -181,6 +252,7 @@ class ReviewsTable
                         $record->update([
                             'is_pinned_destination' => ! $record->is_pinned_destination,
                         ]);
+                        static::clearReviewCache();
 
                         Notification::make()
                             ->title(
@@ -216,6 +288,7 @@ class ReviewsTable
                         $record->update([
                             'is_pinned_global' => ! $record->is_pinned_global,
                         ]);
+                        static::clearReviewCache();
 
                         Notification::make()
                             ->title(
@@ -243,6 +316,40 @@ class ReviewsTable
                     })
                     ->deselectRecordsAfterCompletion(),
 
+                BulkAction::make('approveAndPinDestination')
+                    ->label('Approve + Pin Destinasi')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->action(function (Collection $records): void {
+                        $records->each(function (Review $record): void {
+                            static::approve($record);
+
+                            $record->update([
+                                'is_pinned_destination' => true,
+                            ]);
+                        });
+
+                        static::clearReviewCache();
+                    })
+                    ->deselectRecordsAfterCompletion(),
+
+                BulkAction::make('approveAndPinGlobal')
+                    ->label('Approve + Pin Global')
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->action(function (Collection $records): void {
+                        $records->each(function (Review $record): void {
+                            static::approve($record);
+
+                            $record->update([
+                                'is_pinned_global' => true,
+                            ]);
+                        });
+
+                        static::clearReviewCache();
+                    })
+                    ->deselectRecordsAfterCompletion(),
+
                 BulkAction::make('reject')
                     ->label('Reject')
                     ->color('danger')
@@ -261,6 +368,7 @@ class ReviewsTable
             'approved_by' => Auth::id(),
             'approved_at' => now(),
         ]);
+        static::clearReviewCache();
 
         return $review;
     }
@@ -269,10 +377,18 @@ class ReviewsTable
     {
         $review->update([
             'status' => 'rejected',
+            'is_pinned_destination' => false,
+            'is_pinned_global' => false,
             'approved_by' => null,
             'approved_at' => null,
         ]);
+        static::clearReviewCache();
 
         return $review;
+    }
+
+    protected static function clearReviewCache(): void
+    {
+        CacheVersion::bump('reviews:version');
     }
 }

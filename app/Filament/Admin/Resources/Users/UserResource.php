@@ -26,6 +26,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationLabel = 'User Management';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Sistem';
+
     protected static ?string $modelLabel = 'User';
 
     protected static ?string $pluralModelLabel = 'Users';

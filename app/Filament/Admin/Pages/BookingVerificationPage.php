@@ -29,13 +29,15 @@ class BookingVerificationPage extends Page implements HasForms
     protected static ?string $navigationLabel =
         'Verifikasi Booking';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Operasional';
+
     protected static ?string $title =
         'Verifikasi Booking';
 
     protected static ?string $slug =
         'booking-verification';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 2;
 
     public ?array $data = [];
 

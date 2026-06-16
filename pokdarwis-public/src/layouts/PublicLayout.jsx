@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 
 import Footer from "../components/Footer";
+import FloatingWhatsApp from "../components/FloatingWhatsApp";
 import Navbar from "../components/Navbar";
 
 const layoutStyle = {
@@ -21,6 +22,7 @@ export default function PublicLayout() {
                 <Outlet />
             </div>
             <Footer />
+            <FloatingWhatsApp />
         </div>
     );
 }

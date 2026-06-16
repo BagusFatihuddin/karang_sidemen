@@ -3,9 +3,12 @@
 namespace App\Support;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Cache;
 
 class AppSettings
 {
+    private const CACHE_KEY = 'settings:all';
+
     /**
      * Get setting value.
      */
@@ -13,10 +16,23 @@ class AppSettings
         string $key,
         mixed $default = null
     ): mixed {
-        return Setting::query()
-            ->where('key', $key)
-            ->value('value')
-            ?? $default;
+        return self::all()[$key] ?? $default;
+    }
+
+    /**
+     * Get all settings as key-value pairs.
+     *
+     * @return array<string, mixed>
+     */
+    public static function all(): array
+    {
+        return Cache::remember(
+            self::CACHE_KEY,
+            now()->addHour(),
+            fn (): array => Setting::query()
+                ->pluck('value', 'key')
+                ->all()
+        );
     }
 
     /**
@@ -35,5 +51,13 @@ class AppSettings
                 'updated_at' => now(),
             ]
         );
+
+        self::clearCache();
+    }
+
+    public static function clearCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        Cache::forget('settings:public:whitelist');
     }
 }

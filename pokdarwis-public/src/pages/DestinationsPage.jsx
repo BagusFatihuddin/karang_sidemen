@@ -1,114 +1,30 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { getDestinations } from "../services/api/destinations";
+import { usePublicSettings } from "../hooks/usePublicSettings";
+import { normalizeList } from "../utils/normalizeList";
+import "./DestinationsPage.css";
 
 const typeOptions = [
     { label: "Semua", value: "" },
+    { label: "Air", value: "air" },
+    { label: "Camping", value: "camping" },
     { label: "Alam", value: "alam" },
-    { label: "Budaya", value: "budaya" },
-    { label: "Religi", value: "religi" },
     { label: "Edukasi", value: "edukasi" },
-    { label: "Buatan", value: "buatan" },
+    { label: "Kuliner", value: "kuliner" },
+    { label: "Lainnya", value: "lainnya" },
 ];
-
-const pageStyle = {
-    maxWidth: "1120px",
-    margin: "0 auto",
-    padding: "32px 20px",
-    fontFamily: "system-ui, sans-serif",
-};
-
-const textStyle = {
-    color: "#4b5563",
-    lineHeight: 1.6,
-};
-
-const pillsStyle = {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "8px",
-    marginBottom: "20px",
-};
-
-const pillStyle = (isActive) => ({
-    padding: "8px 12px",
-    borderRadius: "999px",
-    border: "1px solid #86efac",
-    background: isActive ? "#dcfce7" : "#ffffff",
-    color: "#166534",
-    textDecoration: "none",
-    fontWeight: isActive ? 700 : 500,
-});
-
-const gridStyle = (isMobile) => ({
-    display: "grid",
-    gridTemplateColumns: isMobile ? "repeat(2, minmax(0, 1fr))" : "repeat(3, minmax(0, 1fr))",
-    gap: "16px",
-});
-
-const cardStyle = {
-    border: "1px solid #e5e7eb",
-    borderRadius: "8px",
-    overflow: "hidden",
-    background: "#ffffff",
-};
-
-const imageStyle = {
-    width: "100%",
-    aspectRatio: "4 / 3",
-    objectFit: "cover",
-    background: "#f3f4f6",
-    display: "block",
-};
-
-const fallbackImageStyle = {
-    ...imageStyle,
-    display: "grid",
-    placeItems: "center",
-    color: "#6b7280",
-    fontWeight: 700,
-};
-
-const cardBodyStyle = {
-    padding: "12px",
-};
-
-const badgeStyle = {
-    display: "inline-block",
-    marginBottom: "8px",
-    padding: "4px 8px",
-    borderRadius: "999px",
-    background: "#dcfce7",
-    color: "#166534",
-    fontSize: "12px",
-    fontWeight: 700,
-};
-
-const buttonStyle = {
-    display: "inline-block",
-    marginTop: "10px",
-    padding: "9px 12px",
-    borderRadius: "6px",
-    background: "#ffffff",
-    color: "#166534",
-    border: "1px solid #86efac",
-    textDecoration: "none",
-    fontWeight: 700,
-};
-
-const skeletonStyle = {
-    height: "240px",
-    borderRadius: "8px",
-    background: "linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6)",
-};
 
 const getPayload = (response) => response?.data?.data ?? response?.data ?? [];
 
+const getImageUrl = (destination) =>
+    destination?.thumbnail_url || destination?.images?.[0]?.url || "";
+
 const formatEntryFee = (entryFee) => {
     if (entryFee === null || entryFee === undefined || Number(entryFee) === 0) {
-        return "Gratis";
+        return "Konfirmasi pengelola";
     }
 
     return new Intl.NumberFormat("id-ID", {
@@ -118,91 +34,179 @@ const formatEntryFee = (entryFee) => {
     }).format(Number(entryFee));
 };
 
-const useIsMobile = () => {
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        const mediaQuery = window.matchMedia("(max-width: 720px)");
-        const update = () => setIsMobile(mediaQuery.matches);
-
-        update();
-        mediaQuery.addEventListener("change", update);
-
-        return () => mediaQuery.removeEventListener("change", update);
-    }, []);
-
-    return isMobile;
-};
+const getDestinationOrder = (destination, fallback = 999) =>
+    Number.isFinite(Number(destination?.homepage_sort_order))
+        ? Number(destination.homepage_sort_order)
+        : fallback;
 
 export default function DestinationsPage() {
-    const isMobile = useIsMobile();
     const [searchParams] = useSearchParams();
     const activeType = searchParams.get("type") || "";
     const { data, isLoading } = useQuery({
         queryKey: ["destinations", activeType],
         queryFn: () => getDestinations(activeType),
     });
+    const { data: settingsData } = usePublicSettings();
+    const settings = settingsData?.data?.data ?? settingsData?.data ?? {};
+
     const payload = getPayload(data);
-    const destinations = Array.isArray(payload) ? payload : [];
+    const destinations = useMemo(
+        () =>
+            (Array.isArray(payload) ? payload : []).sort(
+                (a, b) =>
+                    getDestinationOrder(a) - getDestinationOrder(b) ||
+                    a.name.localeCompare(b.name),
+            ),
+        [payload],
+    );
+    const heroDestination =
+        destinations.find((destination) => destination.is_featured_homepage) ||
+        destinations[0];
+    const heroImage =
+        settings.media_destinations_hero_image_url || getImageUrl(heroDestination);
+    const activityTags = useMemo(
+        () =>
+            Array.from(
+                new Set(
+                    destinations
+                        .flatMap((destination) =>
+                            normalizeList(destination.activity_keywords),
+                        )
+                        .filter(Boolean),
+                ),
+            ).slice(0, 9),
+        [destinations],
+    );
 
     return (
-        <main style={pageStyle}>
-            <h1>Destinasi</h1>
-
-            <div style={pillsStyle}>
-                {typeOptions.map((type) => (
-                    <Link
-                        key={type.label}
-                        to={type.value ? `/destinasi?type=${type.value}` : "/destinasi"}
-                        style={pillStyle(activeType === type.value)}
-                    >
-                        {type.label}
-                    </Link>
-                ))}
-            </div>
-
-            {isLoading ? (
-                <div style={gridStyle(isMobile)}>
-                    {[1, 2, 3, 4, 5, 6].map((item) => (
-                        <div key={item} style={skeletonStyle} />
-                    ))}
+        <main
+            className="destinations-page"
+            style={{
+                "--destination-hero-image": heroImage ? `url("${heroImage}")` : "none",
+            }}
+        >
+            <section className="destinations-hero">
+                <div className="destinations-hero__image" aria-hidden="true" />
+                <div className="destinations-hero__content">
+                    <p>Explore Karang Sidemen</p>
+                    <h1>Destinasi alam yang hidup dari cerita desa.</h1>
+                    <div className="destinations-hero__bottom">
+                        <span>
+                            {destinations.length || "..."} destinasi aktif
+                        </span>
+                        <p>
+                            Danau, air terjun, hutan, camping, dan ruang tenang
+                            yang bisa dikelola langsung dari admin.
+                        </p>
+                    </div>
                 </div>
-            ) : destinations.length === 0 ? (
-                <p style={textStyle}>Belum ada destinasi tersedia.</p>
-            ) : (
-                <div style={gridStyle(isMobile)}>
-                    {destinations.map((destination) => (
-                        <article key={destination.id} style={cardStyle}>
-                            {destination.thumbnail_url ? (
-                                <img
-                                    src={destination.thumbnail_url}
-                                    alt={destination.name}
-                                    style={imageStyle}
-                                />
-                            ) : (
-                                <div style={fallbackImageStyle}>Destinasi</div>
-                            )}
-                            <div style={cardBodyStyle}>
-                                {destination.destination_type && (
-                                    <span style={badgeStyle}>
-                                        {destination.destination_type}
-                                    </span>
-                                )}
-                                <h2>{destination.name}</h2>
-                                <p style={textStyle}>
-                                    {formatEntryFee(destination.entry_fee)}
-                                </p>
+            </section>
+
+            <section className="destinations-shell">
+                <div className="destinations-filter">
+                    <div>
+                        <p className="destinations-kicker">Pilih vibe</p>
+                        <h2>
+                            {activeType
+                                ? `Mode ${activeType}`
+                                : "Semua pengalaman wisata"}
+                        </h2>
+                    </div>
+                    <div className="destinations-filter__chips">
+                        {typeOptions.map((type) => (
+                            <Link
+                                key={type.label}
+                                to={
+                                    type.value
+                                        ? `/destinasi?type=${type.value}`
+                                        : "/destinasi"
+                                }
+                                className={
+                                    activeType === type.value
+                                        ? "destinations-chip destinations-chip--active"
+                                        : "destinations-chip"
+                                }
+                            >
+                                {type.label}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                {activityTags.length > 0 && (
+                    <div className="destinations-tags" aria-label="Aktivitas wisata">
+                        {activityTags.map((tag) => (
+                            <span key={tag}>{tag}</span>
+                        ))}
+                    </div>
+                )}
+
+                {isLoading ? (
+                    <div className="destinations-grid">
+                        {[1, 2, 3, 4, 5, 6].map((item) => (
+                            <div className="destinations-skeleton" key={item} />
+                        ))}
+                    </div>
+                ) : destinations.length === 0 ? (
+                    <div className="destinations-empty">
+                        <p>Belum ada destinasi untuk filter ini.</p>
+                        <Link to="/destinasi">Lihat semua destinasi</Link>
+                    </div>
+                ) : (
+                    <div className="destinations-grid">
+                        {destinations.map((destination, index) => (
+                            <article className="destination-card" key={destination.id}>
                                 <Link
                                     to={`/destinasi/${destination.id}`}
-                                    style={buttonStyle}
+                                    className="destination-card__media"
+                                    aria-label={`Buka detail ${destination.name}`}
                                 >
-                                    Detail
+                                    {getImageUrl(destination) ? (
+                                        <img src={getImageUrl(destination)} alt="" />
+                                    ) : (
+                                        <div className="destination-card__fallback">
+                                            Karang Sidemen
+                                        </div>
+                                    )}
+                                    <span>{String(index + 1).padStart(2, "0")}</span>
                                 </Link>
-                            </div>
-                        </article>
-                    ))}
-                </div>
-            )}
+                                <div className="destination-card__body">
+                                    <div className="destination-card__meta">
+                                        {destination.destination_type && (
+                                            <span>{destination.destination_type}</span>
+                                        )}
+                                        <strong>{formatEntryFee(destination.entry_fee)}</strong>
+                                    </div>
+                                    <h3>{destination.name}</h3>
+                                    <p>
+                                        {destination.short_description ||
+                                            destination.tourism_vibe ||
+                                            destination.description}
+                                    </p>
+                                    <div className="destination-card__tags">
+                                        {[
+                                            ...normalizeList(
+                                                destination.activity_keywords,
+                                            ),
+                                            ...normalizeList(destination.tags),
+                                        ]
+                                            .slice(0, 3)
+                                            .map((tag) => (
+                                                <span key={tag}>{tag}</span>
+                                            ))}
+                                    </div>
+                                    <Link
+                                        to={`/destinasi/${destination.id}`}
+                                        className="destination-card__link"
+                                    >
+                                        Buka detail
+                                    </Link>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </section>
         </main>
     );
 }

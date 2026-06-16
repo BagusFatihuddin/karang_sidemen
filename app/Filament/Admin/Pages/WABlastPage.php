@@ -28,11 +28,13 @@ class WABlastPage extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'WA Blast';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Pengunjung';
+
     protected static ?string $title = 'WA Blast';
 
     protected static ?string $slug = 'wa-blast';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 3;
 
     public ?array $data = [];
 

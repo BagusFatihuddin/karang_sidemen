@@ -7,11 +7,11 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -27,9 +27,21 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('POKDARWIS')
+            ->brandName('POKDARWIS Karang Sidemen')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#18593f'),
+                'success' => Color::Green,
+                'warning' => Color::Amber,
+                'danger' => Color::Rose,
+                'info' => Color::Sky,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make('Konten Wisata'),
+                NavigationGroup::make('Pengunjung'),
+                NavigationGroup::make('Operasional'),
+                NavigationGroup::make('Laporan'),
+                NavigationGroup::make('Sistem')
+                    ->collapsed(),
             ])
             ->discoverResources(
                 in: app_path('Filament/Admin/Resources'),
@@ -48,7 +60,6 @@ class AdminPanelProvider extends PanelProvider
             )
             ->widgets([
                 AccountWidget::class,
-                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

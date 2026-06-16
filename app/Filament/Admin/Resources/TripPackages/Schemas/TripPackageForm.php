@@ -103,11 +103,13 @@ class TripPackageForm
                     ->columnSpanFull(),
 
                 Section::make('Guide')
+                    ->description('Pilih guide aktif yang akan tampil di kartu paket publik. Lengkapi foto dan keahlian guide di menu Guide Lokal.')
                     ->schema([
                         CheckboxList::make('package_guides')
-                            ->label('Guide')
+                            ->label('Guide Pendamping')
                             ->options(
                                 fn (): array => Guide::query()
+                                    ->where('is_active', true)
                                     ->orderBy('name')
                                     ->pluck('name', 'id')
                                     ->all()

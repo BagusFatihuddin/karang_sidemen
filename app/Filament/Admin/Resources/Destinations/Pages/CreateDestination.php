@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Destinations\Pages;
 use App\Filament\Admin\Resources\Destinations\DestinationResource;
 use App\Models\DestinationImage;
 use App\Services\CloudinaryService;
+use App\Support\CacheVersion;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Http\UploadedFile;
@@ -20,12 +21,14 @@ class CreateDestination extends CreateRecord
     protected function mutateFormDataBeforeCreate(
         array $data
     ): array {
+        $data['slug'] = filled($data['slug'] ?? null)
+            ? Str::slug($data['slug'])
+            : Str::slug($data['name']);
+
         $data['cloudinary_folder'] =
             sprintf(
                 'destinations/%s',
-                Str::slug(
-                    $data['name']
-                )
+                $data['slug']
             );
 
         return $data;
@@ -33,6 +36,8 @@ class CreateDestination extends CreateRecord
 
     protected function afterCreate(): void
     {
+        CacheVersion::bump('destinations:version');
+
         $uploadState =
             $this->data['destination_upload']
             ?? null;
@@ -86,7 +91,7 @@ class CreateDestination extends CreateRecord
                 CloudinaryService::class
             )->upload(
                 $uploadedFile,
-                'destinations/general'
+                $this->record->cloudinary_folder ?: 'destinations/general'
             );
 
             DestinationImage::create([
@@ -109,6 +114,8 @@ class CreateDestination extends CreateRecord
                             + 1
                         ),
             ]);
+
+            CacheVersion::bump('destinations:version');
         } catch (\Throwable $e) {
             Log::warning(
                 'Destination image upload failed on create',

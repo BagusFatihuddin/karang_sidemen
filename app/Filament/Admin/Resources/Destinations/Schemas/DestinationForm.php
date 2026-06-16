@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Destinations\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -19,56 +20,123 @@ class DestinationForm
     ): Schema {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label('Nama Destinasi')
-                    ->required()
-                    ->maxLength(150),
+                Section::make('Konten Destinasi')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nama Destinasi')
+                            ->required()
+                            ->maxLength(150),
 
-                Textarea::make('description')
-                    ->label('Deskripsi')
-                    ->required()
-                    ->rows(5)
-                    ->columnSpanFull(),
+                        TextInput::make('slug')
+                            ->label('Slug')
+                            ->helperText('Kosongkan saat membuat destinasi baru agar dibuat otomatis dari nama.')
+                            ->maxLength(180),
 
-                Textarea::make('facilities')
-                    ->label('Fasilitas')
-                    ->rows(4)
-                    ->columnSpanFull(),
+                        Textarea::make('short_description')
+                            ->label('Deskripsi Pendek')
+                            ->rows(2)
+                            ->maxLength(255)
+                            ->columnSpanFull(),
 
-                Select::make('destination_type')
-                    ->label('Jenis Destinasi')
-                    ->options([
-                        'camping' => 'Camping',
-                        'air' => 'Air',
-                        'edukasi' => 'Edukasi',
-                        'alam' => 'Alam',
-                        'kuliner' => 'Kuliner',
-                        'lainnya' => 'Lainnya',
+                        Textarea::make('description')
+                            ->label('Deskripsi Panjang')
+                            ->required()
+                            ->rows(5)
+                            ->columnSpanFull(),
+
+                        TextInput::make('tourism_vibe')
+                            ->label('Vibe Wisata')
+                            ->helperText('Contoh: tenang, sejuk, fotogenik, cocok untuk keluarga.')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+
+                        Textarea::make('facilities')
+                            ->label('Fasilitas')
+                            ->rows(4)
+                            ->columnSpanFull(),
                     ])
-                    ->required()
-                    ->native(false),
+                    ->columns(2),
 
-                TextInput::make('entry_fee')
-                    ->label('Biaya Masuk')
-                    ->numeric(),
+                Section::make('Storytelling Homepage')
+                    ->schema([
+                        Toggle::make('is_featured_homepage')
+                            ->label('Tampilkan di Homepage Cinematic')
+                            ->helperText('Aktifkan untuk kartu reel, horizontal interruption, dan experience grid.')
+                            ->default(false),
 
-                TextInput::make('parking_fee')
-                    ->label('Biaya Parkir')
-                    ->numeric(),
+                        TextInput::make('homepage_sort_order')
+                            ->label('Urutan Homepage')
+                            ->numeric()
+                            ->minValue(1),
 
-                TextInput::make('rental_price')
-                    ->label('Harga Sewa')
-                    ->numeric(),
+                        TextInput::make('homepage_label')
+                            ->label('Label Pendek Homepage')
+                            ->helperText('Contoh: Blue Lake, Forest Escape, Hidden Camping.')
+                            ->maxLength(80),
 
-                TextInput::make('whatsapp_number')
-                    ->label('WhatsApp')
-                    ->tel()
-                    ->maxLength(20),
+                        TagsInput::make('tags')
+                            ->label('Tags')
+                            ->separator(',')
+                            ->columnSpanFull(),
 
-                TextInput::make('maps_url')
-                    ->label('Google Maps URL')
-                    ->url()
-                    ->maxLength(500),
+                        TagsInput::make('highlights')
+                            ->label('Highlight Features')
+                            ->separator(',')
+                            ->columnSpanFull(),
+
+                        TagsInput::make('activity_keywords')
+                            ->label('Activity Keywords')
+                            ->separator(',')
+                            ->helperText('Contoh: swimming, camping, waterfall, river, photography.')
+                            ->columnSpanFull(),
+
+                        TagsInput::make('source_urls')
+                            ->label('Sumber Data Publik')
+                            ->separator(',')
+                            ->helperText('URL referensi agar konten tetap bisa dicek.')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(3),
+
+                Section::make('Harga, Kontak, dan Lokasi')
+                    ->schema([
+                        Select::make('destination_type')
+                            ->label('Jenis Destinasi')
+                            ->options([
+                                'camping' => 'Camping',
+                                'air' => 'Air',
+                                'edukasi' => 'Edukasi',
+                                'alam' => 'Alam',
+                                'kuliner' => 'Kuliner',
+                                'lainnya' => 'Lainnya',
+                            ])
+                            ->required()
+                            ->native(false),
+
+                        TextInput::make('entry_fee')
+                            ->label('Biaya Masuk')
+                            ->numeric(),
+
+                        TextInput::make('parking_fee')
+                            ->label('Biaya Parkir')
+                            ->numeric(),
+
+                        TextInput::make('rental_price')
+                            ->label('Harga Sewa')
+                            ->numeric(),
+
+                        TextInput::make('whatsapp_number')
+                            ->label('WhatsApp')
+                            ->tel()
+                            ->maxLength(20),
+
+                        TextInput::make('maps_url')
+                            ->label('Google Maps URL')
+                            ->url()
+                            ->maxLength(500)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(3),
 
                 Section::make(
                     'Gambar Destinasi'

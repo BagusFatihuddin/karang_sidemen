@@ -1,114 +1,13 @@
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+
 import { usePublicSettings } from "../hooks/usePublicSettings";
+import { getDestinations } from "../services/api/destinations";
+import { getReviews } from "../services/api/reviews";
 import { buildWhatsAppUrl } from "../services/whatsapp";
+import "./AboutPage.css";
 
-const pageStyle = {
-    fontFamily: "system-ui, sans-serif",
-};
-
-const sectionStyle = {
-    maxWidth: "1120px",
-    margin: "0 auto",
-    padding: "32px 20px",
-};
-
-const heroStyle = {
-    ...sectionStyle,
-    paddingTop: "48px",
-    paddingBottom: "48px",
-    textAlign: "center",
-};
-
-const titleStyle = {
-    margin: "0 0 10px",
-    fontSize: "36px",
-    fontWeight: 700,
-    color: "#111827",
-};
-
-const taglineStyle = {
-    margin: "0 0 28px",
-    fontSize: "16px",
-    color: "#4b5563",
-    lineHeight: 1.6,
-};
-
-const cardStyle = {
-    border: "1px solid #e5e7eb",
-    borderRadius: "8px",
-    padding: "24px",
-    background: "#ffffff",
-    marginBottom: "24px",
-};
-
-const cardTitleStyle = {
-    margin: "0 0 16px",
-    fontSize: "20px",
-    fontWeight: 700,
-    color: "#111827",
-};
-
-const textStyle = {
-    margin: "0 0 12px",
-    color: "#4b5563",
-    lineHeight: 1.6,
-};
-
-const buttonStyle = {
-    display: "inline-block",
-    padding: "10px 14px",
-    borderRadius: "6px",
-    background: "#15803d",
-    color: "#ffffff",
-    border: "1px solid #15803d",
-    textDecoration: "none",
-    fontWeight: 700,
-    cursor: "pointer",
-    marginBottom: "12px",
-    marginRight: "8px",
-};
-
-const linkStyle = {
-    display: "inline-block",
-    padding: "10px 14px",
-    borderRadius: "6px",
-    color: "#166534",
-    fontWeight: 600,
-    textDecoration: "none",
-    border: "1px solid #86efac",
-    marginBottom: "8px",
-    marginRight: "8px",
-};
-
-const socialLinkStyle = {
-    display: "inline-block",
-    marginRight: "12px",
-    marginBottom: "12px",
-};
-
-const linkWrapStyle = {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "8px",
-};
-
-const iframeWrapStyle = {
-    borderRadius: "8px",
-    overflow: "hidden",
-    background: "#f3f4f6",
-    marginTop: "16px",
-};
-
-const iframeStyle = {
-    width: "100%",
-    minHeight: "400px",
-    border: "none",
-    display: "block",
-};
-
-const skeletonStyle = {
-    borderRadius: "8px",
-    background: "linear-gradient(90deg, #f3f4f6, #e5e7eb, #f3f4f6)",
-};
+const getPayload = (response) => response?.data?.data ?? response?.data ?? [];
 
 const socialFields = [
     { key: "social_instagram", label: "Instagram" },
@@ -116,141 +15,205 @@ const socialFields = [
     { key: "social_tiktok", label: "TikTok" },
 ];
 
+const storyCards = [
+    {
+        title: "Dikelola lokal",
+        body: "Website ini menempatkan POKDARWIS sebagai penghubung antara pengunjung, warga, dan pengalaman wisata desa.",
+    },
+    {
+        title: "Alam sebagai cerita utama",
+        body: "Danau, sungai, air terjun, hutan, camping, dan budaya lokal menjadi identitas besar Karang Sidemen.",
+    },
+    {
+        title: "Data bisa terus tumbuh",
+        body: "Destinasi, review, paket, guide, dan gambar bisa diperbarui dari admin seiring konten lapangan semakin lengkap.",
+    },
+];
+
+const defaultAboutHeroImage =
+    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=88";
+
 export default function AboutPage() {
     const { data, isLoading } = usePublicSettings();
-    const settings = data?.data?.data ?? data?.data ?? {};
+    const { data: destinationsData } = useQuery({
+        queryKey: ["destinations", "about"],
+        queryFn: getDestinations,
+    });
+    const { data: reviewsData } = useQuery({
+        queryKey: ["reviews", "about"],
+        queryFn: () => getReviews({ page: 1 }),
+    });
 
+    const settings = data?.data?.data ?? data?.data ?? {};
+    const destinationsPayload = getPayload(destinationsData);
+    const destinations = Array.isArray(destinationsPayload)
+        ? destinationsPayload
+        : [];
+    const reviewsPayload = reviewsData?.data ?? {};
+    const reviewTotal = reviewsPayload.pagination?.total ?? 0;
     const socialLinks = socialFields.filter((item) => settings[item.key]);
     const hasGoogleMaps = !!settings.google_maps_embed_url;
+    const villageName = settings.village_name || "Desa Wisata Karang Sidemen";
+    const heroImage =
+        settings.media_about_hero_fallback_image_url ||
+        destinations.find((destination) => destination.thumbnail_url)?.thumbnail_url ||
+        defaultAboutHeroImage;
+    const storyImage = settings.media_about_story_image_url || "";
+    const organizationImage = settings.media_about_organization_chart_image_url || "";
 
     if (isLoading) {
         return (
-            <main style={pageStyle}>
-                <section style={heroStyle}>
-                    <div
-                        style={{
-                            ...skeletonStyle,
-                            height: "50px",
-                            marginBottom: "16px",
-                        }}
-                    />
-                    <div
-                        style={{
-                            ...skeletonStyle,
-                            height: "24px",
-                            width: "70%",
-                            margin: "0 auto 40px",
-                        }}
-                    />
-                </section>
-
-                <section style={sectionStyle}>
-                    <div
-                        style={{
-                            ...skeletonStyle,
-                            height: "180px",
-                            marginBottom: "24px",
-                        }}
-                    />
-                    <div
-                        style={{
-                            ...skeletonStyle,
-                            height: "180px",
-                            marginBottom: "24px",
-                        }}
-                    />
-                    <div style={{ ...skeletonStyle, height: "400px" }} />
-                </section>
+            <main className="about-page">
+                <div className="about-skeleton about-skeleton--hero" />
             </main>
         );
     }
 
     return (
-        <main style={pageStyle}>
-            {/* Hero Section */}
-            <section style={heroStyle}>
-                <h1 style={titleStyle}>
-                    {settings.village_name || "Tentang Desa Wisata"}
-                </h1>
-                {settings.tagline && (
-                    <p style={taglineStyle}>{settings.tagline}</p>
-                )}
+        <main
+            className="about-page"
+            style={{ "--about-hero-image": `url("${heroImage}")` }}
+        >
+            <section className="about-hero">
+                <div className="about-hero__image" aria-hidden="true" />
+                <div className="about-hero__content">
+                    <p>Tentang desa wisata</p>
+                    <h1>{villageName}</h1>
+                    <div className="about-hero__bottom">
+                        <span>POKDARWIS Karang Sidemen</span>
+                        <p>
+                            {settings.tagline ||
+                                "Desa wisata alam yang tumbuh dari danau, air terjun, hutan, budaya lokal, dan pengelolaan warga."}
+                        </p>
+                    </div>
+                </div>
             </section>
 
-            <section style={sectionStyle}>
-                {/* WhatsApp Section */}
-                {settings.global_whatsapp && (
-                    <div style={cardStyle}>
-                        <h2 style={cardTitleStyle}>Hubungi Kami</h2>
-                        <p style={textStyle}>
-                            Tertarik untuk mengetahui lebih lanjut? Hubungi kami
-                            melalui WhatsApp.
-                        </p>
-                        <a
-                            href={buildWhatsAppUrl(
-                                "Halo, saya ingin mengetahui informasi tentang desa wisata.",
-                            )}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={buttonStyle}
-                        >
-                            💬 WhatsApp
-                        </a>
+            <section className="about-shell">
+                <section className={storyImage ? "about-story about-story--with-image" : "about-story"}>
+                    <div>
+                        <p>Tentang pengelolaan</p>
+                        <h2>Wisata desa harus terasa hidup karena orang-orang lokalnya ikut hadir.</h2>
                     </div>
-                )}
-
-                {/* Social Media Section */}
-                {socialLinks.length > 0 && (
-                    <div style={cardStyle}>
-                        <h2 style={cardTitleStyle}>Ikuti Kami</h2>
-                        <p style={textStyle}>
-                            Dapatkan update terbaru dari desa wisata melalui
-                            media sosial kami.
+                    <div className="about-story__body">
+                        {storyImage && (
+                            <img
+                                className="about-story__image"
+                                src={storyImage}
+                                alt=""
+                            />
+                        )}
+                        <p>
+                            Karang Sidemen dipresentasikan sebagai desa wisata, bukan
+                            satu destinasi tunggal. Website ini dirancang untuk membantu
+                            pengunjung memahami pilihan pengalaman, melihat review,
+                            menghubungi pengelola, dan menemukan cerita yang tepat
+                            sebelum datang.
                         </p>
-                        <div style={linkWrapStyle}>
-                            {socialLinks.map((item) => (
-                                <a
-                                    key={item.key}
-                                    href={settings[item.key]}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    style={linkStyle}
-                                >
-                                    {item.label}
-                                </a>
-                            ))}
-                        </div>
                     </div>
-                )}
+                </section>
 
-                {/* Google Maps Section */}
-                {hasGoogleMaps && (
-                    <div style={cardStyle}>
-                        <h2 style={cardTitleStyle}>Lokasi Kami</h2>
-                        <p style={textStyle}>
-                            Temukan lokasi desa wisata kami di Google Maps.
-                        </p>
+                <section className="about-stats">
+                    <article>
+                        <span>{destinations.length}</span>
+                        <p>Destinasi aktif</p>
+                    </article>
+                    <article>
+                        <span>{reviewTotal}</span>
+                        <p>Review disetujui</p>
+                    </article>
+                    <article>
+                        <span>1</span>
+                        <p>Desa wisata utama</p>
+                    </article>
+                </section>
 
-                        {/* Try to embed if URL looks like an embed code */}
-                        {settings.google_maps_embed_url.includes("iframe") ? (
-                            <div style={iframeWrapStyle}>
-                                <div
-                                    dangerouslySetInnerHTML={{
-                                        __html: settings.google_maps_embed_url,
-                                    }}
-                                />
+                <section className="about-card-grid">
+                    {storyCards.map((card) => (
+                        <article key={card.title}>
+                            <h3>{card.title}</h3>
+                            <p>{card.body}</p>
+                        </article>
+                    ))}
+                </section>
+
+                <section className="about-contact">
+                    <div>
+                        <p>Kontak dan lokasi</p>
+                        <h2>Mulai dari chat singkat, lalu susun rencana kunjungan.</h2>
+                    </div>
+                    <div className="about-contact__panel">
+                        {settings.global_whatsapp && (
+                            <a
+                                href={buildWhatsAppUrl(
+                                    "Halo, saya ingin mengetahui informasi tentang Desa Wisata Karang Sidemen.",
+                                    settings.global_whatsapp,
+                                )}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="about-contact__primary"
+                            >
+                                Chat WhatsApp
+                            </a>
+                        )}
+
+                        <Link to="/destinasi">Lihat destinasi</Link>
+                        <Link to="/reviews">Baca review</Link>
+
+                        {socialLinks.length > 0 && (
+                            <div className="about-socials">
+                                {socialLinks.map((item) => (
+                                    <a
+                                        key={item.key}
+                                        href={settings[item.key]}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        {item.label}
+                                    </a>
+                                ))}
                             </div>
+                        )}
+                    </div>
+                </section>
+
+                {organizationImage && (
+                    <section className="about-organization">
+                        <div>
+                            <p>POKDARWIS</p>
+                            <h2>
+                                {settings.about_organization_title ||
+                                    "Struktur Organisasi POKDARWIS"}
+                            </h2>
+                        </div>
+                        <img src={organizationImage} alt="Struktur organisasi POKDARWIS" />
+                    </section>
+                )}
+
+                {hasGoogleMaps && (
+                    <section className="about-map">
+                        <div>
+                            <p>Lokasi</p>
+                            <h2>Temukan Karang Sidemen di peta.</h2>
+                        </div>
+                        {settings.google_maps_embed_url.includes("iframe") ? (
+                            <div
+                                className="about-map__embed"
+                                dangerouslySetInnerHTML={{
+                                    __html: settings.google_maps_embed_url,
+                                }}
+                            />
                         ) : (
                             <a
                                 href={settings.google_maps_embed_url}
                                 target="_blank"
                                 rel="noreferrer"
-                                style={buttonStyle}
+                                className="about-map__link"
                             >
-                                📍 Buka Google Maps
+                                Buka Google Maps
                             </a>
                         )}
-                    </div>
+                    </section>
                 )}
             </section>
         </main>

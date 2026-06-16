@@ -23,8 +23,18 @@ class Destination extends Model
      */
     protected $fillable = [
         'name',
+        'slug',
         'description',
+        'short_description',
         'facilities',
+        'tourism_vibe',
+        'tags',
+        'highlights',
+        'activity_keywords',
+        'source_urls',
+        'is_featured_homepage',
+        'homepage_sort_order',
+        'homepage_label',
         'entry_fee',
         'parking_fee',
         'rental_price',
@@ -56,6 +66,12 @@ class Destination extends Model
             'entry_fee' => 'decimal:2',
             'parking_fee' => 'decimal:2',
             'rental_price' => 'decimal:2',
+            'tags' => 'array',
+            'highlights' => 'array',
+            'activity_keywords' => 'array',
+            'source_urls' => 'array',
+            'is_featured_homepage' => 'boolean',
+            'homepage_sort_order' => 'integer',
         ];
     }
 

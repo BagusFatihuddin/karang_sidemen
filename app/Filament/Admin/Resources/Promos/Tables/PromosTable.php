@@ -17,7 +17,7 @@ class PromosTable
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('title')
-                    ->label('Judul Promo')
+                    ->label('Judul Event')
                     ->searchable()
                     ->sortable(),
 

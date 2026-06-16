@@ -32,13 +32,15 @@ class VisitorRegistrationPage extends Page implements HasForms
     protected static ?string $navigationLabel =
         'Registrasi Wisatawan';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Operasional';
+
     protected static ?string $title =
         'Registrasi Wisatawan';
 
     protected static ?string $slug =
         'visitor-registration';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 1;
 
     public ?array $data = [];
 

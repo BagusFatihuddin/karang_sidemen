@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Destinations\Pages;
 use App\Filament\Admin\Resources\Destinations\DestinationResource;
 use App\Models\DestinationImage;
 use App\Services\CloudinaryService;
+use App\Support\CacheVersion;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Http\UploadedFile;
@@ -53,6 +54,8 @@ class EditDestination extends EditRecord
         $selectedImage->update([
             'sort_order' => 0,
         ]);
+
+        CacheVersion::bump('destinations:version');
 
         Notification::make()
             ->title(
@@ -128,6 +131,8 @@ class EditDestination extends EditRecord
             }
         }
 
+        CacheVersion::bump('destinations:version');
+
         Notification::make()
             ->title(
                 'Gambar berhasil dihapus'
@@ -183,6 +188,8 @@ class EditDestination extends EditRecord
                 $currentOrder,
         ]);
 
+        CacheVersion::bump('destinations:version');
+
         Notification::make()
             ->title(
                 'Urutan gambar diperbarui'
@@ -237,6 +244,8 @@ class EditDestination extends EditRecord
                 $currentOrder,
         ]);
 
+        CacheVersion::bump('destinations:version');
+
         Notification::make()
             ->title(
                 'Urutan gambar diperbarui'
@@ -257,6 +266,8 @@ class EditDestination extends EditRecord
 
     protected function afterSave(): void
     {
+        CacheVersion::bump('destinations:version');
+
         $uploadState =
             $this->data['destination_upload']
             ?? null;
@@ -310,7 +321,7 @@ class EditDestination extends EditRecord
                 CloudinaryService::class
             )->upload(
                 $uploadedFile,
-                'destinations/general'
+                $this->record->cloudinary_folder ?: 'destinations/general'
             );
 
             DestinationImage::create([
@@ -333,6 +344,8 @@ class EditDestination extends EditRecord
                             + 1
                         ),
             ]);
+
+            CacheVersion::bump('destinations:version');
 
             Notification::make()
                 ->title(

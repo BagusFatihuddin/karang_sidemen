@@ -25,13 +25,15 @@ class TripPackageResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationLabel = 'Trip Packages';
+    protected static ?string $navigationLabel = 'Paket Wisata';
 
-    protected static ?string $modelLabel = 'Trip Package';
+    protected static string|\UnitEnum|null $navigationGroup = 'Konten Wisata';
 
-    protected static ?string $pluralModelLabel = 'Trip Packages';
+    protected static ?string $modelLabel = 'Paket Wisata';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?string $pluralModelLabel = 'Paket Wisata';
+
+    protected static ?int $navigationSort = 2;
 
     protected static function allowed(): bool
     {

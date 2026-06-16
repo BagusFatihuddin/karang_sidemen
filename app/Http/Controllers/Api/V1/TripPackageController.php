@@ -27,6 +27,7 @@ class TripPackageController extends Controller
                         'maps_url',
                     ]),
                 'guides' => fn ($query) => $query
+                    ->where('is_active', true)
                     ->select([
                         'guides.id',
                         'name',
@@ -70,6 +71,7 @@ class TripPackageController extends Controller
                         'maps_url',
                     ]),
                 'guides' => fn ($query) => $query
+                    ->where('is_active', true)
                     ->select([
                         'guides.id',
                         'name',

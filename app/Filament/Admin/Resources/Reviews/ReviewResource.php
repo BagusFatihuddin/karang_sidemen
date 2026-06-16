@@ -27,11 +27,13 @@ class ReviewResource extends Resource
 
     protected static ?string $navigationLabel = 'Reviews';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Pengunjung';
+
     protected static ?string $modelLabel = 'Review';
 
-    protected static ?string $pluralModelLabel = 'Reviews';
+    protected static ?string $pluralModelLabel = 'Review';
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 2;
 
     protected static function allowed(): bool
     {
