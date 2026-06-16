@@ -12,6 +12,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -29,6 +30,10 @@ class VisitorsTable
                     ->label('Nama')
                     ->searchable()
                     ->sortable(),
+
+                ViewColumn::make('actions')
+                    ->label('')
+                    ->view('filament.admin.columns.visitor-actions'),
 
                 TextColumn::make('origin_category')
                     ->label('Kategori Asal')
@@ -148,7 +153,10 @@ class VisitorsTable
             ])
             ->recordActions([
                 Action::make('sendReviewLink')
-                    ->label('Kirim Link Review')
+                    ->label('💬 Kirim Link Review')
+                    ->icon('heroicon-m-chat-bubble-bottom-center-text')
+                    ->color('success')
+                    ->tooltip('Kirim link review ke WhatsApp wisatawan')
                     ->action(
                         fn (Visitor $record) =>
                         static::openReviewWhatsApp($record)

@@ -44,6 +44,14 @@ class WABlastPage extends Page implements HasForms
 
     public array $bulkLinks = [];
 
+    public int $currentPage = 1;
+
+    public int $perPage = 15;
+
+    public int $totalResults = 0;
+
+    public int $totalPages = 0;
+
     public function mount(): void
     {
         abort_unless(
@@ -86,27 +94,29 @@ class WABlastPage extends Page implements HasForms
                 Section::make('Filter Wisatawan')
                     ->schema([
                         Select::make('origin_category')
-                            ->label('Kategori Asal')
+                            ->label('🏘️ Kategori Asal')
                             ->options([
                                 'lombok_tengah' => 'Lombok Tengah',
                                 'lombok_lainnya' => 'Lombok Lainnya',
                                 'luar_lombok' => 'Luar Lombok',
                                 'mancanegara' => 'Mancanegara',
                             ])
-                            ->native(false),
+                            ->native(false)
+                            ->placeholder('Pilih kategori asal...'),
 
                         Select::make('visit_type')
-                            ->label('Tipe Kunjungan')
+                            ->label('👥 Tipe Kunjungan')
                             ->options([
                                 'sendiri' => 'Sendiri',
                                 'pasangan' => 'Pasangan',
                                 'keluarga' => 'Keluarga',
                                 'rombongan' => 'Rombongan',
                             ])
-                            ->native(false),
+                            ->native(false)
+                            ->placeholder('Pilih tipe kunjungan...'),
 
                         Select::make('destination_id')
-                            ->label('Destinasi')
+                            ->label('📍 Destinasi')
                             ->multiple()
                             ->options(
                                 fn (): array => Destination::query()
@@ -115,12 +125,15 @@ class WABlastPage extends Page implements HasForms
                                     ->all()
                             )
                             ->searchable()
-                            ->native(false),
+                            ->native(false)
+                            ->placeholder('Pilih satu atau lebih destinasi...'),
 
                         Textarea::make('message')
-                            ->label('Pesan')
+                            ->label('📨 Pesan')
                             ->required()
-                            ->rows(4),
+                            ->rows(4)
+                            ->placeholder('Contoh: Halo [nama], terima kasih telah berkunjung ke desa wisata kami. Kami senang melihat Anda! Jika ada pertanyaan, silakan hubungi kami.')
+                            ->helperText('Gunakan [nama] untuk mengganti dengan nama wisatawan. Pesan akan disesuaikan untuk setiap penerima.'),
                     ])
                     ->columns(1),
             ]);
@@ -128,9 +141,22 @@ class WABlastPage extends Page implements HasForms
 
     public function search(): void
     {
+        // Reset pagination when searching
+        $this->currentPage = 1;
+        $this->loadResults();
+    }
+
+    public function goToPage(int $page): void
+    {
+        $this->currentPage = max(1, min($page, $this->totalPages));
+        $this->loadResults();
+    }
+
+    private function loadResults(): void
+    {
         $data = $this->form->getState();
 
-        $visitors = Visitor::query()
+        $query = Visitor::query()
             ->with('destination')
             ->when(
                 filled($data['origin_category'] ?? null),
@@ -153,7 +179,22 @@ class WABlastPage extends Page implements HasForms
                     $data['destination_id']
                 )
             )
-            ->latest('visited_at')
+            ->orderByDesc('visited_at')
+            ->orderByDesc('id'); // Secondary sort untuk consistency
+
+        // Get total count
+        $this->totalResults = $query->count();
+        $this->totalPages = (int) ceil($this->totalResults / $this->perPage);
+
+        // Ensure currentPage is valid
+        if ($this->currentPage > $this->totalPages && $this->totalPages > 0) {
+            $this->currentPage = $this->totalPages;
+        }
+
+        // Get paginated results
+        $visitors = $query
+            ->skip(($this->currentPage - 1) * $this->perPage)
+            ->take($this->perPage)
             ->get();
 
         $message = (string) ($data['message'] ?? '');
@@ -173,6 +214,7 @@ class WABlastPage extends Page implements HasForms
             })
             ->all();
 
+        // Bulk links hanya untuk page saat ini
         $this->bulkLinks = collect($this->results)
             ->pluck('url')
             ->filter()
