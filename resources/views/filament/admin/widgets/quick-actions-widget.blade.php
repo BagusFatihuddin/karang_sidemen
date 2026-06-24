@@ -44,11 +44,7 @@
 
                     <a
                         href="{{ $action['url'] }}"
-                        class="group relative overflow-hidden rounded-2xl p-5 transition duration-300 ease-out hover:-translate-y-1.5"
-                        style="
-                            border: 1px solid rgba(255, 255, 255, 0.1);
-                            background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-                        "
+                        class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition duration-300 ease-out hover:-translate-y-1.5 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:shadow-none"
                     >
                         <div
                             class="absolute inset-0 -z-10 opacity-0 transition duration-300 group-hover:opacity-100"
@@ -73,11 +69,11 @@
                         </div>
 
                         <div class="mt-4">
-                            <h3 class="font-semibold text-white leading-snug">
+                            <h3 class="font-semibold text-gray-950 leading-snug dark:text-white">
                                 {{ $action['label'] }}
                             </h3>
 
-                            <p class="mt-2 text-xs text-gray-400 leading-relaxed">
+                            <p class="mt-2 text-xs text-gray-600 leading-relaxed dark:text-gray-400">
                                 {{ $action['description'] }}
                             </p>
                         </div>

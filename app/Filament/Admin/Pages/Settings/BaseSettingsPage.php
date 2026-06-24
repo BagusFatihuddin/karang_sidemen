@@ -14,6 +14,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 abstract class BaseSettingsPage extends Page implements HasForms
 {
@@ -125,40 +126,122 @@ abstract class BaseSettingsPage extends Page implements HasForms
         string $settingKey,
         string $folder = 'website-public-media'
     ): void {
-        $uploadState = $this->data[$this->uploadFieldName($settingKey)] ?? null;
-        $path = $this->extractUploadPath($uploadState);
+        $uploadField = $this->uploadFieldName($settingKey);
+        $uploadState = $data[$uploadField] ?? $this->data[$uploadField] ?? null;
 
-        if (! $path) {
+        if (! $uploadState) {
             return;
         }
 
         try {
-            $fullPath = Storage::disk('local')->path($path);
+            $uploadedFile = $this->resolveUploadedFile($uploadState);
 
-            $uploadedFile = new UploadedFile(
-                $fullPath,
-                basename($fullPath),
-                mime_content_type($fullPath) ?: 'image/jpeg',
-                test: true
-            );
+            if (! $uploadedFile) {
+                $this->failSettingsImageUpload(
+                    $uploadField,
+                    'Upload gambar gagal. File tidak bisa diproses, silakan pilih ulang gambar.'
+                );
+            }
+
+            $this->validateSettingsImageUpload($uploadedFile, $uploadField);
 
             $result = app(CloudinaryService::class)->upload($uploadedFile, $folder);
 
-            if (filled($result['url'] ?? null)) {
-                $data[$settingKey] = $result['url'];
+            if (blank($result['url'] ?? null)) {
+                $this->failSettingsImageUpload(
+                    $uploadField,
+                    'Upload gambar gagal. URL gambar tidak diterima dari server upload.'
+                );
             }
+
+            $data[$settingKey] = $result['url'];
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::warning('Settings media upload failed', [
                 'setting_key' => $settingKey,
                 'message' => $e->getMessage(),
             ]);
 
-            Notification::make()
-                ->title('Upload gambar gagal')
-                ->body($e->getMessage())
-                ->danger()
-                ->send();
+            $this->failSettingsImageUpload(
+                $uploadField,
+                'Upload gambar gagal. ' . $e->getMessage()
+            );
         }
+    }
+
+    private function validateSettingsImageUpload(UploadedFile $uploadedFile, string $uploadField): void
+    {
+        $allowedMimeTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+        ];
+        $maxKilobytes = 2048;
+
+        if (str_contains($uploadField, 'brand_logo')) {
+            $allowedMimeTypes[] = 'image/svg+xml';
+        }
+
+        $mimeType = strtolower((string) $uploadedFile->getMimeType());
+
+        if (! in_array($mimeType, $allowedMimeTypes, true)) {
+            $message = str_contains($uploadField, 'brand_logo')
+                ? 'Tipe file tidak sesuai. Gunakan gambar JPG, PNG, WEBP, atau SVG.'
+                : 'Tipe file tidak sesuai. Gunakan gambar JPG, PNG, atau WEBP.';
+
+            $this->failSettingsImageUpload($uploadField, $message);
+        }
+
+        if ($uploadedFile->getSize() > ($maxKilobytes * 1024)) {
+            $this->failSettingsImageUpload(
+                $uploadField,
+                'Ukuran gambar terlalu besar. Maksimal ' . (int) ($maxKilobytes / 1024) . ' MB.'
+            );
+        }
+    }
+
+    private function failSettingsImageUpload(string $uploadField, string $message): never
+    {
+        Notification::make()
+            ->title('Upload gambar gagal')
+            ->body($message)
+            ->danger()
+            ->send();
+
+        throw ValidationException::withMessages([
+            'data.' . $uploadField => $message,
+        ]);
+    }
+
+    private function resolveUploadedFile(mixed $uploadState): ?UploadedFile
+    {
+        if (is_array($uploadState)) {
+            $uploadState = reset($uploadState);
+        }
+
+        if ($uploadState instanceof UploadedFile) {
+            return $uploadState;
+        }
+
+        $path = $this->extractUploadPath($uploadState);
+
+        if (! $path) {
+            return null;
+        }
+
+        $fullPath = is_file($path) ? $path : Storage::disk('local')->path($path);
+
+        if (! is_file($fullPath)) {
+            return null;
+        }
+
+        return new UploadedFile(
+            $fullPath,
+            basename($fullPath),
+            mime_content_type($fullPath) ?: 'image/jpeg',
+            test: true
+        );
     }
 
     private function extractUploadPath(mixed $uploadState): ?string
@@ -167,10 +250,14 @@ abstract class BaseSettingsPage extends Page implements HasForms
             return $uploadState;
         }
 
-        if (is_array($uploadState)) {
-            $path = reset($uploadState);
+        if (is_object($uploadState)) {
+            foreach (['getRealPath', 'getPathname'] as $method) {
+                if (method_exists($uploadState, $method)) {
+                    $path = $uploadState->{$method}();
 
-            return is_string($path) ? $path : null;
+                    return is_string($path) ? $path : null;
+                }
+            }
         }
 
         return null;

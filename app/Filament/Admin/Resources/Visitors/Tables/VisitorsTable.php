@@ -10,9 +10,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -27,13 +25,19 @@ class VisitorsTable
             ->defaultSort('visited_at', 'desc')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nama')
+                    ->label('Nama Wisatawan')
                     ->searchable()
+                    ->sortable()
+                    ->description(fn (Visitor $record) => $record->whatsapp_number),
+
+                TextColumn::make('destination.name')
+                    ->label('Destinasi')
                     ->sortable(),
 
-                ViewColumn::make('actions')
-                    ->label('')
-                    ->view('filament.admin.columns.visitor-actions'),
+                TextColumn::make('visited_at')
+                    ->label('Tanggal Kunjungan')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
 
                 TextColumn::make('origin_category')
                     ->label('Kategori Asal')
@@ -47,10 +51,12 @@ class VisitorsTable
                             default => $state ?? '-',
                         }
                     )
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('origin_city')
                     ->label('Kota Asal')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('visit_type')
@@ -65,19 +71,12 @@ class VisitorsTable
                             default => $state ?? '-',
                         }
                     )
-                    ->sortable(),
-
-                TextColumn::make('destination.name')
-                    ->label('Destinasi')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 TextColumn::make('recordedBy.name')
                     ->label('Dicatat Oleh')
-                    ->sortable(),
-
-                TextColumn::make('visited_at')
-                    ->label('Tanggal Kunjungan')
-                    ->dateTime('d M Y H:i')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
             ])
             ->filters([
@@ -153,32 +152,29 @@ class VisitorsTable
             ])
             ->recordActions([
                 Action::make('sendReviewLink')
-                    ->label('💬 Kirim Link Review')
+                    ->label('Kirim Review')
                     ->icon('heroicon-m-chat-bubble-bottom-center-text')
                     ->color('success')
+                    ->button()
                     ->tooltip('Kirim link review ke WhatsApp wisatawan')
-                    ->action(
-                        fn (Visitor $record) =>
-                        static::openReviewWhatsApp($record)
-                    ),
+                    ->disabled(fn (Visitor $record) => !static::normalizePhone($record->whatsapp_number))
+                    ->url(fn (Visitor $record) => static::getReviewWhatsAppUrl($record))
+                    ->openUrlInNewTab(),
 
-                ViewAction::make(),
+                ViewAction::make()
+                    ->button()
+                    ->color('gray'),
             ]);
     }
 
-    protected static function openReviewWhatsApp(
+    protected static function getReviewWhatsAppUrl(
         Visitor $visitor
-    ) {
+    ): ?string {
         $phone = static::normalizePhone(
             $visitor->whatsapp_number
         );
 
         if ($phone === null) {
-            Notification::make()
-                ->title('Nomor WhatsApp tidak valid.')
-                ->danger()
-                ->send();
-
             return null;
         }
 
@@ -191,15 +187,13 @@ class VisitorsTable
         );
 
         $message = sprintf(
-            'Halo %s, terima kasih telah berkunjung. Silakan beri review di sini: %s',
+            "Halo %s, terima kasih telah berkunjung ke %s. Kami sangat menghargai feedback Anda!\n\nSilakan beri review pengalaman Anda di sini:\n%s",
             $visitor->name,
+            $visitor->destination?->name ?? 'salah satu destinasi kami',
             $reviewUrl
         );
 
-        return redirect()->away(
-            'https://wa.me/' . $phone .
-            '?text=' . urlencode($message)
-        );
+        return 'https://wa.me/' . $phone . '?text=' . urlencode($message);
     }
 
     protected static function getOrCreateReviewToken(
@@ -231,8 +225,12 @@ class VisitorsTable
     }
 
     protected static function normalizePhone(
-        string $phone
+        ?string $phone
     ): ?string {
+        if (!$phone) {
+            return null;
+        }
+
         $phone = trim($phone);
         $phone = str_replace([' ', '-'], '', $phone);
 

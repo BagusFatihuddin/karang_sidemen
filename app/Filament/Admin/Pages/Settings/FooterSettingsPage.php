@@ -52,8 +52,12 @@ class FooterSettingsPage extends BaseSettingsPage
                         ->visibility('private')
                         ->imageEditor(false)
                         ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
-                        ->maxSize(4096)
-                        ->helperText('Ukuran: maks 4 MB. Gunakan gambar landscape yang menarik.')
+                        ->maxSize(2048)
+                        ->validationMessages([
+                            'mimetypes' => 'Tipe file tidak sesuai. Gunakan gambar JPG, PNG, atau WEBP.',
+                            'max' => 'Ukuran gambar terlalu besar. Maksimal 2 MB.',
+                        ])
+                        ->helperText('Ukuran: maks 2 MB. Gunakan gambar landscape yang menarik.')
                         ->dehydrated(false),
                 ])
                 ->columns(1),

@@ -1,10 +1,17 @@
 import apiClient from "./client";
 
-export const getDestinations = async (type) => {
-    const destinationType = typeof type === "string" ? type : "";
+export const getDestinations = async (params = {}) => {
+    const requestParams =
+        typeof params === "string" ? { type: params } : { ...params };
+
+    Object.keys(requestParams).forEach((key) => {
+        if (!requestParams[key]) {
+            delete requestParams[key];
+        }
+    });
 
     return apiClient.get("/destinations", {
-        params: destinationType ? { type: destinationType } : {},
+        params: requestParams,
     });
 };
 

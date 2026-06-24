@@ -7,8 +7,8 @@
          ">
         <div class="flex items-start justify-between gap-4">
             <div class="flex flex-col gap-2 flex-1">
-                <span class="text-sm font-medium text-gray-400">Total Destinasi</span>
-                <span class="text-3xl font-bold text-white">{{ $totalDestinations }}</span>
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Destinasi</span>
+                <span class="text-3xl font-bold text-gray-950 dark:text-white">{{ $totalDestinations }}</span>
             </div>
             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style="background-color: rgba(59, 130, 246, 0.25);">
                 📍
@@ -24,8 +24,8 @@
          ">
         <div class="flex items-start justify-between gap-4">
             <div class="flex flex-col gap-2 flex-1">
-                <span class="text-sm font-medium text-gray-400">Destinasi Aktif</span>
-                <span class="text-3xl font-bold text-white">{{ $activeDestinations }}</span>
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Destinasi Aktif</span>
+                <span class="text-3xl font-bold text-gray-950 dark:text-white">{{ $activeDestinations }}</span>
             </div>
             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style="background-color: rgba(16, 185, 129, 0.25);">
                 ✅
@@ -41,8 +41,8 @@
          ">
         <div class="flex items-start justify-between gap-4">
             <div class="flex flex-col gap-2 flex-1">
-                <span class="text-sm font-medium text-gray-400">Fitur Homepage</span>
-                <span class="text-3xl font-bold text-white">{{ $featuredDestinations }}</span>
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Fitur Homepage</span>
+                <span class="text-3xl font-bold text-gray-950 dark:text-white">{{ $featuredDestinations }}</span>
             </div>
             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl" style="background-color: rgba(251, 146, 60, 0.25);">
                 ⭐
@@ -58,9 +58,9 @@
          ">
         <div class="flex items-start justify-between gap-4">
             <div class="flex flex-col gap-2 flex-1">
-                <span class="text-sm font-medium text-gray-400">Jenis Destinasi</span>
-                <span class="text-xl font-bold text-white">{{ count($destinationsByType) }} Tipe</span>
-                <div class="text-xs text-gray-500 mt-2 space-y-1">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Jenis Destinasi</span>
+                <span class="text-xl font-bold text-gray-950 dark:text-white">{{ count($destinationsByType) }} Tipe</span>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 space-y-1">
                     @foreach($destinationsByType as $type => $count)
                         <div>{{ ucfirst($type) }}: {{ $count }}</div>
                     @endforeach

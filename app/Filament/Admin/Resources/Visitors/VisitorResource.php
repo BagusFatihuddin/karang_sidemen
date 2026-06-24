@@ -84,6 +84,7 @@ class VisitorResource extends Resource
             ->with([
                 'destination',
                 'recordedBy',
+                'reviewTokens',
             ]);
     }
 

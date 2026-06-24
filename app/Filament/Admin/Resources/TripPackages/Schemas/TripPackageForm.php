@@ -51,6 +51,10 @@ class TripPackageForm
                         'image/webp',
                     ])
                     ->maxSize(2048)
+                    ->validationMessages([
+                        'mimetypes' => 'Tipe file tidak sesuai. Gunakan gambar JPG, PNG, atau WEBP.',
+                        'max' => 'Ukuran gambar terlalu besar. Maksimal 2 MB.',
+                    ])
                     ->helperText(
                         'Format: JPG, PNG, WEBP. Maksimal 2MB.'
                     )

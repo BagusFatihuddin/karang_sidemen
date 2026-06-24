@@ -65,6 +65,10 @@ class BrandSettingsPage extends BaseSettingsPage
                             'image/svg+xml',
                         ])
                         ->maxSize(2048)
+                        ->validationMessages([
+                            'mimetypes' => 'Tipe file tidak sesuai. Gunakan gambar JPG, PNG, WEBP, atau SVG.',
+                            'max' => 'Ukuran gambar terlalu besar. Maksimal 2 MB.',
+                        ])
                         ->helperText('Format: JPG, PNG, WebP, atau SVG. Ukuran: max 2 MB. Ukuran yang direkomendasikan: 200x200 px.')
                         ->dehydrated(false),
                 ])

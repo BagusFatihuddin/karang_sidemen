@@ -6,9 +6,9 @@
     <!-- TextInput & FileUpload di sini via parent -->
     
     <!-- Image Preview Section -->
-    <div x-show="imageUrl" x-transition class="rounded-lg border border-white/10 bg-white/5 p-4">
-        <p class="mb-3 text-xs font-medium text-gray-400">📸 Preview Gambar:</p>
-        <div class="relative overflow-hidden rounded-lg bg-black/50">
+    <div x-show="imageUrl" x-transition class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
+        <p class="mb-3 text-xs font-medium text-gray-600 dark:text-gray-400">📸 Preview Gambar:</p>
+        <div class="relative overflow-hidden rounded-lg bg-gray-100 dark:bg-black/50">
             <img 
                 :src="imageUrl" 
                 alt="Preview" 
@@ -20,13 +20,13 @@
             </div>
         </div>
         <p class="mt-2 text-xs text-gray-500">
-            <span x-text="imageUrl"></span>
+            <span class="text-gray-600 dark:text-gray-400" x-text="imageUrl"></span>
         </p>
     </div>
 
     <!-- No Image Message -->
-    <div x-show="!imageUrl" class="rounded-lg border border-dashed border-gray-600 bg-gray-900/30 p-4 text-center">
-        <p class="text-sm text-gray-400">🖼️ Upload atau paste URL gambar untuk melihat preview</p>
+    <div x-show="!imageUrl" class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 text-center dark:border-gray-600 dark:bg-gray-900/30">
+        <p class="text-sm text-gray-600 dark:text-gray-400">🖼️ Upload atau paste URL gambar untuk melihat preview</p>
     </div>
 </div>
 

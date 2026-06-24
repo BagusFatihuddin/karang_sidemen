@@ -727,17 +727,36 @@ body {
     }
 
     .home-destination-grid {
-        display: flex;
-        gap: 14px;
-        overflow-x: auto;
-        padding-bottom: 12px;
-        scroll-snap-type: x mandatory;
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .home-destination-card {
-        min-width: 78vw;
-        min-height: 390px;
-        scroll-snap-align: start;
+        min-height: 340px;
+    }
+
+    .home-destination-card::after {
+        background: linear-gradient(180deg, rgba(7, 22, 18, 0.04) 24%, rgba(7, 22, 18, 0.92));
+    }
+
+    .home-destination-card__body {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        padding: 14px;
+        border-radius: 8px;
+        background: rgba(11, 31, 25, 0.54);
+        backdrop-filter: blur(10px);
+    }
+
+    .home-destination-card h3 {
+        font-size: 22px;
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+    }
+
+    .home-destination-card a {
+        margin-top: 10px;
     }
 
     .home-final-cta {

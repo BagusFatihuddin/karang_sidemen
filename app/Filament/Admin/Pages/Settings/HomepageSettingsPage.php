@@ -88,7 +88,11 @@ class HomepageSettingsPage extends BaseSettingsPage
                         ->visibility('private')
                         ->imageEditor(false)
                         ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
-                        ->maxSize(4096)
+                        ->maxSize(2048)
+                        ->validationMessages([
+                            'mimetypes' => 'Tipe file tidak sesuai. Gunakan gambar JPG, PNG, atau WEBP.',
+                            'max' => 'Ukuran gambar terlalu besar. Maksimal 2 MB.',
+                        ])
                         ->dehydrated(false)
                         ->columnSpanFull(),
                 ])
@@ -200,7 +204,11 @@ class HomepageSettingsPage extends BaseSettingsPage
                         ->visibility('private')
                         ->imageEditor(false)
                         ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
-                        ->maxSize(4096)
+                        ->maxSize(2048)
+                        ->validationMessages([
+                            'mimetypes' => 'Tipe file tidak sesuai. Gunakan gambar JPG, PNG, atau WEBP.',
+                            'max' => 'Ukuran gambar terlalu besar. Maksimal 2 MB.',
+                        ])
                         ->dehydrated(false),
                 ]),
         ];

@@ -587,24 +587,35 @@
 
 @media (max-width: 720px) {
     .destination-detail-hero {
-        min-height: 88vh;
+        min-height: 76svh;
     }
 
     .destination-detail-hero__content,
     .destination-detail-shell {
-        width: calc(100% - 28px);
+        width: calc(100% - 24px);
     }
 
     .destination-detail-hero__content {
-        padding: 126px 0 72px;
+        padding: 102px 0 54px;
+    }
+
+    .destination-detail-back {
+        min-height: 36px;
+        margin-bottom: 20px;
+        padding: 9px 11px;
     }
 
     .destination-detail-hero h1 {
-        font-size: clamp(54px, 16vw, 78px);
+        max-width: 100%;
+        font-size: clamp(44px, 15vw, 66px);
+        line-height: 0.9;
+        overflow-wrap: anywhere;
     }
 
     .destination-detail-hero__bottom {
+        margin-top: 22px;
         display: grid;
+        gap: 12px;
     }
 
     .destination-detail-hero__bottom span {
@@ -612,36 +623,64 @@
         max-width: 100%;
     }
 
+    .destination-detail-hero__bottom p {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
     .destination-detail-shell {
-        padding: 62px 0 84px;
+        padding: 36px 0 70px;
+    }
+
+    .destination-detail-layout,
+    .destination-detail-main {
+        gap: 18px;
+    }
+
+    .destination-gallery {
+        padding: 8px;
     }
 
     .destination-gallery__stage {
-        min-height: 420px;
+        min-height: auto;
+        aspect-ratio: 4 / 3;
+    }
+
+    .destination-gallery__thumb {
+        flex-basis: 84px;
+        height: 62px;
+    }
+
+    .destination-story,
+    .destination-highlights,
+    .destination-map,
+    .destination-reviews,
+    .destination-booking-card {
+        padding: 20px;
+        border-radius: 8px;
     }
 
     .destination-story h2,
+    .destination-map h2,
     .destination-reviews h2,
     .destination-booking-card h2 {
-        font-size: clamp(36px, 12vw, 56px);
+        font-size: clamp(32px, 11vw, 48px);
+        line-height: 1;
+    }
+
+    .destination-story > p:last-of-type,
+    .destination-facilities p,
+    .destination-map span {
+        font-size: 15px;
+        line-height: 1.65;
     }
 
     .destination-highlights__grid {
-        display: flex;
-        gap: 12px;
-        overflow-x: auto;
-        padding-bottom: 8px;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-    }
-
-    .destination-highlights__grid::-webkit-scrollbar {
-        display: none;
+        grid-template-columns: 1fr;
     }
 
     .destination-highlights article {
-        flex: 0 0 78vw;
-        scroll-snap-align: center;
+        min-height: auto;
     }
 
     .destination-review-controls {
@@ -651,12 +690,21 @@
     }
 
     .destination-review-card {
-        grid-template-columns: 1fr;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .destination-review-card__avatar,
+    .destination-review-card__avatar span {
+        width: 44px;
+        height: 44px;
     }
 
     .destination-review-card__meta {
         align-items: start;
         flex-direction: column;
+        gap: 4px;
     }
 
     .destination-pagination {

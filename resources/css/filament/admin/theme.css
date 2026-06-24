@@ -5,3 +5,101 @@
 @source '../../../../vendor/filament/**/*.blade.php';
 
 @import "tailwindcss";
+
+@layer components {
+    html:not(.dark) .fi-body,
+    html:not(.dark) .fi-main {
+        background: #f6f8f5;
+        color: #10221b;
+    }
+
+    html:not(.dark) .fi-sidebar,
+    html:not(.dark) .fi-topbar nav,
+    html:not(.dark) .fi-section,
+    html:not(.dark) .fi-ta-ctn,
+    html:not(.dark) .fi-fo-field-wrp,
+    html:not(.dark) .fi-modal-window {
+        color: #10221b;
+    }
+
+    html:not(.dark) .fi-section,
+    html:not(.dark) .fi-ta-ctn,
+    html:not(.dark) .fi-wi-widget .fi-section {
+        border-color: #d8e2dc;
+        background: #ffffff;
+        box-shadow: 0 18px 48px rgba(16, 34, 27, 0.08);
+    }
+
+    html:not(.dark) .fi-input,
+    html:not(.dark) .fi-select-input,
+    html:not(.dark) .fi-textarea,
+    html:not(.dark) .fi-fo-file-upload .filepond--root,
+    html:not(.dark) .fi-fo-file-upload .filepond--panel-root {
+        color: #10221b;
+        background-color: #ffffff;
+    }
+
+    html:not(.dark) .fi-input::placeholder,
+    html:not(.dark) .fi-textarea::placeholder {
+        color: #6b7a71;
+    }
+
+    html:not(.dark) .fi-fo-field-wrp-label span,
+    html:not(.dark) .fi-section-header-heading,
+    html:not(.dark) .fi-ta-header-heading,
+    html:not(.dark) .fi-ta-text,
+    html:not(.dark) .fi-ta-cell,
+    html:not(.dark) .fi-modal-heading {
+        color: #10221b;
+    }
+
+    html:not(.dark) .fi-fo-field-wrp-helper-text,
+    html:not(.dark) .fi-section-header-description,
+    html:not(.dark) .fi-ta-header-description {
+        color: #526158;
+    }
+
+    html:not(.dark) .fi-sidebar-item-label,
+    html:not(.dark) .fi-sidebar-group-label,
+    html:not(.dark) .fi-breadcrumbs-item-label {
+        color: #33443a;
+    }
+
+    html:not(.dark) .fi-sidebar-item-active a,
+    html:not(.dark) .fi-sidebar-item a:hover {
+        background: #e8f3ee;
+        color: #18593f;
+    }
+
+    html:not(.dark) .fi-btn-color-gray {
+        color: #10221b;
+        border-color: #d8e2dc;
+        background: #ffffff;
+    }
+
+    html:not(.dark) .fi-fo-file-upload .filepond--drop-label {
+        color: #33443a;
+    }
+}
+
+@layer components {
+    .dark .settings-page-intro,
+    html.dark .settings-page-intro,
+    [data-theme="dark"] .settings-page-intro {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)) !important;
+        box-shadow: none !important;
+    }
+
+    .dark .settings-page-intro h1,
+    html.dark .settings-page-intro h1,
+    [data-theme="dark"] .settings-page-intro h1 {
+        color: #ffffff !important;
+    }
+
+    .dark .settings-page-intro p,
+    html.dark .settings-page-intro p,
+    [data-theme="dark"] .settings-page-intro p {
+        color: #d1d5db !important;
+    }
+}

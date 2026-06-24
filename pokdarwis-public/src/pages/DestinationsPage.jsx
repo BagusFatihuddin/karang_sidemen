@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
@@ -42,14 +42,22 @@ const getDestinationOrder = (destination, fallback = 999) =>
 export default function DestinationsPage() {
     const [searchParams] = useSearchParams();
     const activeType = searchParams.get("type") || "";
+    const [page, setPage] = useState(1);
+
+    useEffect(() => {
+        setPage(1);
+    }, [activeType]);
+
     const { data, isLoading } = useQuery({
-        queryKey: ["destinations", activeType],
-        queryFn: () => getDestinations(activeType),
+        queryKey: ["destinations", activeType, page],
+        queryFn: () => getDestinations({ type: activeType, page }),
     });
     const { data: settingsData } = usePublicSettings();
     const settings = settingsData?.data?.data ?? settingsData?.data ?? {};
 
+    const responsePayload = data?.data ?? {};
     const payload = getPayload(data);
+    const pagination = responsePayload.pagination ?? {};
     const destinations = useMemo(
         () =>
             (Array.isArray(payload) ? payload : []).sort(
@@ -92,7 +100,7 @@ export default function DestinationsPage() {
                     <h1>Destinasi alam yang hidup dari cerita desa.</h1>
                     <div className="destinations-hero__bottom">
                         <span>
-                            {destinations.length || "..."} destinasi aktif
+                            {(pagination.total ?? destinations.length) || "..."} destinasi aktif
                         </span>
                         <p>
                             Danau, air terjun, hutan, camping, dan ruang tenang
@@ -153,58 +161,90 @@ export default function DestinationsPage() {
                         <Link to="/destinasi">Lihat semua destinasi</Link>
                     </div>
                 ) : (
-                    <div className="destinations-grid">
-                        {destinations.map((destination, index) => (
-                            <article className="destination-card" key={destination.id}>
-                                <Link
-                                    to={`/destinasi/${destination.id}`}
-                                    className="destination-card__media"
-                                    aria-label={`Buka detail ${destination.name}`}
-                                >
-                                    {getImageUrl(destination) ? (
-                                        <img src={getImageUrl(destination)} alt="" />
-                                    ) : (
-                                        <div className="destination-card__fallback">
-                                            Karang Sidemen
+                    <>
+                        <div className="destinations-grid">
+                            {destinations.map((destination, index) => {
+                                const itemNumber =
+                                    (pagination.from ?? (page - 1) * 15 + 1) + index;
+
+                                return (
+                                    <article className="destination-card" key={destination.id}>
+                                        <Link
+                                            to={`/destinasi/${destination.id}`}
+                                            className="destination-card__media"
+                                            aria-label={`Buka detail ${destination.name}`}
+                                        >
+                                            {getImageUrl(destination) ? (
+                                                <img src={getImageUrl(destination)} alt="" />
+                                            ) : (
+                                                <div className="destination-card__fallback">
+                                                    Karang Sidemen
+                                                </div>
+                                            )}
+                                            <span>{String(itemNumber).padStart(2, "0")}</span>
+                                        </Link>
+                                        <div className="destination-card__body">
+                                            <div className="destination-card__meta">
+                                                {destination.destination_type && (
+                                                    <span>{destination.destination_type}</span>
+                                                )}
+                                                <strong>{formatEntryFee(destination.entry_fee)}</strong>
+                                            </div>
+                                            <h3>{destination.name}</h3>
+                                            <p>
+                                                {destination.short_description ||
+                                                    destination.tourism_vibe ||
+                                                    destination.description}
+                                            </p>
+                                            <div className="destination-card__tags">
+                                                {[
+                                                    ...normalizeList(
+                                                        destination.activity_keywords,
+                                                    ),
+                                                    ...normalizeList(destination.tags),
+                                                ]
+                                                    .slice(0, 3)
+                                                    .map((tag) => (
+                                                        <span key={tag}>{tag}</span>
+                                                    ))}
+                                            </div>
+                                            <Link
+                                                to={`/destinasi/${destination.id}`}
+                                                className="destination-card__link"
+                                            >
+                                                Buka detail
+                                            </Link>
                                         </div>
-                                    )}
-                                    <span>{String(index + 1).padStart(2, "0")}</span>
-                                </Link>
-                                <div className="destination-card__body">
-                                    <div className="destination-card__meta">
-                                        {destination.destination_type && (
-                                            <span>{destination.destination_type}</span>
-                                        )}
-                                        <strong>{formatEntryFee(destination.entry_fee)}</strong>
-                                    </div>
-                                    <h3>{destination.name}</h3>
-                                    <p>
-                                        {destination.short_description ||
-                                            destination.tourism_vibe ||
-                                            destination.description}
-                                    </p>
-                                    <div className="destination-card__tags">
-                                        {[
-                                            ...normalizeList(
-                                                destination.activity_keywords,
-                                            ),
-                                            ...normalizeList(destination.tags),
-                                        ]
-                                            .slice(0, 3)
-                                            .map((tag) => (
-                                                <span key={tag}>{tag}</span>
-                                            ))}
-                                    </div>
-                                    <Link
-                                        to={`/destinasi/${destination.id}`}
-                                        className="destination-card__link"
-                                    >
-                                        Buka detail
-                                    </Link>
-                                </div>
-                            </article>
-                        ))}
-                    </div>
+                                    </article>
+                                );
+                            })}
+                        </div>
+
+                        <div className="destinations-pagination">
+                            <button
+                                type="button"
+                                disabled={page <= 1}
+                                onClick={() => setPage((current) => current - 1)}
+                            >
+                                Sebelumnya
+                            </button>
+                            <span>
+                                Halaman {pagination.current_page ?? page}
+                                {pagination.last_page ? ` dari ${pagination.last_page}` : ""}
+                            </span>
+                            <button
+                                type="button"
+                                disabled={
+                                    pagination.last_page
+                                        ? page >= pagination.last_page
+                                        : destinations.length === 0
+                                }
+                                onClick={() => setPage((current) => current + 1)}
+                            >
+                                Berikutnya
+                            </button>
+                        </div>
+                    </>
                 )}
             </section>
         </main>
