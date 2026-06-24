@@ -27,26 +27,26 @@
     top: 20px;
     left: 50%;
     z-index: 30;
-    width: min(1120px, calc(100% - 40px));
-    min-height: 58px;
-    padding: 8px 8px 8px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.42);
+    width: min(1040px, calc(100% - 48px));
+    min-height: 52px;
+    padding: 7px 8px 7px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
     border-radius: 999px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 18px;
     color: #faffef;
-    background: rgba(12, 38, 29, 0.4);
-    box-shadow: 0 24px 80px rgba(16, 34, 27, 0.22);
+    background: rgba(12, 38, 29, 0.28);
+    box-shadow: 0 18px 58px rgba(16, 34, 27, 0.18);
     backdrop-filter: blur(18px);
     transform: translateX(-50%);
 }
 
 .concept-nav a {
     color: inherit;
-    font-size: 13px;
-    font-weight: 950;
+    font-size: 12px;
+    font-weight: 900;
     text-decoration: none;
 }
 
@@ -63,9 +63,9 @@
 }
 
 .concept-nav__links a {
-    padding: 10px 12px;
+    padding: 8px 11px;
     border-radius: 999px;
-    color: rgba(250, 255, 239, 0.78);
+    color: rgba(250, 255, 239, 0.72);
 }
 
 .concept-nav__links a:hover {
@@ -108,9 +108,11 @@
 }
 
 .concept-hero__content {
+    position: relative;
+    z-index: 6;
     width: min(1120px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 146px 0 170px;
+    padding: 146px min(430px, 38vw) 170px 0;
 }
 
 .concept-hero__content > p,
@@ -124,28 +126,28 @@
 }
 
 .concept-hero h1 {
-    max-width: 1080px;
+    max-width: 680px;
     margin: 0;
     display: grid;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(76px, 15vw, 182px);
-    line-height: 0.78;
+    font-size: clamp(72px, 10.6vw, 146px);
+    line-height: 0.82;
     letter-spacing: 0;
     text-shadow: 0 22px 80px rgba(0, 0, 0, 0.28);
 }
 
 .concept-hero h1 span:last-child {
-    margin-left: clamp(34px, 18vw, 236px);
+    margin-left: clamp(28px, 8vw, 112px);
     color: #ffe38b;
-    transform: translateX(calc(var(--page-progress) * -76px));
+    transform: translateX(calc(var(--page-progress) * -42px));
 }
 
 .concept-hero__bottom {
-    width: min(720px, 100%);
-    margin-top: 36px;
+    width: min(620px, 100%);
+    margin-top: 32px;
     display: flex;
     align-items: end;
-    gap: 22px;
+    gap: 20px;
 }
 
 .concept-hero__bottom p {
@@ -295,13 +297,13 @@
 }
 
 .concept-floating-card--one {
-    right: max(24px, calc((100vw - 1120px) / 2));
-    bottom: 30vh;
+    right: max(52px, calc((100vw - 1120px) / 2 + 24px));
+    bottom: 34vh;
 }
 
 .concept-floating-card--two {
-    right: max(190px, calc((100vw - 1120px) / 2 + 160px));
-    bottom: 14vh;
+    right: max(230px, calc((100vw - 1120px) / 2 + 214px));
+    bottom: 16vh;
     animation-delay: -3.6s;
 }
 
@@ -1113,12 +1115,12 @@
 @media (max-width: 760px) {
     .concept-nav {
         top: 10px;
-        width: calc(100% - 20px);
-        min-height: 54px;
-        padding: 7px 8px 7px 14px;
-        border-color: rgba(255, 243, 215, 0.26);
-        background: rgba(6, 28, 20, 0.58);
-        box-shadow: 0 18px 54px rgba(0, 0, 0, 0.26);
+        width: calc(100% - 28px);
+        min-height: 48px;
+        padding: 6px 7px 6px 13px;
+        border-color: rgba(255, 243, 215, 0.2);
+        background: rgba(6, 28, 20, 0.46);
+        box-shadow: 0 14px 42px rgba(0, 0, 0, 0.2);
     }
 
     .concept-nav__brand {
@@ -1146,7 +1148,7 @@
     }
 
     .concept-hero {
-        min-height: 108svh;
+        min-height: 104svh;
         overflow: hidden;
     }
 
@@ -1164,8 +1166,9 @@
     }
 
     .concept-hero__content {
-        width: calc(100% - 24px);
-        padding: 104px 0 280px;
+        width: calc(100% - 32px);
+        max-width: 420px;
+        padding: 96px 0 260px;
     }
 
     .concept-hero__content > p,
@@ -1175,22 +1178,23 @@
     }
 
     .concept-hero h1 {
-        max-width: 96vw;
-        font-size: clamp(58px, 21vw, 98px);
-        line-height: 0.78;
+        max-width: 100%;
+        font-size: clamp(48px, 17.4vw, 74px);
+        line-height: 0.88;
+        overflow-wrap: normal;
     }
 
     .concept-hero h1 span:last-child {
-        margin-left: 16px;
-        transform: translateX(calc(var(--page-progress) * -24px));
+        margin-left: clamp(10px, 6vw, 24px);
+        transform: translateX(calc(var(--page-progress) * -10px));
     }
 
     .concept-hero__bottom {
-        width: min(100%, 360px);
-        margin-top: 22px;
+        width: min(100%, 340px);
+        margin-top: 20px;
         display: grid;
         align-items: start;
-        gap: 14px;
+        gap: 13px;
     }
 
     .concept-hero__bottom p {
@@ -1208,13 +1212,12 @@
 
     .concept-floating-card {
         display: grid;
-        width: 104px;
+        width: clamp(96px, 29vw, 116px);
         padding: 6px;
         border-radius: 9px;
         background: rgba(12, 38, 29, 0.68);
         box-shadow: 0 16px 44px rgba(0, 0, 0, 0.24);
         backdrop-filter: blur(16px);
-        animation: none;
     }
 
     .concept-floating-card img {
@@ -1227,21 +1230,21 @@
     }
 
     .concept-floating-card--one {
-        right: 14px;
-        bottom: 112px;
+        right: max(22px, env(safe-area-inset-right));
+        bottom: 124px;
     }
 
     .concept-floating-card--two {
         right: auto;
-        left: 14px;
-        bottom: 36px;
+        left: max(22px, env(safe-area-inset-left));
+        bottom: 38px;
     }
 
     .concept-event-card {
         position: absolute;
-        left: 128px;
-        right: 12px;
-        bottom: 34px;
+        left: 142px;
+        right: 20px;
+        bottom: 38px;
         width: auto;
         min-height: 86px;
         margin: 0;
@@ -1586,24 +1589,27 @@
     }
 
     .concept-hero h1 {
-        font-size: clamp(58px, 22vw, 92px);
+        font-size: clamp(46px, 17vw, 68px);
     }
 
     .concept-floating-card {
-        width: 96px;
+        width: 92px;
     }
 
     .concept-floating-card--one {
-        bottom: 108px;
+        right: 20px;
+        bottom: 112px;
     }
 
     .concept-floating-card--two {
+        left: 20px;
         bottom: 34px;
     }
 
     .concept-event-card {
-        left: 118px;
-        grid-template-columns: 68px minmax(0, 1fr);
+        left: 124px;
+        right: 18px;
+        grid-template-columns: 64px minmax(0, 1fr);
     }
 
     .concept-horizontal__panel {
