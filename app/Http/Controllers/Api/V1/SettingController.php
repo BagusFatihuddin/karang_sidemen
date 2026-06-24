@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
+use App\Support\AppSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
@@ -36,10 +36,15 @@ class SettingController extends Controller
             'homepage_portal_eyebrow',
             'homepage_portal_title',
             'homepage_portal_body',
+            'homepage_zoom_items',
             'homepage_breathing_eyebrow',
+            'homepage_breathing_title',
+            'homepage_breathing_body',
+            'media_homepage_breathing_image_url',
             'homepage_horizontal_eyebrow',
             'homepage_horizontal_title',
             'homepage_horizontal_hint',
+            'homepage_horizontal_items',
             'homepage_experience_eyebrow',
             'homepage_experience_title',
             'homepage_highlight_eyebrow',
@@ -68,9 +73,11 @@ class SettingController extends Controller
         ];
 
         $settings = Cache::remember($cacheKey, 60 * 60, function () use ($whitelist) {
-            return Setting::whereIn('key', $whitelist)
-                ->get()
-                ->mapWithKeys(fn($setting) => [$setting->key => $setting->value])
+            $allSettings = AppSettings::all();
+
+            return collect($whitelist)
+                ->filter(fn (string $key): bool => array_key_exists($key, $allSettings))
+                ->mapWithKeys(fn (string $key): array => [$key => $allSettings[$key]])
                 ->toArray();
         });
 

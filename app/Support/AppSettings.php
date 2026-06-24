@@ -31,6 +31,7 @@ class AppSettings
             now()->addHour(),
             fn (): array => Setting::query()
                 ->pluck('value', 'key')
+                ->map(fn (mixed $value): mixed => self::decodeValue($value))
                 ->all()
         );
     }
@@ -47,7 +48,7 @@ class AppSettings
                 'key' => $key,
             ],
             [
-                'value' => $value,
+                'value' => self::encodeValue($value),
                 'updated_at' => now(),
             ]
         );
@@ -59,5 +60,31 @@ class AppSettings
     {
         Cache::forget(self::CACHE_KEY);
         Cache::forget('settings:public:whitelist');
+    }
+
+    private static function encodeValue(mixed $value): mixed
+    {
+        if (is_array($value) || is_object($value)) {
+            return json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        return $value;
+    }
+
+    private static function decodeValue(mixed $value): mixed
+    {
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        $trimmed = trim($value);
+
+        if ($trimmed === '' || ! in_array($trimmed[0], ['[', '{'], true)) {
+            return $value;
+        }
+
+        $decoded = json_decode($value, true);
+
+        return json_last_error() === JSON_ERROR_NONE ? $decoded : $value;
     }
 }

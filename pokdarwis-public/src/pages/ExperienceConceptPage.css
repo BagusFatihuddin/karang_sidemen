@@ -407,7 +407,7 @@
 }
 
 .concept-portal-section {
-    height: 260vh;
+    height: calc(190vh + (var(--zoom-item-count, 1) * 72vh));
     color: #faffef;
     background:
         linear-gradient(180deg, #edf8e7 0%, #123b2d 18%, #10221b 76%, #e4f4ef 100%);
@@ -429,8 +429,8 @@
     top: 18vh;
     z-index: 3;
     width: min(560px, calc(100% - 40px));
-    opacity: calc(1 - (var(--zoom-progress) * 1.6));
-    transform: translateY(calc(var(--zoom-progress) * -54px));
+    opacity: var(--portal-copy-opacity, calc(1 - (var(--zoom-progress) * 1.6)));
+    transform: translateY(calc(var(--zoom-item-progress, var(--zoom-progress)) * -54px));
 }
 
 .concept-portal__copy p:last-child {
@@ -456,11 +456,21 @@
 .concept-portal__image {
     position: absolute;
     inset: 0;
-    background-image: var(--image-portal);
     background-position: center;
     background-size: cover;
-    transform: scale(calc(1.18 - (var(--zoom-progress) * 0.22)));
     filter: saturate(1.12) contrast(1.06);
+    transition: opacity 420ms ease, transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.concept-portal__image--out {
+    background-image: var(--image-portal-out);
+    transform: scale(calc(1.12 - (var(--zoom-item-progress, var(--zoom-progress)) * 0.08)));
+}
+
+.concept-portal__image--in {
+    background-image: var(--image-portal-in);
+    opacity: var(--portal-in-opacity, 0);
+    transform: scale(calc(1.2 - (var(--portal-in-opacity, 0) * 0.14)));
 }
 
 .concept-portal__image::after {
@@ -484,7 +494,7 @@
     gap: 3px;
     color: #faffef;
     background: rgba(6, 28, 20, 0.36);
-    opacity: calc((var(--zoom-progress) - 0.56) * 2.2);
+    opacity: calc((var(--zoom-item-progress, var(--zoom-progress)) - 0.56) * 2.2);
     backdrop-filter: blur(14px);
 }
 
@@ -500,6 +510,35 @@
     font-family: Georgia, "Times New Roman", serif;
     font-size: clamp(30px, 5vw, 56px);
     line-height: 0.95;
+}
+
+.concept-portal-section--empty {
+    height: auto;
+    min-height: 82vh;
+}
+
+.concept-portal__empty {
+    width: min(680px, calc(100% - 40px));
+    padding: 28px;
+    border: 1px solid rgba(250, 255, 239, 0.2);
+    border-radius: 16px;
+    color: #faffef;
+    background: rgba(6, 28, 20, 0.42);
+    backdrop-filter: blur(18px);
+}
+
+.concept-portal__empty h2 {
+    margin: 0 0 12px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(42px, 8vw, 86px);
+    line-height: 0.92;
+}
+
+.concept-portal__empty p:last-child {
+    max-width: 460px;
+    color: rgba(250, 255, 239, 0.78);
+    font-size: 18px;
+    line-height: 1.6;
 }
 
 .concept-breathing {
@@ -562,7 +601,7 @@
     --horizontal-progress: 0;
     --horizontal-active: 0;
     position: relative;
-    height: 380vh;
+    height: 245vh;
     overflow: hidden;
     color: #faffef;
     background:
@@ -1124,7 +1163,7 @@
     }
 
     .concept-nav__brand {
-        max-width: 44%;
+        max-width: 52%;
         font-size: 12px;
     }
 
@@ -1148,7 +1187,7 @@
     }
 
     .concept-hero {
-        min-height: 104svh;
+        min-height: 108svh;
         overflow: hidden;
     }
 
@@ -1168,7 +1207,7 @@
     .concept-hero__content {
         width: calc(100% - 32px);
         max-width: 420px;
-        padding: 96px 0 260px;
+        padding: 104px 0 330px;
     }
 
     .concept-hero__content > p,
@@ -1179,8 +1218,8 @@
 
     .concept-hero h1 {
         max-width: 100%;
-        font-size: clamp(48px, 17.4vw, 74px);
-        line-height: 0.88;
+        font-size: clamp(46px, 16.7vw, 72px);
+        line-height: 0.9;
         overflow-wrap: normal;
     }
 
@@ -1190,17 +1229,18 @@
     }
 
     .concept-hero__bottom {
-        width: min(100%, 340px);
-        margin-top: 20px;
+        width: min(100%, 330px);
+        margin-top: 24px;
         display: grid;
         align-items: start;
-        gap: 13px;
+        gap: 0;
     }
 
     .concept-hero__bottom p {
         max-width: 96%;
         font-size: 15px;
-        line-height: 1.5;
+        line-height: 1.55;
+        text-shadow: 0 14px 42px rgba(0, 0, 0, 0.34);
     }
 
     .concept-hero__bottom a,
@@ -1212,16 +1252,16 @@
 
     .concept-floating-card {
         display: grid;
-        width: clamp(96px, 29vw, 116px);
-        padding: 6px;
-        border-radius: 9px;
-        background: rgba(12, 38, 29, 0.68);
-        box-shadow: 0 16px 44px rgba(0, 0, 0, 0.24);
+        width: clamp(118px, 36vw, 142px);
+        padding: 7px;
+        border-radius: 10px;
+        background: rgba(12, 38, 29, 0.7);
+        box-shadow: 0 18px 54px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(16px);
     }
 
     .concept-floating-card img {
-        aspect-ratio: 4 / 5.2;
+        aspect-ratio: 4 / 5.05;
     }
 
     .concept-floating-card span {
@@ -1230,28 +1270,32 @@
     }
 
     .concept-floating-card--one {
-        right: max(22px, env(safe-area-inset-right));
-        bottom: 124px;
+        right: calc(50% - 136px);
+        bottom: 98px;
+        z-index: 5;
+        rotate: 4deg;
     }
 
     .concept-floating-card--two {
         right: auto;
-        left: max(22px, env(safe-area-inset-left));
-        bottom: 38px;
+        left: calc(50% - 132px);
+        bottom: 58px;
+        z-index: 4;
+        rotate: -6deg;
     }
 
     .concept-event-card {
         position: absolute;
-        left: 142px;
-        right: 20px;
-        bottom: 38px;
-        width: auto;
-        min-height: 86px;
+        left: 18px;
+        right: auto;
+        bottom: 22px;
+        width: min(252px, calc(100% - 106px));
+        min-height: 78px;
         margin: 0;
-        grid-template-columns: 76px minmax(0, 1fr);
-        gap: 10px;
+        grid-template-columns: 68px minmax(0, 1fr);
+        gap: 9px;
         padding: 8px;
-        background: rgba(12, 38, 29, 0.76);
+        background: rgba(12, 38, 29, 0.78);
         transform: none;
     }
 
@@ -1260,7 +1304,7 @@
     }
 
     .concept-event-card img {
-        min-height: 70px;
+        min-height: 62px;
     }
 
     .concept-event-card strong {
@@ -1359,7 +1403,11 @@
     }
 
     .concept-portal-section {
-        height: 230vh;
+        height: calc(180vh + (var(--zoom-item-count, 1) * 64vh));
+    }
+
+    .concept-portal-section--empty {
+        height: auto;
     }
 
     .concept-portal__copy {
@@ -1410,7 +1458,7 @@
 
     .concept-horizontal {
         height: auto;
-        padding: 92px 0 84px;
+        padding: 82px 0 58px;
         background:
             radial-gradient(circle at 80% 12%, rgba(255, 227, 139, 0.16), transparent 15rem),
             radial-gradient(circle at 18% 24%, rgba(51, 226, 189, 0.2), transparent 17rem),
@@ -1581,7 +1629,7 @@
 
 @media (max-width: 420px) {
     .concept-nav__brand {
-        max-width: 38%;
+        max-width: 46%;
     }
 
     .concept-nav__links a {
@@ -1589,27 +1637,33 @@
     }
 
     .concept-hero h1 {
-        font-size: clamp(46px, 17vw, 68px);
+        font-size: clamp(44px, 16vw, 64px);
+    }
+
+    .concept-hero__content {
+        width: calc(100% - 28px);
+        padding-bottom: 318px;
     }
 
     .concept-floating-card {
-        width: 92px;
+        width: 112px;
     }
 
     .concept-floating-card--one {
-        right: 20px;
-        bottom: 112px;
+        right: calc(50% - 128px);
+        bottom: 96px;
     }
 
     .concept-floating-card--two {
-        left: 20px;
-        bottom: 34px;
+        left: calc(50% - 124px);
+        bottom: 58px;
     }
 
     .concept-event-card {
-        left: 124px;
-        right: 18px;
-        grid-template-columns: 64px minmax(0, 1fr);
+        left: 16px;
+        right: auto;
+        width: min(232px, calc(100% - 102px));
+        grid-template-columns: 60px minmax(0, 1fr);
     }
 
     .concept-horizontal__panel {

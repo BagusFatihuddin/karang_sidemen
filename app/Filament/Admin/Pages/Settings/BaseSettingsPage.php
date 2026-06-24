@@ -129,8 +129,20 @@ abstract class BaseSettingsPage extends Page implements HasForms
         $uploadField = $this->uploadFieldName($settingKey);
         $uploadState = $data[$uploadField] ?? $this->data[$uploadField] ?? null;
 
+        $uploadedUrl = $this->uploadSettingsImageFromState($uploadState, $uploadField, $folder);
+
+        if ($uploadedUrl) {
+            $data[$settingKey] = $uploadedUrl;
+        }
+    }
+
+    protected function uploadSettingsImageFromState(
+        mixed $uploadState,
+        string $uploadField,
+        string $folder = 'website-public-media'
+    ): ?string {
         if (! $uploadState) {
-            return;
+            return null;
         }
 
         try {
@@ -154,12 +166,12 @@ abstract class BaseSettingsPage extends Page implements HasForms
                 );
             }
 
-            $data[$settingKey] = $result['url'];
+            return $result['url'];
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
             Log::warning('Settings media upload failed', [
-                'setting_key' => $settingKey,
+                'upload_field' => $uploadField,
                 'message' => $e->getMessage(),
             ]);
 

@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePublicSettings } from "../hooks/usePublicSettings";
 import Footer from "../components/Footer";
 import FloatingWhatsApp from "../components/FloatingWhatsApp";
+import Navbar from "../components/Navbar";
 import { getDestinations } from "../services/api/destinations";
 import { getPromos } from "../services/api/promos";
 import { getPinnedReviews } from "../services/api/reviewsPinned";
@@ -23,11 +24,122 @@ const getDestinationBySlug = (destinations, slug) =>
 
 const settingValue = (settings, key, fallback) => settings?.[key] || fallback;
 
-const applyTemplate = (template, values) =>
-    Object.entries(values).reduce(
-        (text, [key, value]) => text.replaceAll(`{${key}}`, value || ""),
-        template,
+const normalizeHomepageItems = (value) => {
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    if (typeof value === "string" && value.trim().startsWith("[")) {
+        try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    }
+
+    return [];
+};
+
+const normalizeHomepageZoomItems = (value) => {
+    return normalizeHomepageItems(value)
+        .filter((item) => item && item.is_active !== false)
+        .map((item, index) => ({
+            title: item.title || "",
+            description: item.description || item.subtitle || "",
+            zoomOutImage:
+                item.zoom_out_image_url || item.zoomOutImage || item.zoom_out_image || "",
+            zoomInImage:
+                item.zoom_in_image_url || item.zoomInImage || item.zoom_in_image || "",
+            displayOrder: Number.isFinite(Number(item.display_order))
+                ? Number(item.display_order)
+                : index + 1,
+        }))
+        .filter(
+            (item) =>
+                item.title ||
+                item.description ||
+                item.zoomOutImage ||
+                item.zoomInImage,
+        )
+        .sort(
+            (a, b) =>
+                a.displayOrder - b.displayOrder || a.title.localeCompare(b.title),
+        );
+};
+
+const normalizeHomepageHorizontalItems = (value) => {
+    return normalizeHomepageItems(value)
+        .filter((item) => item && item.is_active !== false)
+        .map((item, index) => ({
+            title: item.title || "",
+            description: item.description || "",
+            imageUrl: item.image_url || item.imageUrl || "",
+            linkUrl: item.link_url || item.linkUrl || "",
+            displayOrder: Number.isFinite(Number(item.display_order))
+                ? Number(item.display_order)
+                : index + 1,
+        }))
+        .filter((item) => item.title || item.description || item.imageUrl)
+        .sort(
+            (a, b) =>
+                a.displayOrder - b.displayOrder || a.title.localeCompare(b.title),
+        );
+};
+
+const isExternalUrl = (url) => /^https?:\/\//i.test(url);
+
+const HorizontalStoryPanel = ({ item, index }) => {
+    const content = (
+        <>
+            {item.imageUrl && <img src={item.imageUrl} alt="" />}
+            <div className="concept-horizontal__shade" />
+            <div className="concept-horizontal__content">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{item.title}</h3>
+                {item.description && <p>{item.description}</p>}
+            </div>
+        </>
     );
+
+    const className = "concept-horizontal__panel";
+    const style = { "--panel-index": index };
+
+    if (!item.linkUrl) {
+        return (
+            <article className={className} style={style}>
+                {content}
+            </article>
+        );
+    }
+
+    if (isExternalUrl(item.linkUrl)) {
+        return (
+            <a
+                href={item.linkUrl}
+                className={className}
+                style={style}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Buka ${item.title}`}
+            >
+                {content}
+            </a>
+        );
+    }
+
+    return (
+        <Link
+            to={item.linkUrl}
+            className={className}
+            style={style}
+            aria-label={`Buka ${item.title}`}
+            onClick={() => window.scrollTo({ top: 0, left: 0 })}
+        >
+            {content}
+        </Link>
+    );
+};
 
 const getHomepageOrder = (destination, fallback = 999) =>
     Number.isFinite(Number(destination?.homepage_sort_order))
@@ -306,45 +418,69 @@ export default function ExperienceConceptPage() {
     const danauBiru =
         getDestinationBySlug(destinationItems, "danau-biru") ||
         featuredDestinations[0];
-    const datuBajang =
-        getDestinationBySlug(destinationItems, "penimproh-datu-bajang") ||
-        featuredDestinations[1];
-    const portalDestination =
-        datuBajang || getDestinationBySlug(destinationItems, "air-terjun-batu-belah");
-    const nextDestination = danauBiru || featuredDestinations[0];
     const heroImage =
         settings.media_homepage_hero_image_url ||
         getImageUrl(danauBiru) ||
         getImageUrl(featuredDestinations[0]);
     const finalImage =
         settings.media_homepage_final_image_url || defaultFinalImage;
-    const portalImage =
-        getImageUrl(portalDestination) || getImageUrl(featuredDestinations[1]);
+    const zoomItems = useMemo(
+        () => normalizeHomepageZoomItems(settings?.homepage_zoom_items),
+        [settings?.homepage_zoom_items],
+    );
     const breathingDestination =
         getDestinationBySlug(destinationItems, "tahura-nuraksa") ||
         getDestinationBySlug(destinationItems, "danau-biru") ||
         featuredDestinations[0];
-    const breathingImage = getImageUrl(breathingDestination);
-    const horizontalDestinations = useMemo(() => {
-        return featuredDestinations.slice(0, 5);
+    const breathingTitle =
+        settings.homepage_breathing_title || breathingDestination?.name || "Karang Sidemen";
+    const breathingBody =
+        settings.homepage_breathing_body ||
+        breathingDestination?.short_description ||
+        breathingDestination?.tourism_vibe ||
+        "Ruang jeda untuk merasakan lanskap Karang Sidemen sebelum lanjut mengeksplorasi cerita berikutnya.";
+    const breathingImage =
+        settings.media_homepage_breathing_image_url || getImageUrl(breathingDestination);
+    const managedHorizontalItems = useMemo(
+        () => normalizeHomepageHorizontalItems(settings?.homepage_horizontal_items),
+        [settings?.homepage_horizontal_items],
+    );
+    const fallbackHorizontalItems = useMemo(() => {
+        return featuredDestinations.slice(0, 5).map((destination) => ({
+            title: destination.homepage_label || destination.name,
+            description:
+                destination.tourism_vibe ||
+                destination.short_description ||
+                destination.name,
+            imageUrl: getImageUrl(destination),
+            linkUrl: `/destinasi/${destination.id}`,
+        }));
     }, [featuredDestinations]);
+    const horizontalItems =
+        managedHorizontalItems.length > 0
+            ? managedHorizontalItems
+            : fallbackHorizontalItems;
 
-    const zoomIn = zoomProgress <= 0.52 ? zoomProgress / 0.52 : 1;
+    const zoomItemCount = Math.max(zoomItems.length, 1);
+    const activeZoomIndex = zoomItems.length
+        ? Math.min(zoomItems.length - 1, Math.floor(zoomProgress * zoomItems.length))
+        : 0;
+    const activeZoomItem = zoomItems[activeZoomIndex];
+    const nextZoomItem = zoomItems[(activeZoomIndex + 1) % zoomItems.length];
+    const zoomItemProgress = zoomItems.length
+        ? clamp(zoomProgress * zoomItems.length - activeZoomIndex, 0, 1)
+        : 0;
+    const zoomIn = zoomItemProgress <= 0.52 ? zoomItemProgress / 0.52 : 1;
     const zoomOut =
-        zoomProgress > 0.52 ? (zoomProgress - 0.52) / 0.48 : 0;
+        zoomItemProgress > 0.52 ? (zoomItemProgress - 0.52) / 0.48 : 0;
     const portalScale = 0.82 + zoomIn * 1.42 - zoomOut * 1.32;
     const portalRadius = 42 - zoomIn * 34 + zoomOut * 20;
-    const portalTitle = applyTemplate(
-        settingValue(
-            settings,
-            "homepage_portal_title",
-            "Masuk ke {portal}. Keluar lagi ke {next}.",
-        ),
-        {
-            portal: portalDestination?.name || "atraksi air",
-            next: nextDestination?.name || "scene berikutnya",
-        },
-    );
+    const portalCopyOpacity = clamp(1 - zoomItemProgress * 1.45, 0, 1);
+    const portalImageOpacity = clamp((zoomItemProgress - 0.14) / 0.62, 0, 1);
+    const portalOutImage =
+        activeZoomItem?.zoomOutImage || activeZoomItem?.zoomInImage || "";
+    const portalInImage =
+        activeZoomItem?.zoomInImage || activeZoomItem?.zoomOutImage || "";
 
     return (
         <>
@@ -356,26 +492,24 @@ export default function ExperienceConceptPage() {
                     "--reel-progress": reelProgress,
                     "--portal-scale": portalScale,
                     "--portal-radius": `${portalRadius}px`,
+                    "--portal-copy-opacity": portalCopyOpacity,
+                    "--portal-in-opacity": portalImageOpacity,
+                    "--zoom-item-progress": zoomItemProgress,
+                    "--zoom-item-count": zoomItemCount,
                     "--image-hero": heroImage ? `url("${heroImage}")` : "none",
                     "--image-final": `url("${finalImage}")`,
-                    "--image-portal": portalImage ? `url("${portalImage}")` : "none",
+                    "--image-portal-out": portalOutImage
+                        ? `url("${portalOutImage}")`
+                        : "none",
+                    "--image-portal-in": portalInImage
+                        ? `url("${portalInImage}")`
+                        : "none",
                     "--image-breathing": breathingImage
                         ? `url("${breathingImage}")`
                         : "none",
                 }}
             >
-            <nav className="concept-nav" aria-label="Navigasi konsep">
-                <Link to="/" className="concept-nav__brand">
-                    {settings?.village_name || "Karang Sidemen"}
-                </Link>
-                <div className="concept-nav__links">
-                    <Link to="/destinasi">Destinasi</Link>
-                    <Link to="/paket">Paket</Link>
-                    <a href="#portal">Zoom</a>
-                    <Link to="/reviews">Review</Link>
-                    <Link to="/tentang">Tentang</Link>
-                </div>
-            </nav>
+            <Navbar />
 
             <section className="concept-hero">
                 <div className="concept-hero__image" aria-hidden="true" />
@@ -401,13 +535,6 @@ export default function ExperienceConceptPage() {
                         {settings?.tagline ||
                                 "Desa wisata alam di kaki Rinjani dengan danau, air terjun, hutan, budaya lokal, dan pengalaman camping."}
                         </p>
-                        <a href="#portal">
-                            {settingValue(
-                                settings,
-                                "homepage_hero_cta_label",
-                                "Lihat momen zoom",
-                            )}
-                        </a>
                     </div>
                 </div>
 
@@ -486,37 +613,59 @@ export default function ExperienceConceptPage() {
             <section
                 id="portal"
                 ref={zoomRef}
-                className="concept-portal-section"
+                className={`concept-portal-section${
+                    zoomItems.length === 0 ? " concept-portal-section--empty" : ""
+                }`}
             >
                 <div className="concept-portal">
-                    <div className="concept-portal__copy">
-                        <p className="concept-kicker">
-                            {settingValue(
-                                settings,
-                                "homepage_portal_eyebrow",
-                                "Scroll zoom moment",
-                            )}
-                        </p>
-                        <h2>{portalTitle}</h2>
-                        <p>
-                            {settingValue(
-                                settings,
-                                "homepage_portal_body",
-                                "Momen ini menjaga interaksi cinematic: visual membesar saat scroll, lalu mengecil lagi untuk membuka destinasi berikutnya.",
-                            )}
-                        </p>
-                    </div>
-                    <div className="concept-portal__frame">
-                        <div className="concept-portal__image" aria-hidden="true" />
-                        <div className="concept-portal__next">
-                            <span>next scene</span>
-                            <strong>{nextDestination?.name || "Karang Sidemen"}</strong>
+                    {zoomItems.length > 0 ? (
+                        <>
+                            <div className="concept-portal__copy">
+                                <p className="concept-kicker">
+                                    {settingValue(
+                                        settings,
+                                        "homepage_portal_eyebrow",
+                                        "Scroll zoom moment",
+                                    )}
+                                </p>
+                                <h2>{activeZoomItem.title}</h2>
+                                <p>
+                                    {activeZoomItem.description ||
+                                        settingValue(
+                                            settings,
+                                            "homepage_portal_body",
+                                            "Momen ini menjaga interaksi cinematic: visual membesar saat scroll, lalu mengecil lagi untuk membuka cerita berikutnya.",
+                                        )}
+                                </p>
+                            </div>
+                            <div className="concept-portal__frame">
+                                <div
+                                    className="concept-portal__image concept-portal__image--out"
+                                    aria-hidden="true"
+                                />
+                                <div
+                                    className="concept-portal__image concept-portal__image--in"
+                                    aria-hidden="true"
+                                />
+                                {nextZoomItem && zoomItems.length > 1 && (
+                                    <div className="concept-portal__next">
+                                        <span>next scene</span>
+                                        <strong>{nextZoomItem.title}</strong>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="concept-portal__empty">
+                            <p className="concept-kicker">Scroll zoom moment</p>
+                            <h2>Zoom story belum dikurasi.</h2>
+                            <p>Tambahkan momen Zoom dari Pengaturan Halaman Utama.</p>
                         </div>
-                    </div>
+                    )}
                 </div>
             </section>
 
-            {breathingDestination && (
+            {(breathingTitle || breathingBody || breathingImage) && (
                 <section className="concept-breathing">
                     <div className="concept-breathing__image" aria-hidden="true" />
                     <div className="concept-breathing__content">
@@ -527,16 +676,13 @@ export default function ExperienceConceptPage() {
                                 "Tarik napas sebentar",
                             )}
                         </p>
-                        <h2>{breathingDestination.name}</h2>
-                        <p>
-                            {breathingDestination.short_description ||
-                                breathingDestination.tourism_vibe}
-                        </p>
+                        <h2>{breathingTitle}</h2>
+                        <p>{breathingBody}</p>
                     </div>
                 </section>
             )}
 
-            {horizontalDestinations.length > 0 && (
+            {horizontalItems.length > 0 && (
                 <section
                     className="concept-horizontal"
                     ref={horizontalSectionRef}
@@ -571,28 +717,12 @@ export default function ExperienceConceptPage() {
                             className="concept-horizontal__track"
                             ref={horizontalTrackRef}
                         >
-                            {horizontalDestinations.map((destination, index) => (
-                                <Link
-                                    to={`/destinasi/${destination.id}`}
-                                    className="concept-horizontal__panel"
-                                    key={destination.id}
-                                    style={{ "--panel-index": index }}
-                                    aria-label={`Buka detail ${destination.name}`}
-                                >
-                                    <img src={getImageUrl(destination)} alt="" />
-                                    <div className="concept-horizontal__shade" />
-                                    <div className="concept-horizontal__content">
-                                        <span>
-                                            {String(index + 1).padStart(2, "0")}
-                                        </span>
-                                        <h3>{destination.homepage_label || destination.name}</h3>
-                                        <p>
-                                            {destination.tourism_vibe ||
-                                                destination.short_description ||
-                                                destination.name}
-                                        </p>
-                                    </div>
-                                </Link>
+                            {horizontalItems.map((item, index) => (
+                                <HorizontalStoryPanel
+                                    item={item}
+                                    index={index}
+                                    key={`${item.title}-${index}`}
+                                />
                             ))}
                         </div>
                         <div className="concept-horizontal__meter" aria-hidden="true">

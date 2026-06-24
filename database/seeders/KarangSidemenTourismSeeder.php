@@ -343,10 +343,49 @@ class KarangSidemenTourismSeeder extends Seeder
             'homepage_portal_eyebrow' => 'Scroll zoom moment',
             'homepage_portal_title' => 'Masuk ke {portal}. Keluar lagi ke {next}.',
             'homepage_portal_body' => 'Momen ini menjaga interaksi cinematic: visual membesar saat scroll, lalu mengecil lagi untuk membuka destinasi berikutnya.',
+            'homepage_zoom_items' => [
+                [
+                    'title' => 'Danau Biru',
+                    'description' => 'Wide landscape dan detail air biru untuk membuka rasa eksplorasi.',
+                    'zoom_out_image_url' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=88',
+                    'zoom_in_image_url' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=88',
+                    'display_order' => 1,
+                    'is_active' => true,
+                ],
+                [
+                    'title' => 'Camping Kaki Rinjani',
+                    'description' => 'Dari suasana lembah menuju detail tenda dan api unggun.',
+                    'zoom_out_image_url' => 'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1800&q=88',
+                    'zoom_in_image_url' => 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1800&q=88',
+                    'display_order' => 2,
+                    'is_active' => true,
+                ],
+            ],
             'homepage_breathing_eyebrow' => 'Tarik napas sebentar',
+            'homepage_breathing_title' => 'Hutan, air, dan udara yang pelan.',
+            'homepage_breathing_body' => 'Setelah momen zoom, beri pengunjung jeda visual sebelum masuk ke eksplorasi horizontal Karang Sidemen.',
+            'media_homepage_breathing_image_url' => 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1800&q=88',
             'homepage_horizontal_eyebrow' => 'Explore Karang Sidemen',
             'homepage_horizontal_title' => 'Geser vertikal, tapi rasanya masuk ke rute tersembunyi.',
             'homepage_horizontal_hint' => 'Scroll down to move sideways',
+            'homepage_horizontal_items' => [
+                [
+                    'title' => 'Danau Biru',
+                    'description' => 'Air tenang, warna biru, dan suasana hutan yang menjadi pembuka cerita desa wisata.',
+                    'image_url' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=88',
+                    'link_url' => '/destinasi',
+                    'display_order' => 1,
+                    'is_active' => true,
+                ],
+                [
+                    'title' => 'Camping Kaki Rinjani',
+                    'description' => 'Ruang menginap alam untuk pengunjung yang ingin tinggal lebih lama di lanskap Karang Sidemen.',
+                    'image_url' => 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1800&q=88',
+                    'link_url' => '/paket',
+                    'display_order' => 2,
+                    'is_active' => true,
+                ],
+            ],
             'homepage_experience_eyebrow' => 'Database-driven experiences',
             'homepage_experience_title' => 'Setiap kartu datang dari data destinasi yang bisa dikelola admin.',
             'homepage_highlight_eyebrow' => 'Highlight terverifikasi',
@@ -379,7 +418,7 @@ class KarangSidemenTourismSeeder extends Seeder
             Setting::query()->updateOrCreate(
                 ['key' => $key],
                 [
-                    'value' => $value,
+                    'value' => is_array($value) ? json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : $value,
                     'updated_at' => now(),
                 ]
             );

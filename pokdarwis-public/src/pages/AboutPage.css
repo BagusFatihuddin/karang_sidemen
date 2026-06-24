@@ -127,10 +127,24 @@
 }
 
 .about-story {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1fr);
-    gap: 36px;
-    align-items: end;
+    grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.88fr);
+    gap: clamp(28px, 5vw, 68px);
+    align-items: center;
+    overflow: hidden;
+}
+
+.about-story::before {
+    content: "";
+    position: absolute;
+    right: -10%;
+    top: -24%;
+    width: 46%;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(51, 226, 189, 0.18), transparent 66%);
+    pointer-events: none;
 }
 
 .about-story h2,
@@ -145,25 +159,38 @@
     text-wrap: balance;
 }
 
+.about-story h2 {
+    max-width: 720px;
+    font-size: clamp(46px, 6.8vw, 96px);
+    line-height: 0.92;
+}
+
 .about-story__body > p {
+    position: relative;
     margin: 0;
+    padding: 20px;
+    border: 1px solid rgba(24, 89, 63, 0.12);
+    border-radius: 10px;
     color: rgba(16, 34, 27, 0.72);
-    font-size: 18px;
+    background: rgba(250, 255, 239, 0.58);
+    font-size: 17px;
     line-height: 1.72;
+    box-shadow: 0 18px 54px rgba(28, 76, 55, 0.1);
 }
 
 .about-story__body {
+    position: relative;
     display: grid;
     gap: 18px;
 }
 
 .about-story__image {
     width: 100%;
-    aspect-ratio: 16 / 10;
-    border-radius: 9px;
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
     display: block;
     object-fit: cover;
-    box-shadow: 0 22px 70px rgba(28, 76, 55, 0.14);
+    box-shadow: 0 26px 82px rgba(28, 76, 55, 0.18);
 }
 
 .about-stats,
@@ -350,6 +377,10 @@
         grid-template-columns: 1fr;
     }
 
+    .about-story h2 {
+        max-width: none;
+    }
+
     .about-stats,
     .about-card-grid {
         grid-template-columns: 1fr;
@@ -386,6 +417,11 @@
     .about-contact h2,
     .about-map h2 {
         font-size: clamp(38px, 12vw, 56px);
+    }
+
+    .about-story__body > p {
+        padding: 16px;
+        font-size: 16px;
     }
 
     .about-map__embed,
