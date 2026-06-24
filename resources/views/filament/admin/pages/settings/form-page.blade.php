@@ -1,9 +1,15 @@
 <x-filament-panels::page>
+    @php
+        $isHomepageBuilder = $this instanceof \App\Filament\Admin\Pages\Settings\HomepageSettingsPage;
+    @endphp
+
     <!-- Breadcrumb & Description -->
     <div class="settings-page-intro mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-gradient-to-br dark:from-white/5 dark:to-white/0">
         <div class="flex items-start justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">⚙️ Pengaturan Website</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    {{ $isHomepageBuilder ? 'Homepage Builder' : 'Pengaturan Website' }}
+                </p>
                 <h1 class="mt-2 text-2xl font-bold text-gray-950 dark:text-white">
                     {{ $this->getTitle() }}
                 </h1>
@@ -22,9 +28,9 @@
 
         <!-- Submit Section -->
         <div class="flex items-center justify-end gap-3 border-t border-gray-200 pt-6 dark:border-white/10">
-            <p class="text-xs text-gray-500 dark:text-gray-400">💾 Semua perubahan akan disimpan otomatis</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $isHomepageBuilder ? 'Simpan perubahan konten homepage' : 'Semua perubahan akan disimpan otomatis' }}</p>
             <x-filament::button type="submit" class="bg-primary-600 hover:bg-primary-700">
-                ✓ Simpan Pengaturan
+                {{ $isHomepageBuilder ? 'Simpan Homepage' : 'Simpan Pengaturan' }}
             </x-filament::button>
         </div>
     </form>

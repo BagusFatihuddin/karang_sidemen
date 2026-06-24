@@ -165,23 +165,65 @@
     line-height: 0.92;
 }
 
-.about-story__body > p {
-    position: relative;
-    margin: 0;
-    padding: 20px;
-    border: 1px solid rgba(24, 89, 63, 0.12);
-    border-radius: 10px;
-    color: rgba(16, 34, 27, 0.72);
-    background: rgba(250, 255, 239, 0.58);
-    font-size: 17px;
-    line-height: 1.72;
-    box-shadow: 0 18px 54px rgba(28, 76, 55, 0.1);
-}
-
 .about-story__body {
     position: relative;
     display: grid;
-    gap: 18px;
+    gap: 0;
+    align-content: center;
+}
+
+.about-story__editorial-card {
+    position: relative;
+    z-index: 2;
+    width: min(92%, 520px);
+    margin: -42px 0 0 auto;
+    padding: clamp(24px, 4vw, 38px);
+    border: 1px solid rgba(24, 89, 63, 0.14);
+    border-radius: 10px;
+    color: var(--ink);
+    background:
+        linear-gradient(135deg, rgba(250, 255, 239, 0.95), rgba(255, 255, 255, 0.82)),
+        rgba(250, 255, 239, 0.88);
+    box-shadow: 0 26px 90px rgba(28, 76, 55, 0.18);
+    backdrop-filter: blur(16px);
+}
+
+.about-story__editorial-card::before {
+    content: "";
+    position: absolute;
+    left: 26px;
+    top: -16px;
+    width: 72px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--fresh);
+}
+
+.about-story__editorial-card p {
+    margin: 0 0 14px;
+    color: var(--leaf);
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.about-story__editorial-card h3 {
+    max-width: 430px;
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.02;
+    letter-spacing: 0;
+}
+
+.about-story__editorial-card span {
+    display: block;
+    max-width: 440px;
+    margin-top: 18px;
+    color: rgba(16, 34, 27, 0.72);
+    font-size: 17px;
+    line-height: 1.68;
 }
 
 .about-story__image {
@@ -191,6 +233,10 @@
     display: block;
     object-fit: cover;
     box-shadow: 0 26px 82px rgba(28, 76, 55, 0.18);
+}
+
+.about-story--with-image .about-story__image {
+    min-height: 360px;
 }
 
 .about-stats,
@@ -381,6 +427,11 @@
         max-width: none;
     }
 
+    .about-story__editorial-card {
+        width: calc(100% - 28px);
+        margin: -34px auto 0;
+    }
+
     .about-stats,
     .about-card-grid {
         grid-template-columns: 1fr;
@@ -419,8 +470,17 @@
         font-size: clamp(38px, 12vw, 56px);
     }
 
-    .about-story__body > p {
-        padding: 16px;
+    .about-story__editorial-card {
+        width: 100%;
+        margin: 14px 0 0;
+        padding: 20px;
+    }
+
+    .about-story__editorial-card h3 {
+        font-size: clamp(27px, 9vw, 38px);
+    }
+
+    .about-story__editorial-card span {
         font-size: 16px;
     }
 

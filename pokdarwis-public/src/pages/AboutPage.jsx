@@ -103,13 +103,16 @@ export default function AboutPage() {
                                 alt=""
                             />
                         )}
-                        <p>
-                            Karang Sidemen dipresentasikan sebagai desa wisata, bukan
-                            satu destinasi tunggal. Website ini dirancang untuk membantu
-                            pengunjung memahami pilihan pengalaman, melihat review,
-                            menghubungi pengelola, dan menemukan cerita yang tepat
-                            sebelum datang.
-                        </p>
+                        <article className="about-story__editorial-card">
+                            <p>Sudut pandang lokal</p>
+                            <h3>Website ini menjadi jembatan antara cerita warga dan rencana perjalanan pengunjung.</h3>
+                            <span>
+                                Karang Sidemen dipresentasikan sebagai desa wisata, bukan
+                                satu destinasi tunggal. Pengunjung bisa memahami pilihan
+                                pengalaman, melihat review, menghubungi pengelola, dan
+                                menemukan cerita yang tepat sebelum datang.
+                            </span>
+                        </article>
                     </div>
                 </section>
 
