@@ -35,7 +35,8 @@ export default function Footer() {
     const settings = data?.data?.data ?? data?.data ?? {};
     const socialLinks = socialFields.filter((item) => settings[item.key]);
     const villageName = settings.village_name || "Desa Wisata Karang Sidemen";
-    const ctaImage = settings.media_footer_cta_image_url || defaultFooterCtaImage;
+    const ctaImage =
+        settings.media_footer_cta_image_url || defaultFooterCtaImage;
 
     return (
         <footer
@@ -46,7 +47,10 @@ export default function Footer() {
                 <section className="site-footer__cta">
                     <div>
                         <p>Rencanakan kunjungan</p>
-                        <h2>Datang ke Karang Sidemen dengan cerita yang sudah kebayang.</h2>
+                        <h2>
+                            Datang ke Karang Sidemen dengan cerita yang sudah
+                            terbayang.
+                        </h2>
                     </div>
                     {settings.global_whatsapp && (
                         <a
@@ -87,7 +91,8 @@ export default function Footer() {
                             ))}
                         </div>
 
-                        {(socialLinks.length > 0 || settings.global_whatsapp) && (
+                        {(socialLinks.length > 0 ||
+                            settings.global_whatsapp) && (
                             <div>
                                 <strong>Kontak</strong>
                                 {socialLinks.map((item) => (
