@@ -61,8 +61,6 @@ class ReportsPage extends Page implements HasForms
         $this->form->fill(
             $this->defaultFormData()
         );
-
-        $this->applyFilters();
     }
 
     protected static function allowed(): bool
