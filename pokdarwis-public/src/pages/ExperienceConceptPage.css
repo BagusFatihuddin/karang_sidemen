@@ -12,10 +12,21 @@
     color: var(--ink);
     background:
         linear-gradient(180deg, rgba(10, 32, 24, 0.16), transparent 34rem),
-        linear-gradient(135deg, #edf8e7 0%, #dff7ff 34%, #fff3d7 62%, #e8f5df 100%);
+        linear-gradient(
+            135deg,
+            #edf8e7 0%,
+            #dff7ff 34%,
+            #fff3d7 62%,
+            #e8f5df 100%
+        );
     font-family:
-        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
 .concept-page * {
@@ -104,8 +115,18 @@
 .concept-hero__shade {
     z-index: -1;
     background:
-        linear-gradient(90deg, rgba(7, 24, 18, 0.9), rgba(7, 24, 18, 0.2) 58%, rgba(7, 24, 18, 0.76)),
-        linear-gradient(180deg, rgba(7, 24, 18, 0.08), rgba(7, 24, 18, 0.7) 82%, #edf8e7 100%);
+        linear-gradient(
+            90deg,
+            rgba(7, 24, 18, 0.9),
+            rgba(7, 24, 18, 0.2) 58%,
+            rgba(7, 24, 18, 0.76)
+        ),
+        linear-gradient(
+            180deg,
+            rgba(7, 24, 18, 0.08),
+            rgba(7, 24, 18, 0.7) 82%,
+            #edf8e7 100%
+        );
 }
 
 .concept-hero__content {
@@ -410,8 +431,13 @@
 .concept-portal-section {
     height: calc(190vh + (var(--zoom-item-count, 1) * 72vh));
     color: #faffef;
-    background:
-        linear-gradient(180deg, #edf8e7 0%, #123b2d 18%, #10221b 76%, #e4f4ef 100%);
+    background: linear-gradient(
+        180deg,
+        #edf8e7 0%,
+        #123b2d 18%,
+        #10221b 76%,
+        #e4f4ef 100%
+    );
 }
 
 .concept-portal {
@@ -431,7 +457,9 @@
     z-index: 3;
     width: min(560px, calc(100% - 40px));
     opacity: var(--portal-copy-opacity, calc(1 - (var(--zoom-progress) * 1.6)));
-    transform: translateY(calc(var(--zoom-item-progress, var(--zoom-progress)) * -54px));
+    transform: translateY(
+        calc(var(--zoom-item-progress, var(--zoom-progress)) * -54px)
+    );
 }
 
 .concept-portal__copy p:last-child {
@@ -460,12 +488,16 @@
     background-position: center;
     background-size: cover;
     filter: saturate(1.12) contrast(1.06);
-    transition: opacity 420ms ease, transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+        opacity 420ms ease,
+        transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .concept-portal__image--out {
     background-image: var(--image-portal-out);
-    transform: scale(calc(1.12 - (var(--zoom-item-progress, var(--zoom-progress)) * 0.08)));
+    transform: scale(
+        calc(1.12 - (var(--zoom-item-progress, var(--zoom-progress)) * 0.08))
+    );
 }
 
 .concept-portal__image--in {
@@ -495,7 +527,9 @@
     gap: 3px;
     color: #faffef;
     background: rgba(6, 28, 20, 0.36);
-    opacity: calc((var(--zoom-item-progress, var(--zoom-progress)) - 0.56) * 2.2);
+    opacity: calc(
+        (var(--zoom-item-progress, var(--zoom-progress)) - 0.56) * 2.2
+    );
     backdrop-filter: blur(14px);
 }
 
@@ -571,7 +605,12 @@
     inset: 0;
     z-index: -1;
     background:
-        linear-gradient(90deg, rgba(6, 28, 20, 0.82), rgba(6, 28, 20, 0.18) 58%, rgba(6, 28, 20, 0.54)),
+        linear-gradient(
+            90deg,
+            rgba(6, 28, 20, 0.82),
+            rgba(6, 28, 20, 0.18) 58%,
+            rgba(6, 28, 20, 0.54)
+        ),
         linear-gradient(180deg, rgba(6, 28, 20, 0.18), rgba(6, 28, 20, 0.72));
 }
 
@@ -606,7 +645,11 @@
     overflow: hidden;
     color: #faffef;
     background:
-        radial-gradient(circle at 16% 18%, rgba(51, 226, 189, 0.18), transparent 30rem),
+        radial-gradient(
+            circle at 16% 18%,
+            rgba(51, 226, 189, 0.18),
+            transparent 30rem
+        ),
         linear-gradient(180deg, #10221b 0%, #123b2d 48%, #e4f4ef 100%);
 }
 
@@ -721,7 +764,12 @@
     inset: 0;
     z-index: -1;
     background:
-        linear-gradient(90deg, rgba(6, 28, 20, 0.84), rgba(6, 28, 20, 0.12) 58%, rgba(6, 28, 20, 0.48)),
+        linear-gradient(
+            90deg,
+            rgba(6, 28, 20, 0.84),
+            rgba(6, 28, 20, 0.12) 58%,
+            rgba(6, 28, 20, 0.48)
+        ),
         linear-gradient(180deg, transparent 38%, rgba(6, 28, 20, 0.78));
 }
 
@@ -1200,9 +1248,23 @@
 
     .concept-hero__shade {
         background:
-            radial-gradient(circle at 70% 24%, rgba(51, 226, 189, 0.22), transparent 15rem),
-            linear-gradient(180deg, rgba(7, 24, 18, 0.12), rgba(7, 24, 18, 0.58) 46%, rgba(7, 24, 18, 0.9) 100%),
-            linear-gradient(90deg, rgba(7, 24, 18, 0.88), rgba(7, 24, 18, 0.2) 62%, rgba(7, 24, 18, 0.7));
+            radial-gradient(
+                circle at 70% 24%,
+                rgba(51, 226, 189, 0.22),
+                transparent 15rem
+            ),
+            linear-gradient(
+                180deg,
+                rgba(7, 24, 18, 0.12),
+                rgba(7, 24, 18, 0.58) 46%,
+                rgba(7, 24, 18, 0.9) 100%
+            ),
+            linear-gradient(
+                90deg,
+                rgba(7, 24, 18, 0.88),
+                rgba(7, 24, 18, 0.2) 62%,
+                rgba(7, 24, 18, 0.7)
+            );
     }
 
     .concept-hero__content {
@@ -1378,7 +1440,11 @@
     .concept-reel {
         padding: 86px 0 78px;
         background:
-            radial-gradient(circle at 16% 0%, rgba(51, 226, 189, 0.22), transparent 15rem),
+            radial-gradient(
+                circle at 16% 0%,
+                rgba(51, 226, 189, 0.22),
+                transparent 15rem
+            ),
             #edf8e7;
     }
 
@@ -1391,7 +1457,13 @@
         overscroll-behavior-x: contain;
         scroll-snap-type: x mandatory;
         animation: none;
-        mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 42px), transparent);
+        mask-image: linear-gradient(
+            90deg,
+            transparent,
+            #000 14px,
+            #000 calc(100% - 42px),
+            transparent
+        );
     }
 
     .concept-reel figure {
@@ -1461,8 +1533,16 @@
         height: auto;
         padding: 82px 0 58px;
         background:
-            radial-gradient(circle at 80% 12%, rgba(255, 227, 139, 0.16), transparent 15rem),
-            radial-gradient(circle at 18% 24%, rgba(51, 226, 189, 0.2), transparent 17rem),
+            radial-gradient(
+                circle at 80% 12%,
+                rgba(255, 227, 139, 0.16),
+                transparent 15rem
+            ),
+            radial-gradient(
+                circle at 18% 24%,
+                rgba(51, 226, 189, 0.2),
+                transparent 17rem
+            ),
             linear-gradient(180deg, #10221b 0%, #123b2d 78%, #e4f4ef 100%);
     }
 
@@ -1495,7 +1575,13 @@
         overscroll-behavior-x: contain;
         scroll-snap-type: x mandatory;
         transform: none !important;
-        mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 42px), transparent);
+        mask-image: linear-gradient(
+            90deg,
+            transparent,
+            #000 18px,
+            #000 calc(100% - 42px),
+            transparent
+        );
     }
 
     .concept-horizontal__panel {
@@ -1545,7 +1631,13 @@
         padding-bottom: 12px;
         overscroll-behavior-x: contain;
         scroll-snap-type: x mandatory;
-        mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 42px), transparent);
+        mask-image: linear-gradient(
+            90deg,
+            transparent,
+            #000 14px,
+            #000 calc(100% - 42px),
+            transparent
+        );
     }
 
     .concept-experience-card {
@@ -1592,7 +1684,13 @@
         overscroll-behavior-x: contain;
         scroll-snap-type: x mandatory;
         scrollbar-width: none;
-        mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 42px), transparent);
+        mask-image: linear-gradient(
+            90deg,
+            transparent,
+            #000 14px,
+            #000 calc(100% - 42px),
+            transparent
+        );
     }
 
     .concept-review-grid::-webkit-scrollbar {
@@ -1635,6 +1733,10 @@
 
     .concept-nav__links a {
         padding-inline: 8px;
+        /* Ensure tappable targets meet recommended minimum on small screens */
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
     }
 
     .concept-hero h1 {
@@ -1673,5 +1775,29 @@
 
     .concept-horizontal__content h3 {
         font-size: clamp(40px, 14vw, 62px);
+    }
+}
+
+@media (max-width: 430px) {
+    /* Mobile-only: increase nav link tappable area without changing visual design */
+    .concept-nav__links a {
+        min-height: 44px;
+        /* preserve existing horizontal padding */
+        padding-top: 9px;
+        padding-bottom: 9px;
+        display: inline-flex;
+        align-items: center;
+    }
+    .concept-nav {
+        /* ensure the nav container can accommodate taller items without layout shifts */
+        min-height: 52px;
+    }
+    /* Ensure brand link has sufficient tappable area without resizing mark */
+    .concept-nav__brand {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        padding-top: 4px;
+        padding-bottom: 4px;
     }
 }
