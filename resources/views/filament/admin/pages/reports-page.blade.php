@@ -3,17 +3,37 @@
         {{ $this->form }}
 
         <div class="mt-6 flex gap-3">
-            <x-filament::button type="submit">
+            <x-filament::button
+                type="submit"
+                wire:loading.attr="disabled"
+                wire:target="applyFilters"
+            >
                 Terapkan Filter
             </x-filament::button>
 
-            <x-filament::button type="button" wire:click="exportToExcel" outlined>
+            <x-filament::button
+                type="button"
+                wire:click="exportToExcel"
+                wire:loading.attr="disabled"
+                wire:target="applyFilters"
+                outlined
+            >
                 Export Excel
             </x-filament::button>
 
-            <x-filament::button type="button" wire:click="exportToPdf" outlined>
+            <x-filament::button
+                type="button"
+                wire:click="exportToPdf"
+                wire:loading.attr="disabled"
+                wire:target="applyFilters"
+                outlined
+            >
                 Export PDF
             </x-filament::button>
+
+            <div wire:loading wire:target="applyFilters" class="text-sm text-gray-500">
+                Memproses laporan...
+            </div>
         </div>
     </form>
 
