@@ -81,6 +81,7 @@
     align-items: end;
     color: #faffef;
     background: #103726;
+    overflow: hidden;
 }
 
 .concept-hero__image,
