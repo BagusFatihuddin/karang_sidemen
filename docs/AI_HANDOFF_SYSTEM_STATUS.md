@@ -6,21 +6,28 @@ Dokumen ini dibuat sebagai transfer knowledge untuk AI/engineer berikutnya yang 
 
 Sistem ini adalah website desa wisata dan admin operasional untuk **Desa Wisata Karang Sidemen**, dikelola oleh **POKDARWIS Karang Sidemen**.
 
-Arsitektur saat ini:
+### Current Architecture
 
-- Backend: Laravel 13, PHP 8.4, MySQL.
-- Admin: Filament v5 di route `/admin`.
-- Frontend publik: React/Vite di folder `pokdarwis-public`.
-- API publik: Laravel route `routes/api_v1.php`.
-- Media upload: Cloudinary.
-- Konten utama: database-driven.
+Aplikasi telah bermigrasi ke struktur monorepo Laravel yang terintegrasi:
 
-Identitas produk yang harus dijaga:
+- **Backend:** Laravel 13, PHP 8.4, MySQL.
+- **Admin:** Filament v5 di route `/admin`.
+- **Frontend:** React/Vite SPA terintegrasi.
+    - Source code: `resources/js/react/`
+    - Entry point: `resources/views/app.blade.php`
+- **API:** Laravel routes di `/api/v1/*`.
+- **Build System:** Menggunakan satu `package.json` dan `vite.config.js` di root project.
 
-- Website publik harus terasa cinematic, hidup, immersive, dan visual-first.
-- Homepage bukan website Datu Bajang saja. Identitas utama adalah Desa Wisata Karang Sidemen.
-- Datu Bajang hanya salah satu destinasi/pengalaman di dalam desa.
-- Admin harus mudah dipakai pengelola wisata, bukan terasa seperti CRUD mentah.
+## Migration Status
+
+Status: **COMPLETED**
+
+Ringkasan milestone migrasi:
+
+1. **Frontend Integration:** Memindahkan source React dari folder terpisah ke `resources/js/react/`.
+2. **Build Consolidation:** Mengintegrasikan konfigurasi Vite dan dependensi NPM ke dalam pipeline Laravel.
+3. **Routing:** Menghubungkan React Router dengan Blade template.
+4. **Cleanup:** Menghapus folder `pokdarwis-public/` yang lama.
 
 ## Status Publik Frontend
 
@@ -379,101 +386,3 @@ Penting:
 ## Perintah Verifikasi yang Pernah Dipakai
 
 Backend:
-
-```bash
-php -l app/Support/AppSettings.php
-php artisan migrate
-php artisan migrate:status --pending
-php artisan route:list --path=admin/settings
-php artisan db:table reviews
-php artisan db:table destinations
-php artisan db:table visitors
-php artisan about
-php artisan optimize:clear
-```
-
-Frontend:
-
-```bash
-cd pokdarwis-public
-npm run build
-npm run lint
-```
-
-Catatan: build/lint frontend terakhir belum clean karena issue di atas.
-
-## File Penting untuk AI Berikutnya
-
-Roadmap:
-
-- `docs/FRONTEND_FILAMENT_ROADMAP.md`
-- `docs/AI_HANDOFF_SYSTEM_STATUS.md`
-
-Settings/admin:
-
-- `app/Support/AppSettings.php`
-- `app/Support/CacheVersion.php`
-- `app/Filament/Admin/Pages/SettingsPage.php`
-- `app/Filament/Admin/Pages/Settings/*`
-- `resources/views/filament/admin/pages/settings-page.blade.php`
-
-Homepage/public:
-
-- `pokdarwis-public/src/pages/ExperienceConceptPage.jsx`
-- `pokdarwis-public/src/pages/ExperienceConceptPage.css`
-- `pokdarwis-public/src/router/index.jsx`
-- `pokdarwis-public/src/layouts/PublicLayout.jsx`
-- `pokdarwis-public/src/components/Navbar.jsx`
-- `pokdarwis-public/src/components/Footer.jsx`
-- `pokdarwis-public/src/components/FloatingWhatsApp.jsx`
-
-Destinasi/review/API:
-
-- `app/Http/Controllers/Api/V1/DestinationController.php`
-- `app/Http/Controllers/Api/V1/ReviewController.php`
-- `app/Http/Controllers/Api/V1/SettingController.php`
-- `app/Http/Resources/DestinationResource.php`
-- `app/Models/Destination.php`
-- `app/Models/Review.php`
-
-Filament resources:
-
-- `app/Filament/Admin/Resources/Destinations/*`
-- `app/Filament/Admin/Resources/Reviews/*`
-- `app/Filament/Admin/Resources/TripPackages/*`
-- `app/Filament/Admin/Resources/Guides/*`
-- `app/Filament/Admin/Resources/Promos/*`
-
-Performance migration:
-
-- `database/migrations/2026_06_16_120000_add_admin_performance_indexes.php`
-
-Seeder:
-
-- `database/seeders/KarangSidemenTourismSeeder.php`
-
-## Prinsip Lanjutan
-
-Untuk AI/engineer berikutnya:
-
-- Jangan redesign homepage cinematic tanpa instruksi eksplisit.
-- Jangan downgrade motion/immersive feeling.
-- Jangan hardcode konten yang seharusnya bisa dikelola admin.
-- Jika data wisata tidak valid/terverifikasi, jangan mengarang.
-- Jangan pakai `Cache::flush()` untuk perubahan konten biasa.
-- Hindari perubahan besar sekaligus; kerjakan step-by-step dan verifikasi.
-- Jangan menghapus route `/experience-concept`.
-- Event publik masih model `Promo`, jadi hati-hati saat rename agar tidak merusak kompatibilitas.
-- Identitas footer pengembang sengaja dikunci di kode agar admin tidak bisa menghapus.
-
-## Prioritas Pekerjaan Berikutnya
-
-Urutan yang disarankan:
-
-1. Buat `.env.production.example` atau checklist production env.
-2. Bereskan frontend build/lint agar siap deploy.
-3. Optimasi Reports page agar tidak query berat saat mount.
-4. Audit mobile langsung di viewport 360px, 390px, 430px, 768px.
-5. Lanjut polish UI Filament admin tanpa mengganggu optimasi yang sudah ada.
-6. Lengkapi data/foto asli Karang Sidemen.
-7. Pertimbangkan Homepage Builder sederhana jika admin butuh kontrol section yang lebih bebas.
