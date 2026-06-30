@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
-import { bunny } from "laravel-vite-plugin/fonts";
+import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { bunny } from "laravel-vite-plugin/fonts";
 
 export default defineConfig({
     plugins: [
@@ -10,6 +11,7 @@ export default defineConfig({
                 "resources/css/app.css",
                 "resources/css/filament/admin/theme.css",
                 "resources/js/app.js",
+                "resources/js/react/main.jsx",
             ],
             refresh: true,
             fonts: [
@@ -18,6 +20,9 @@ export default defineConfig({
                 }),
             ],
         }),
+
+        react(),
+
         tailwindcss(),
     ],
 
