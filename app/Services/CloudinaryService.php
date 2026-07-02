@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\AppSettings;
 use Cloudinary\Api\Upload\UploadApi;
 use Cloudinary\Configuration\Configuration;
 use Illuminate\Http\UploadedFile;
@@ -91,11 +92,13 @@ class CloudinaryService
 
     private function configure(): void
     {
+        $credentials = $this->getCredentials();
+
         Configuration::instance([
             'cloud' => [
-                'cloud_name' => config('services.cloudinary.cloud_name'),
-                'api_key' => config('services.cloudinary.api_key'),
-                'api_secret' => config('services.cloudinary.api_secret'),
+                'cloud_name' => $credentials['cloud_name'],
+                'api_key' => $credentials['api_key'],
+                'api_secret' => $credentials['api_secret'],
             ],
 
             'url' => [
@@ -106,14 +109,30 @@ class CloudinaryService
 
     private function isConfigured(): bool
     {
-        return filled(
-            config('services.cloudinary.cloud_name')
-        )
-            && filled(
-                config('services.cloudinary.api_key')
-            )
-            && filled(
-                config('services.cloudinary.api_secret')
-            );
+        $credentials = $this->getCredentials();
+
+        return filled($credentials['cloud_name'])
+            && filled($credentials['api_key'])
+            && filled($credentials['api_secret']);
+    }
+
+    private function getCredentials(): array
+    {
+        $cloudName = AppSettings::get('cloudinary_cloud_name');
+        $apiKey = AppSettings::get('cloudinary_api_key');
+        $apiSecret = AppSettings::get('cloudinary_api_secret');
+
+        return [
+            'cloud_name' => filled($cloudName)
+                ? $cloudName
+                : config('services.cloudinary.cloud_name'),
+            'api_key' => filled($apiKey)
+                ? $apiKey
+                : config('services.cloudinary.api_key'),
+            'api_secret' => filled($apiSecret)
+                ? $apiSecret
+                : config('services.cloudinary.api_secret'),
+        ];
     }
 }
+
