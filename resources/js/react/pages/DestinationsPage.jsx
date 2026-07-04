@@ -71,7 +71,8 @@ export default function DestinationsPage() {
         destinations.find((destination) => destination.is_featured_homepage) ||
         destinations[0];
     const heroImage =
-        settings.media_destinations_hero_image_url || getImageUrl(heroDestination);
+        settings.media_destinations_hero_image_url ||
+        getImageUrl(heroDestination);
     const activityTags = useMemo(
         () =>
             Array.from(
@@ -90,7 +91,9 @@ export default function DestinationsPage() {
         <main
             className="destinations-page"
             style={{
-                "--destination-hero-image": heroImage ? `url("${heroImage}")` : "none",
+                "--destination-hero-image": heroImage
+                    ? `url("${heroImage}")`
+                    : "none",
             }}
         >
             <section className="destinations-hero">
@@ -100,11 +103,13 @@ export default function DestinationsPage() {
                     <h1>Destinasi alam yang hidup dari cerita desa.</h1>
                     <div className="destinations-hero__bottom">
                         <span>
-                            {(pagination.total ?? destinations.length) || "..."} destinasi aktif
+                            {(pagination.total ?? destinations.length) || "..."}{" "}
+                            destinasi aktif
                         </span>
                         <p>
-                            Danau, air terjun, hutan, camping, dan ruang tenang
-                            yang bisa dikelola langsung dari admin.
+                            Jelajahi danau, air terjun, hutan, camping, dan
+                            ruang tenang yang menghadirkan pengalaman alam
+                            terbaik di Karang Sidemen.
                         </p>
                     </div>
                 </div>
@@ -113,13 +118,14 @@ export default function DestinationsPage() {
             <section className="destinations-shell">
                 <div className="destinations-filter">
                     <div>
-                        <p className="destinations-kicker">Pilih vibe</p>
+                        <p className="destinations-kicker">Pilih suasana</p>
                         <h2>
                             {activeType
-                                ? `Mode ${activeType}`
+                                ? `Pengalaman di ${activeType}`
                                 : "Semua pengalaman wisata"}
                         </h2>
                     </div>
+
                     <div className="destinations-filter__chips">
                         {typeOptions.map((type) => (
                             <Link
@@ -142,7 +148,10 @@ export default function DestinationsPage() {
                 </div>
 
                 {activityTags.length > 0 && (
-                    <div className="destinations-tags" aria-label="Aktivitas wisata">
+                    <div
+                        className="destinations-tags"
+                        aria-label="Aktivitas wisata"
+                    >
                         {activityTags.map((tag) => (
                             <span key={tag}>{tag}</span>
                         ))}
@@ -165,30 +174,52 @@ export default function DestinationsPage() {
                         <div className="destinations-grid">
                             {destinations.map((destination, index) => {
                                 const itemNumber =
-                                    (pagination.from ?? (page - 1) * 15 + 1) + index;
+                                    (pagination.from ?? (page - 1) * 15 + 1) +
+                                    index;
 
                                 return (
-                                    <article className="destination-card" key={destination.id}>
+                                    <article
+                                        className="destination-card"
+                                        key={destination.id}
+                                    >
                                         <Link
-                                            to={`/destinasi/${destination.id}`}
+                                            to={`/destinasi/${destination.slug}`}
                                             className="destination-card__media"
                                             aria-label={`Buka detail ${destination.name}`}
                                         >
                                             {getImageUrl(destination) ? (
-                                                <img src={getImageUrl(destination)} alt="" />
+                                                <img
+                                                    src={getImageUrl(
+                                                        destination,
+                                                    )}
+                                                    alt=""
+                                                />
                                             ) : (
                                                 <div className="destination-card__fallback">
                                                     Karang Sidemen
                                                 </div>
                                             )}
-                                            <span>{String(itemNumber).padStart(2, "0")}</span>
+                                            <span>
+                                                {String(itemNumber).padStart(
+                                                    2,
+                                                    "0",
+                                                )}
+                                            </span>
                                         </Link>
                                         <div className="destination-card__body">
                                             <div className="destination-card__meta">
                                                 {destination.destination_type && (
-                                                    <span>{destination.destination_type}</span>
+                                                    <span>
+                                                        {
+                                                            destination.destination_type
+                                                        }
+                                                    </span>
                                                 )}
-                                                <strong>{formatEntryFee(destination.entry_fee)}</strong>
+                                                <strong>
+                                                    {formatEntryFee(
+                                                        destination.entry_fee,
+                                                    )}
+                                                </strong>
                                             </div>
                                             <h3>{destination.name}</h3>
                                             <p>
@@ -201,15 +232,19 @@ export default function DestinationsPage() {
                                                     ...normalizeList(
                                                         destination.activity_keywords,
                                                     ),
-                                                    ...normalizeList(destination.tags),
+                                                    ...normalizeList(
+                                                        destination.tags,
+                                                    ),
                                                 ]
                                                     .slice(0, 3)
                                                     .map((tag) => (
-                                                        <span key={tag}>{tag}</span>
+                                                        <span key={tag}>
+                                                            {tag}
+                                                        </span>
                                                     ))}
                                             </div>
                                             <Link
-                                                to={`/destinasi/${destination.id}`}
+                                                to={`/destinasi/${destination.slug}`}
                                                 className="destination-card__link"
                                             >
                                                 Buka detail
@@ -224,13 +259,17 @@ export default function DestinationsPage() {
                             <button
                                 type="button"
                                 disabled={page <= 1}
-                                onClick={() => setPage((current) => current - 1)}
+                                onClick={() =>
+                                    setPage((current) => current - 1)
+                                }
                             >
                                 Sebelumnya
                             </button>
                             <span>
                                 Halaman {pagination.current_page ?? page}
-                                {pagination.last_page ? ` dari ${pagination.last_page}` : ""}
+                                {pagination.last_page
+                                    ? ` dari ${pagination.last_page}`
+                                    : ""}
                             </span>
                             <button
                                 type="button"
@@ -239,7 +278,9 @@ export default function DestinationsPage() {
                                         ? page >= pagination.last_page
                                         : destinations.length === 0
                                 }
-                                onClick={() => setPage((current) => current + 1)}
+                                onClick={() =>
+                                    setPage((current) => current + 1)
+                                }
                             >
                                 Berikutnya
                             </button>

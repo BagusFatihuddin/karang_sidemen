@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout";
+import ReviewLayout from "../layouts/ReviewLayout";
 
 const DestinationsPage = React.lazy(() => import("../pages/DestinationsPage"));
 const DestinationDetailPage = React.lazy(
@@ -51,6 +52,20 @@ const router = createBrowserRouter([
         ),
     },
     {
+        path: "/review/:token",
+        element: <ReviewLayout />,
+        children: [
+            {
+                index: true,
+                element: (
+                    <Suspense fallback={<SuspenseFallback />}>
+                        <ReviewTokenPage />
+                    </Suspense>
+                ),
+            },
+        ],
+    },
+    {
         path: "/",
         element: <PublicLayout />,
         children: [
@@ -63,7 +78,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: "destinasi/:id",
+                path: "destinasi/:destination",
                 element: (
                     <Suspense fallback={<SuspenseFallback />}>
                         <DestinationDetailPage />
@@ -99,14 +114,6 @@ const router = createBrowserRouter([
                 element: (
                     <Suspense fallback={<SuspenseFallback />}>
                         <EventDetailPage />
-                    </Suspense>
-                ),
-            },
-            {
-                path: "review/:token",
-                element: (
-                    <Suspense fallback={<SuspenseFallback />}>
-                        <ReviewTokenPage />
                     </Suspense>
                 ),
             },

@@ -52,15 +52,18 @@ const useHeroProgress = () => {
 
 export default function HomePage() {
     const heroProgress = useHeroProgress();
-    const { data: settingsData, isLoading: settingsLoading } = usePublicSettings();
+    const { data: settingsData, isLoading: settingsLoading } =
+        usePublicSettings();
     const { data: promosData, isLoading: promosLoading } = useQuery({
         queryKey: ["promos"],
         queryFn: getPromos,
     });
-    const { data: destinationsData, isLoading: destinationsLoading } = useQuery({
-        queryKey: ["destinations"],
-        queryFn: getDestinations,
-    });
+    const { data: destinationsData, isLoading: destinationsLoading } = useQuery(
+        {
+            queryKey: ["destinations"],
+            queryFn: getDestinations,
+        },
+    );
     const { data: reviewsData, isLoading: reviewsLoading } = useQuery({
         queryKey: ["reviews", "pinned"],
         queryFn: getPinnedReviews,
@@ -114,7 +117,9 @@ export default function HomePage() {
         }
 
         const interval = window.setInterval(() => {
-            setActiveReviewIndex((current) => (current + 1) % reviewItems.length);
+            setActiveReviewIndex(
+                (current) => (current + 1) % reviewItems.length,
+            );
         }, 4400);
 
         return () => window.clearInterval(interval);
@@ -136,11 +141,18 @@ export default function HomePage() {
             <section className="home-hero" style={heroStyle}>
                 <div className="home-hero__landscape" aria-hidden="true" />
                 <div className="home-hero__texture" aria-hidden="true" />
-                <div className="home-hero__mist home-hero__mist--one" aria-hidden="true" />
-                <div className="home-hero__mist home-hero__mist--two" aria-hidden="true" />
+                <div
+                    className="home-hero__mist home-hero__mist--one"
+                    aria-hidden="true"
+                />
+                <div
+                    className="home-hero__mist home-hero__mist--two"
+                    aria-hidden="true"
+                />
 
                 <div className="home-hero__content">
-                    <p className="home-hero__eyebrow">Lombok hidden nature escape</p>
+                    <p className="home-hero__eyebrow">Hidden nature escape</p>
+
                     {settingsLoading ? (
                         <div className="home-skeleton home-skeleton--hero" />
                     ) : (
@@ -149,9 +161,13 @@ export default function HomePage() {
                             <p className="home-hero__tagline">{tagline}</p>
                             <div className="home-hero__actions">
                                 <Link to="/destinasi" className="home-button">
-                                    Jelajahi Destinasi
+                                    Jelajahi Karang Sidemen
                                 </Link>
-                                <a href="#hidden-paradise" className="home-button home-button--ghost">
+
+                                <a
+                                    href="#hidden-paradise"
+                                    className="home-button home-button--ghost"
+                                >
                                     Lihat Reveal
                                 </a>
                             </div>
@@ -159,9 +175,12 @@ export default function HomePage() {
                     )}
                 </div>
 
-                <div className="home-hero__meta" aria-label="Ringkasan pengalaman">
-                    <span>Blue lake</span>
-                    <span>Waterfall</span>
+                <div
+                    className="home-hero__meta"
+                    aria-label="Ringkasan pengalaman"
+                >
+                    <span>Danau biru</span>
+                    <span>Air terjun</span>
                     <span>Camping</span>
                 </div>
 
@@ -173,14 +192,19 @@ export default function HomePage() {
 
             <section id="hidden-paradise" className="home-reveal">
                 <div className="home-reveal__copy">
-                    <p className="home-kicker">Hidden paradise reveal</p>
-                    <h2>Air biru. Batu sungai. Hutan dingin. Semuanya pelan-pelan kebuka.</h2>
+                    <p className="home-kicker">Keindahan tersembunyi</p>
+                    <h2>
+                        Air biru, batu sungai, hutan dingin—pelan-pelan terbuka.
+                    </h2>
                 </div>
-                <div className="home-reveal__words" aria-label="Sorotan pengalaman">
-                    <span>Waterfalls.</span>
-                    <span>Blue Lake.</span>
-                    <span>Forest Escape.</span>
-                    <span>Camping.</span>
+                <div
+                    className="home-reveal__words"
+                    aria-label="Sorotan pengalaman"
+                >
+                    <span>Air terjun</span>
+                    <span>Danau biru</span>
+                    <span>Hutan yang menyejukkan</span>
+                    <span>Camping</span>
                 </div>
             </section>
 
@@ -198,11 +222,16 @@ export default function HomePage() {
                     </div>
                     <article className="home-feature">
                         {activePromo.image_url && (
-                            <img src={activePromo.image_url} alt={activePromo.title} />
+                            <img
+                                src={activePromo.image_url}
+                                alt={activePromo.title}
+                            />
                         )}
                         <div className="home-feature__body">
                             <h3>{activePromo.title}</h3>
-                            {activePromo.description && <p>{activePromo.description}</p>}
+                            {activePromo.description && (
+                                <p>{activePromo.description}</p>
+                            )}
                             {activePromo.external_url && (
                                 <a
                                     href={activePromo.external_url}
@@ -220,13 +249,17 @@ export default function HomePage() {
 
             <section className="home-section">
                 <div className="home-section__heading">
-                    <p className="home-kicker">Destination experience</p>
-                    <h2>Spot yang bikin orang berhenti scroll.</h2>
+                    <p className="home-kicker">Pengalaman destinasi</p>
+                    <h2>Spot yang bikin orang berhenti sejenak.</h2>
                 </div>
+
                 {destinationsLoading ? (
                     <div className="home-destination-grid">
                         {[1, 2, 3, 4, 5, 6].map((item) => (
-                            <div key={item} className="home-skeleton home-skeleton--card" />
+                            <div
+                                key={item}
+                                className="home-skeleton home-skeleton--card"
+                            />
                         ))}
                     </div>
                 ) : destinationItems.length === 0 ? (
@@ -234,7 +267,10 @@ export default function HomePage() {
                 ) : (
                     <div className="home-destination-grid">
                         {destinationItems.map((destination) => (
-                            <article key={destination.id} className="home-destination-card">
+                            <article
+                                key={destination.id}
+                                className="home-destination-card"
+                            >
                                 {destination.thumbnail_url ? (
                                     <img
                                         src={destination.thumbnail_url}
@@ -247,7 +283,9 @@ export default function HomePage() {
                                 )}
                                 <div className="home-destination-card__body">
                                     {destination.destination_type && (
-                                        <span>{destination.destination_type}</span>
+                                        <span>
+                                            {destination.destination_type}
+                                        </span>
                                     )}
                                     <h3>{destination.name}</h3>
                                     <Link to={`/destinasi/${destination.id}`}>
@@ -269,9 +307,10 @@ export default function HomePage() {
             {!reviewsLoading && activeReview && (
                 <section className="home-section">
                     <div className="home-section__heading">
-                        <p className="home-kicker">Travel notes</p>
+                        <p className="home-kicker">Cerita Perjalanan</p>
                         <h2>Kesan yang dibawa pulang.</h2>
                     </div>
+
                     <article className="home-testimonial">
                         <div className="home-testimonial__header">
                             {activeReview.photo_url ? (
@@ -280,7 +319,10 @@ export default function HomePage() {
                                     alt={activeReview.reviewer_name}
                                 />
                             ) : (
-                                <div>{getInitials(activeReview.reviewer_name) || "?"}</div>
+                                <div>
+                                    {getInitials(activeReview.reviewer_name) ||
+                                        "?"}
+                                </div>
                             )}
                             <div>
                                 <h3>{activeReview.reviewer_name}</h3>
@@ -309,11 +351,13 @@ export default function HomePage() {
                                 Sebelumnya
                             </button>
                             <Link to="/reviews">Lihat semua ulasan</Link>
+
                             <button
                                 type="button"
                                 onClick={() =>
-                                    setActiveReviewIndex((current) =>
-                                        (current + 1) % reviewItems.length,
+                                    setActiveReviewIndex(
+                                        (current) =>
+                                            (current + 1) % reviewItems.length,
                                     )
                                 }
                             >

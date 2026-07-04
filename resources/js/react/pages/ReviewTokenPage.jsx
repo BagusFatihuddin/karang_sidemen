@@ -55,7 +55,10 @@ const getSubmitErrorMessage = (error) => {
     }
 
     if (status === 422) {
-        return response?.message || "Ada data yang belum sesuai. Cek lagi field yang ditandai.";
+        return (
+            response?.message ||
+            "Ada data yang belum sesuai. Cek lagi field yang ditandai."
+        );
     }
 
     if (status === 429) {
@@ -66,7 +69,9 @@ const getSubmitErrorMessage = (error) => {
         return "Server sedang bermasalah. Tunggu sebentar lalu coba lagi.";
     }
 
-    return response?.message || "Review gagal dikirim. Coba ulangi sebentar lagi.";
+    return (
+        response?.message || "Review gagal dikirim. Coba ulangi sebentar lagi."
+    );
 };
 
 export default function ReviewTokenPage() {
@@ -172,7 +177,9 @@ export default function ReviewTokenPage() {
             <main className="review-token-page">
                 <section className="review-token-state">
                     <p>Review tidak tersedia</p>
-                    <h1>{tokenMessages[tokenState] || tokenMessages.invalid}</h1>
+                    <h1>
+                        {tokenMessages[tokenState] || tokenMessages.invalid}
+                    </h1>
                     <Link to="/">Kembali ke homepage</Link>
                 </section>
             </main>
@@ -202,7 +209,7 @@ export default function ReviewTokenPage() {
                         Desa Wisata Karang Sidemen
                     </Link>
                     <p>Review pengunjung</p>
-                    <h1>Bantu pengunjung berikutnya merasa lebih yakin.</h1>
+                    <h1>Bantu orang lain merasa lebih yakin.</h1>
                     <div className="review-token-destination">
                         <span>Destinasi</span>
                         <strong>
@@ -212,45 +219,9 @@ export default function ReviewTokenPage() {
                 </div>
 
                 <form className="review-token-form" onSubmit={handleSubmit}>
-                    <div className="review-token-form__header">
-                        <p>Isi singkat saja</p>
+                    <div className="review-token-form__header review-token-form__header--mobile-compact">
+                        <p>Review pengunjung</p>
                         <h2>Ceritakan pengalamanmu dengan jujur.</h2>
-                    </div>
-
-                    <div className="review-token-grid">
-                        <label className="review-token-field">
-                            <span>Nama</span>
-                            <input
-                                type="text"
-                                value={reviewerName}
-                                onChange={(event) =>
-                                    updateField("reviewer_name", event.target.value)
-                                }
-                                placeholder="Nama kamu"
-                            />
-                            {getFieldError(validationErrors, "reviewer_name") && (
-                                <small>
-                                    {getFieldError(validationErrors, "reviewer_name")}
-                                </small>
-                            )}
-                        </label>
-
-                        <label className="review-token-field">
-                            <span>Kota</span>
-                            <input
-                                type="text"
-                                value={reviewerCity}
-                                onChange={(event) =>
-                                    updateField("reviewer_city", event.target.value)
-                                }
-                                placeholder="Contoh: Mataram"
-                            />
-                            {getFieldError(validationErrors, "reviewer_city") && (
-                                <small>
-                                    {getFieldError(validationErrors, "reviewer_city")}
-                                </small>
-                            )}
-                        </label>
                     </div>
 
                     <fieldset className="review-token-rating">
@@ -271,7 +242,10 @@ export default function ReviewTokenPage() {
                                         value={option.value}
                                         checked={form.rating === option.value}
                                         onChange={(event) =>
-                                            updateField("rating", event.target.value)
+                                            updateField(
+                                                "rating",
+                                                event.target.value,
+                                            )
                                         }
                                     />
                                     <strong>{option.label}</strong>
@@ -280,7 +254,9 @@ export default function ReviewTokenPage() {
                             ))}
                         </div>
                         {getFieldError(validationErrors, "rating") && (
-                            <small>{getFieldError(validationErrors, "rating")}</small>
+                            <small>
+                                {getFieldError(validationErrors, "rating")}
+                            </small>
                         )}
                     </fieldset>
 
@@ -302,37 +278,106 @@ export default function ReviewTokenPage() {
                         )}
                     </label>
 
-                    <label className="review-token-photo">
-                        <input
-                            type="file"
-                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                            onChange={(event) =>
-                                updateField("photo", event.target.files?.[0] || null)
-                            }
-                        />
-                        <span>
-                            {photoPreview ? "Ganti foto" : "Tambah foto opsional"}
-                        </span>
-                        <small>JPG, PNG, atau WEBP. Maksimal 2MB.</small>
-                    </label>
+                    <div className="review-token-photo-group">
+                        <label className="review-token-photo">
+                            <span>
+                                Foto membantu wisatawan lain mengenal destinasi
+                                ini.
+                            </span>
+                            <input
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                onChange={(event) =>
+                                    updateField(
+                                        "photo",
+                                        event.target.files?.[0] || null,
+                                    )
+                                }
+                            />
+                            <span>
+                                {photoPreview
+                                    ? "Ganti foto"
+                                    : "Tambah foto opsional"}
+                            </span>
+                            <small>JPG, PNG, atau WEBP. Maksimal 2MB.</small>
+                        </label>
 
-                    {photoPreview && (
-                        <div className="review-token-preview">
-                            <img src={photoPreview} alt="Preview foto review" />
-                            <button
-                                type="button"
-                                onClick={() => updateField("photo", null)}
-                            >
-                                Hapus foto
-                            </button>
-                        </div>
-                    )}
+                        {photoPreview && (
+                            <div className="review-token-preview">
+                                <img
+                                    src={photoPreview}
+                                    alt="Preview foto review"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => updateField("photo", null)}
+                                >
+                                    Hapus foto
+                                </button>
+                            </div>
+                        )}
 
-                    {getFieldError(validationErrors, "photo") && (
-                        <p className="review-token-error">
-                            {getFieldError(validationErrors, "photo")}
-                        </p>
-                    )}
+                        {getFieldError(validationErrors, "photo") && (
+                            <p className="review-token-error">
+                                {getFieldError(validationErrors, "photo")}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="review-token-grid review-token-grid--identity">
+                        <label className="review-token-field">
+                            <span>Nama</span>
+                            <input
+                                type="text"
+                                value={reviewerName}
+                                onChange={(event) =>
+                                    updateField(
+                                        "reviewer_name",
+                                        event.target.value,
+                                    )
+                                }
+                                placeholder="Nama kamu"
+                            />
+                            {getFieldError(
+                                validationErrors,
+                                "reviewer_name",
+                            ) && (
+                                <small>
+                                    {getFieldError(
+                                        validationErrors,
+                                        "reviewer_name",
+                                    )}
+                                </small>
+                            )}
+                        </label>
+
+                        <label className="review-token-field">
+                            <span>Kota</span>
+                            <input
+                                type="text"
+                                value={reviewerCity}
+                                onChange={(event) =>
+                                    updateField(
+                                        "reviewer_city",
+                                        event.target.value,
+                                    )
+                                }
+                                placeholder="Contoh: Mataram"
+                            />
+                            {getFieldError(
+                                validationErrors,
+                                "reviewer_city",
+                            ) && (
+                                <small>
+                                    {getFieldError(
+                                        validationErrors,
+                                        "reviewer_city",
+                                    )}
+                                </small>
+                            )}
+                        </label>
+                    </div>
+
                     {submitError && (
                         <p className="review-token-error">{submitError}</p>
                     )}

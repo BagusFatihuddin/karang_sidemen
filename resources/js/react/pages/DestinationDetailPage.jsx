@@ -11,7 +11,8 @@ import "./DestinationDetailPage.css";
 
 const getPayload = (response) => response?.data?.data ?? response?.data ?? {};
 
-const getRatingStars = (rating) => "★".repeat(Math.max(0, Math.min(Number(rating) || 0, 5)));
+const getRatingStars = (rating) =>
+    "★".repeat(Math.max(0, Math.min(Number(rating) || 0, 5)));
 
 const formatPrice = (price) => {
     if (price === null || price === undefined || Number(price) === 0) {
@@ -30,7 +31,10 @@ const normalizeImages = (destination) => {
         ? destination.images.map((image) => image.url).filter(Boolean)
         : [];
 
-    if (destination?.thumbnail_url && !images.includes(destination.thumbnail_url)) {
+    if (
+        destination?.thumbnail_url &&
+        !images.includes(destination.thumbnail_url)
+    ) {
         return [destination.thumbnail_url, ...images];
     }
 
@@ -47,36 +51,44 @@ const getInitials = (name) =>
         .toUpperCase();
 
 export default function DestinationDetailPage() {
-    const { id } = useParams();
+    const { destination: destinationParam } = useParams();
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [rating, setRating] = useState("");
     const [sort, setSort] = useState("latest");
     const [page, setPage] = useState(1);
     const { data: settingsData } = usePublicSettings();
     const { data, isLoading } = useQuery({
-        queryKey: ["destination", id],
-        queryFn: () => getDestination(id),
+        queryKey: ["destination", destinationParam],
+        queryFn: () => getDestination(destinationParam),
     });
+
+    const destination = getPayload(data);
+
     const { data: reviewsData, isLoading: reviewsLoading } = useQuery({
-        queryKey: ["reviews", id, rating, sort, page],
+        queryKey: ["reviews", destination?.id, rating, sort, page],
         queryFn: () =>
             getReviews({
-                destination_id: id,
+                destination_id: destination?.id,
                 rating,
                 sort,
                 page,
             }),
+        enabled: Boolean(destination?.id),
     });
 
-    const destination = getPayload(data);
     const settings = getPayload(settingsData);
     const images = useMemo(() => normalizeImages(destination), [destination]);
-    const safeActiveImageIndex = images[activeImageIndex] ? activeImageIndex : 0;
+    const safeActiveImageIndex = images[activeImageIndex]
+        ? activeImageIndex
+        : 0;
     const activeImage = images[safeActiveImageIndex];
     const reviewsPayload = reviewsData?.data ?? {};
-    const reviews = Array.isArray(reviewsPayload.data) ? reviewsPayload.data : [];
+    const reviews = Array.isArray(reviewsPayload.data)
+        ? reviewsPayload.data
+        : [];
     const pagination = reviewsPayload.pagination ?? {};
-    const whatsappNumber = destination?.whatsapp_number || settings?.global_whatsapp;
+    const whatsappNumber =
+        destination?.whatsapp_number || settings?.global_whatsapp;
     const tags = [
         ...normalizeList(destination?.activity_keywords),
         ...normalizeList(destination?.tags),
@@ -100,16 +112,24 @@ export default function DestinationDetailPage() {
         <main
             className="destination-detail-page"
             style={{
-                "--detail-hero-image": activeImage ? `url("${activeImage}")` : "none",
+                "--detail-hero-image": activeImage
+                    ? `url("${activeImage}")`
+                    : "none",
             }}
         >
             <section className="destination-detail-hero">
-                <div className="destination-detail-hero__image" aria-hidden="true" />
+                <div
+                    className="destination-detail-hero__image"
+                    aria-hidden="true"
+                />
                 <div className="destination-detail-hero__content">
                     <Link to="/destinasi" className="destination-detail-back">
                         Kembali ke destinasi
                     </Link>
-                    <p>{destination?.destination_type || "Destinasi Karang Sidemen"}</p>
+                    <p>
+                        {destination?.destination_type ||
+                            "Destinasi Karang Sidemen"}
+                    </p>
                     <h1>{destination?.name}</h1>
                     <div className="destination-detail-hero__bottom">
                         <span>
@@ -132,7 +152,10 @@ export default function DestinationDetailPage() {
                         <section className="destination-gallery">
                             <div className="destination-gallery__stage">
                                 {activeImage ? (
-                                    <img src={activeImage} alt={destination?.name} />
+                                    <img
+                                        src={activeImage}
+                                        alt={destination?.name}
+                                    />
                                 ) : (
                                     <div className="destination-gallery__fallback">
                                         Karang Sidemen
@@ -151,7 +174,9 @@ export default function DestinationDetailPage() {
                                             }
                                             key={`${image}-${index}`}
                                             type="button"
-                                            onClick={() => setActiveImageIndex(index)}
+                                            onClick={() =>
+                                                setActiveImageIndex(index)
+                                            }
                                             aria-label={`Lihat gambar ${index + 1}`}
                                         >
                                             <img src={image} alt="" />
@@ -162,8 +187,12 @@ export default function DestinationDetailPage() {
                         </section>
 
                         <section className="destination-story">
-                            <p className="destination-detail-kicker">Cerita destinasi</p>
-                            <h2>{destination?.tourism_vibe || destination?.name}</h2>
+                            <p className="destination-detail-kicker">
+                                Cerita destinasi
+                            </p>
+                            <h2>
+                                {destination?.tourism_vibe || destination?.name}
+                            </h2>
                             <p>{destination?.description}</p>
 
                             {uniqueTags.length > 0 && (
@@ -177,11 +206,18 @@ export default function DestinationDetailPage() {
 
                         {highlights.length > 0 && (
                             <section className="destination-highlights">
-                                <p className="destination-detail-kicker">Yang terasa di sini</p>
+                                <p className="destination-detail-kicker">
+                                    Yang terasa di sini
+                                </p>
                                 <div className="destination-highlights__grid">
                                     {highlights.map((highlight, index) => (
                                         <article key={highlight}>
-                                            <span>{String(index + 1).padStart(2, "0")}</span>
+                                            <span>
+                                                {String(index + 1).padStart(
+                                                    2,
+                                                    "0",
+                                                )}
+                                            </span>
                                             <p>{highlight}</p>
                                         </article>
                                     ))}
@@ -192,12 +228,17 @@ export default function DestinationDetailPage() {
                         {destination?.maps_url && (
                             <section className="destination-map">
                                 <div>
-                                    <p className="destination-detail-kicker">Lokasi</p>
-                                    <h2>Buka titik lokasi sebelum berangkat.</h2>
+                                    <p className="destination-detail-kicker">
+                                        Lokasi
+                                    </p>
+                                    <h2>
+                                        Buka titik lokasi sebelum berangkat.
+                                    </h2>
                                     <span>
-                                        Pastikan rute terakhir dikonfirmasi ke pengelola,
-                                        terutama untuk spot alam yang aksesnya berubah
-                                        mengikuti kondisi lapangan.
+                                        Pastikan rute terakhir dikonfirmasi ke
+                                        pengelola, terutama untuk spot alam yang
+                                        aksesnya berubah mengikuti kondisi
+                                        lapangan.
                                     </span>
                                 </div>
                                 <a
@@ -215,8 +256,9 @@ export default function DestinationDetailPage() {
                             <div className="destination-reviews__head">
                                 <div>
                                     <p className="destination-detail-kicker">
-                                        Review destinasi
+                                        Ulasan destinasi
                                     </p>
+
                                     <h2>Suara pengunjung yang sudah datang.</h2>
                                 </div>
                                 <div className="destination-review-controls">
@@ -253,7 +295,7 @@ export default function DestinationDetailPage() {
                                 <div className="destination-detail-skeleton destination-detail-skeleton--reviews" />
                             ) : reviews.length === 0 ? (
                                 <div className="destination-reviews__empty">
-                                    Belum ada review publik untuk destinasi ini.
+                                    Belum ada ulasan publik untuk destinasi ini.
                                 </div>
                             ) : (
                                 <>
@@ -265,22 +307,32 @@ export default function DestinationDetailPage() {
                                             >
                                                 {review.photo_url && (
                                                     <div className="destination-review-card__photo">
-                                                        <img src={review.photo_url} alt="" />
+                                                        <img
+                                                            src={
+                                                                review.photo_url
+                                                            }
+                                                            alt=""
+                                                        />
                                                     </div>
                                                 )}
                                                 <div className="destination-review-card__avatar">
                                                     <span>
-                                                        {getInitials(review.reviewer_name) ||
-                                                            "?"}
+                                                        {getInitials(
+                                                            review.reviewer_name,
+                                                        ) || "?"}
                                                     </span>
                                                 </div>
                                                 <div>
                                                     <div className="destination-review-card__meta">
                                                         <strong>
-                                                            {review.reviewer_name}
+                                                            {
+                                                                review.reviewer_name
+                                                            }
                                                         </strong>
                                                         <span>
-                                                            {getRatingStars(review.rating)}
+                                                            {getRatingStars(
+                                                                review.rating,
+                                                            )}
                                                         </span>
                                                     </div>
                                                     <small>
@@ -298,23 +350,29 @@ export default function DestinationDetailPage() {
                                             type="button"
                                             disabled={page <= 1}
                                             onClick={() =>
-                                                setPage((current) => current - 1)
+                                                setPage(
+                                                    (current) => current - 1,
+                                                )
                                             }
                                         >
                                             Sebelumnya
                                         </button>
                                         <span>
-                                            Halaman {pagination.current_page ?? page}
+                                            Halaman{" "}
+                                            {pagination.current_page ?? page}
                                         </span>
                                         <button
                                             type="button"
                                             disabled={
                                                 pagination.last_page
-                                                    ? page >= pagination.last_page
+                                                    ? page >=
+                                                      pagination.last_page
                                                     : reviews.length === 0
                                             }
                                             onClick={() =>
-                                                setPage((current) => current + 1)
+                                                setPage(
+                                                    (current) => current + 1,
+                                                )
                                             }
                                         >
                                             Berikutnya
@@ -327,21 +385,31 @@ export default function DestinationDetailPage() {
 
                     <aside className="destination-detail-aside">
                         <div className="destination-booking-card">
-                            <p className="destination-detail-kicker">Rencana kunjungan</p>
+                            <p className="destination-detail-kicker">
+                                Rencana kunjungan
+                            </p>
                             <h2>Datang dengan info yang jelas.</h2>
                             <dl>
                                 <div>
                                     <dt>Tiket masuk</dt>
-                                    <dd>{formatPrice(destination?.entry_fee)}</dd>
+                                    <dd>
+                                        {formatPrice(destination?.entry_fee)}
+                                    </dd>
                                 </div>
                                 <div>
                                     <dt>Parkir</dt>
-                                    <dd>{formatPrice(destination?.parking_fee)}</dd>
+                                    <dd>
+                                        {formatPrice(destination?.parking_fee)}
+                                    </dd>
                                 </div>
                                 {hasRentalPrice && (
                                     <div>
                                         <dt>Harga sewa</dt>
-                                        <dd>{formatPrice(destination?.rental_price)}</dd>
+                                        <dd>
+                                            {formatPrice(
+                                                destination?.rental_price,
+                                            )}
+                                        </dd>
                                     </div>
                                 )}
                             </dl>

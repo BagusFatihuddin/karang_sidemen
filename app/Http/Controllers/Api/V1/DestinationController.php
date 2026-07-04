@@ -54,21 +54,31 @@ class DestinationController extends Controller
     /**
      * Get single destination detail.
      *
-     * @param int $id
+     * @param string $destination
      * @param Request $request
      * @return JsonResponse
      */
-    public function show(int $id, Request $request): JsonResponse
+    public function show(string $destination, Request $request): JsonResponse
     {
         $version = (int) Cache::get('destinations:version', 1);
 
-        $result = Cache::remember("destinations:v{$version}:{$id}", 10 * 60, function () use ($id, $request) {
-            $destination = Destination::active()
-                ->with('images', 'dailyVisits')
-                ->findOrFail($id);
+        $result = Cache::remember(
+            "destinations:v{$version}:{$destination}",
+            10 * 60,
+            function () use ($destination, $request) {
+                $lookup = Destination::active()
+                    ->with('images', 'dailyVisits')
+                    ->where('slug', $destination)
+                    ->orWhere('id', $destination)
+                    ->firstOrFail();
 
-            return json_decode(json_encode((new DestinationResource($destination))->toArray($request)), true);
-        });
+                return json_decode(
+                    json_encode((new DestinationResource($lookup))->toArray($request)),
+                    true
+                );
+            }
+        );
+
 
         return response()->json([
             'data' => $result,

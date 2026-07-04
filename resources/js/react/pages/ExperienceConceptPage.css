@@ -95,6 +95,19 @@
     overflow: hidden;
 }
 
+.concept-page--no-reviews .concept-hero {
+    min-height: 126vh;
+    padding-bottom: 12vh;
+}
+
+.concept-page--no-reviews .concept-floating-card--one {
+    bottom: 38vh;
+}
+
+.concept-page--no-reviews .concept-floating-card--two {
+    bottom: 20vh;
+}
+
 .concept-hero__image,
 .concept-hero__shade {
     position: absolute;
@@ -1345,6 +1358,14 @@
         bottom: 58px;
         z-index: 4;
         rotate: -6deg;
+    }
+
+    .concept-page--no-reviews .concept-floating-card--one {
+        bottom: 108px;
+    }
+
+    .concept-page--no-reviews .concept-floating-card--two {
+        bottom: 72px;
     }
 
     .concept-event-card {

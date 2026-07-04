@@ -30,7 +30,8 @@ const getDestinationName = (review) => {
     return "";
 };
 
-const getRatingStars = (rating) => "★".repeat(Math.max(0, Math.min(Number(rating) || 0, 5)));
+const getRatingStars = (rating) =>
+    "★".repeat(Math.max(0, Math.min(Number(rating) || 0, 5)));
 
 const defaultReviewsHeroImage =
     "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=88";
@@ -74,7 +75,9 @@ export default function ReviewsPage() {
         [destinationsPayload],
     );
     const reviewsPayload = data?.data ?? {};
-    const reviews = Array.isArray(reviewsPayload.data) ? reviewsPayload.data : [];
+    const reviews = Array.isArray(reviewsPayload.data)
+        ? reviewsPayload.data
+        : [];
     const pagination = reviewsPayload.pagination ?? {};
     const heroReview = reviews[0];
     const settings = settingsData?.data?.data ?? settingsData?.data ?? {};
@@ -89,12 +92,18 @@ export default function ReviewsPage() {
             <section className="reviews-hero">
                 <div className="reviews-hero__content">
                     <p>Suara pengunjung</p>
-                    <h1>Review yang terasa lokal, singkat, dan bisa dipercaya.</h1>
+                    <h1>
+                        Ulasan yang terasa lokal, singkat, dan bisa dipercaya
+                    </h1>
                     <div className="reviews-hero__bottom">
-                        <span>{pagination.total ?? reviews.length ?? "..."} review</span>
+                        <span>
+                            {pagination.total ?? reviews.length ?? "..."} ulasan
+                        </span>
+
                         <p>
                             Baca pengalaman orang yang sudah datang ke destinasi
-                            Karang Sidemen. Setiap review melewati approval admin.
+                            Karang Sidemen. Ulasan dipilih agar tetap terasa
+                            nyata dan bermanfaat bagi Anda.
                         </p>
                     </div>
                 </div>
@@ -117,9 +126,10 @@ export default function ReviewsPage() {
             <section className="reviews-shell">
                 <div className="reviews-controls">
                     <div>
-                        <p>Filter review</p>
-                        <h2>Temukan cerita dari destinasi yang kamu incar.</h2>
+                        <p>Filter ulasan</p>
+                        <h2>Temukan cerita dari destinasi yang Anda incar.</h2>
                     </div>
+
                     <div className="reviews-controls__inputs">
                         <select
                             value={destinationId}
@@ -130,7 +140,10 @@ export default function ReviewsPage() {
                         >
                             <option value="">Semua destinasi</option>
                             {destinations.map((destination) => (
-                                <option key={destination.id} value={destination.id}>
+                                <option
+                                    key={destination.id}
+                                    value={destination.id}
+                                >
                                     {destination.name}
                                 </option>
                             ))}
@@ -159,7 +172,9 @@ export default function ReviewsPage() {
                             }}
                         >
                             <option value="latest">Terbaru</option>
-                            <option value="highest_rating">Rating tertinggi</option>
+                            <option value="highest_rating">
+                                Rating tertinggi
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -182,30 +197,42 @@ export default function ReviewsPage() {
                                 setPage(1);
                             }}
                         >
-                            Reset filter
+                            Tampilkan semua lagi
                         </button>
                     </section>
                 ) : (
                     <>
                         <div className="reviews-grid">
                             {reviews.map((review) => {
-                                const destinationName = getDestinationName(review);
+                                const destinationName =
+                                    getDestinationName(review);
 
                                 return (
-                                    <article className="review-card" key={review.id}>
+                                    <article
+                                        className="review-card"
+                                        key={review.id}
+                                    >
                                         {review.photo_url && (
                                             <div className="review-card__photo">
-                                                <img src={review.photo_url} alt="" />
+                                                <img
+                                                    src={review.photo_url}
+                                                    alt=""
+                                                />
                                             </div>
                                         )}
                                         <div className="review-card__head">
                                             <span>
-                                                {getInitials(review.reviewer_name) || "?"}
+                                                {getInitials(
+                                                    review.reviewer_name,
+                                                ) || "?"}
                                             </span>
                                             <div>
-                                                <strong>{review.reviewer_name}</strong>
+                                                <strong>
+                                                    {review.reviewer_name}
+                                                </strong>
                                                 <small>
-                                                    {review.reviewer_city || "Pengunjung"}
+                                                    {review.reviewer_city ||
+                                                        "Pengunjung"}
                                                 </small>
                                             </div>
                                         </div>
@@ -217,14 +244,20 @@ export default function ReviewsPage() {
 
                                         <div className="review-card__foot">
                                             {destinationName ? (
-                                                <Link to={`/destinasi/${review.destination_id}`}>
+                                                <Link
+                                                    to={`/destinasi/${review.destination_id}`}
+                                                >
                                                     {destinationName}
                                                 </Link>
                                             ) : (
                                                 <span>Karang Sidemen</span>
                                             )}
                                             {review.created_at && (
-                                                <small>{formatDate(review.created_at)}</small>
+                                                <small>
+                                                    {formatDate(
+                                                        review.created_at,
+                                                    )}
+                                                </small>
                                             )}
                                         </div>
                                     </article>
@@ -236,11 +269,15 @@ export default function ReviewsPage() {
                             <button
                                 type="button"
                                 disabled={page <= 1}
-                                onClick={() => setPage((current) => current - 1)}
+                                onClick={() =>
+                                    setPage((current) => current - 1)
+                                }
                             >
                                 Sebelumnya
                             </button>
-                            <span>Halaman {pagination.current_page ?? page}</span>
+                            <span>
+                                Halaman {pagination.current_page ?? page}
+                            </span>
                             <button
                                 type="button"
                                 disabled={
@@ -248,7 +285,9 @@ export default function ReviewsPage() {
                                         ? page >= pagination.last_page
                                         : reviews.length === 0
                                 }
-                                onClick={() => setPage((current) => current + 1)}
+                                onClick={() =>
+                                    setPage((current) => current + 1)
+                                }
                             >
                                 Berikutnya
                             </button>

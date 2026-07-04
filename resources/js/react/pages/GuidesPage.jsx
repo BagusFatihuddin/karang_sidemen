@@ -43,8 +43,7 @@ export default function GuidesPage() {
         [payload],
     );
     const heroImage =
-        settings.media_guides_hero_fallback_image_url ||
-        defaultGuideImages[0];
+        settings.media_guides_hero_fallback_image_url || defaultGuideImages[0];
     const emptyImage =
         settings.media_guides_empty_image_url || defaultGuideImages[1];
     const noteImage =
@@ -65,14 +64,19 @@ export default function GuidesPage() {
             <section className="guides-hero">
                 <div className="guides-hero__image" aria-hidden="true" />
                 <div className="guides-hero__content">
-                    <p>Panduan lokal</p>
-                    <h1>Pengalaman alam terasa beda kalau ditemani orang yang paham tempatnya.</h1>
+                    <p>Guide Lokal</p>
+                    <h1>
+                        Pengalaman alam terasa beda ketika ditemani orang yang
+                        paham tempatnya.
+                    </h1>
+
                     <div className="guides-hero__bottom">
-                        <span>{guides.length || "..."} guide aktif</span>
+                        <span>{guides.length || "..."} guide tersedia</span>
+
                         <p>
-                            Guide membantu pengunjung memahami jalur, cerita lokal,
-                            waktu terbaik, dan cara menikmati Karang Sidemen dengan
-                            lebih nyaman.
+                            Guide membantu pengunjung memahami jalur, cerita
+                            lokal, waktu terbaik, dan cara menikmati Karang
+                            Sidemen dengan lebih nyaman.
                         </p>
                     </div>
                 </div>
@@ -81,7 +85,9 @@ export default function GuidesPage() {
             <section className="guides-shell">
                 <div className="guides-section-title">
                     <p>Orang lokal, pengalaman nyata</p>
-                    <h2>Pilih pendamping yang cocok dengan gaya perjalananmu.</h2>
+                    <h2>
+                        Pilih pendamping yang cocok dengan gaya perjalananmu.
+                    </h2>
                 </div>
 
                 {isLoading ? (
@@ -94,12 +100,14 @@ export default function GuidesPage() {
                     <section className="guides-empty">
                         <div>
                             <p>Belum ada guide aktif</p>
-                            <h2>Profil panduan belum dipublikasikan dari admin.</h2>
+                            <h2>Panduan sedang dipersiapkan.</h2>
                             <span>
-                                Tambahkan foto, bio, dan pengalaman guide di Filament
-                                agar pengunjung bisa merasa lebih dekat sebelum datang.
+                                Sambil menunggu, Anda tetap bisa menikmati
+                                Karang Sidemen dengan rekomendasi terbaik dari
+                                kami.
                             </span>
                         </div>
+
                         <a
                             href={buildWhatsAppUrl(
                                 "Halo, saya ingin bertanya tentang panduan wisata Karang Sidemen",
@@ -119,17 +127,25 @@ export default function GuidesPage() {
                                     {guide.photo_url ? (
                                         <img src={guide.photo_url} alt="" />
                                     ) : (
-                                        <div>{initials(guide.name) || "KS"}</div>
+                                        <div>
+                                            {initials(guide.name) || "KS"}
+                                        </div>
                                     )}
-                                    <span>{String(index + 1).padStart(2, "0")}</span>
+                                    <span>
+                                        {String(index + 1).padStart(2, "0")}
+                                    </span>
                                 </div>
                                 <div className="guide-card__body">
-                                    <p>Local guide</p>
+                                    <p>Guide Lokal</p>
+
                                     <h3>{guide.name}</h3>
                                     {guide.experience && (
                                         <strong>{guide.experience}</strong>
                                     )}
-                                    <span>{shortText(guide.bio) || "Bio guide belum diisi."}</span>
+                                    <span>
+                                        {shortText(guide.bio) ||
+                                            "Bio guide belum diisi."}
+                                    </span>
                                     <a
                                         href={buildWhatsAppUrl(
                                             `Halo, saya ingin bertanya tentang panduan ${guide.name}`,
@@ -150,7 +166,10 @@ export default function GuidesPage() {
                     <div className="guides-note__image" aria-hidden="true" />
                     <div>
                         <p>Kenapa pakai guide?</p>
-                        <h2>Karena beberapa tempat lebih aman dan lebih hidup saat diceritakan langsung.</h2>
+                        <h2>
+                            Karena beberapa tempat lebih aman dan lebih hidup
+                            saat diceritakan langsung.
+                        </h2>
                     </div>
                     <div className="guides-note__items">
                         <span>Jalur dan akses</span>

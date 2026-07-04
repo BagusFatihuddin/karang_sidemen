@@ -18,15 +18,16 @@ const socialFields = [
 const storyCards = [
     {
         title: "Dikelola lokal",
-        body: "Website ini menempatkan POKDARWIS sebagai penghubung antara pengunjung, warga, dan pengalaman wisata desa.",
+        body: "POKDARWIS menjadi penghubung antara pengunjung, warga, dan pengalaman wisata desa.",
     },
+
     {
         title: "Alam sebagai cerita utama",
         body: "Danau, sungai, air terjun, hutan, camping, dan budaya lokal menjadi identitas besar Karang Sidemen.",
     },
     {
         title: "Data bisa terus tumbuh",
-        body: "Destinasi, review, paket, guide, dan gambar bisa diperbarui dari admin seiring konten lapangan semakin lengkap.",
+        body: "Destinasi, ulasan, paket, guide, dan foto terus diperbarui agar informasi lapangan selalu terasa segar untuk Anda.",
     },
 ];
 
@@ -56,10 +57,12 @@ export default function AboutPage() {
     const villageName = settings.village_name || "Desa Wisata Karang Sidemen";
     const heroImage =
         settings.media_about_hero_fallback_image_url ||
-        destinations.find((destination) => destination.thumbnail_url)?.thumbnail_url ||
+        destinations.find((destination) => destination.thumbnail_url)
+            ?.thumbnail_url ||
         defaultAboutHeroImage;
     const storyImage = settings.media_about_story_image_url || "";
-    const organizationImage = settings.media_about_organization_chart_image_url || "";
+    const organizationImage =
+        settings.media_about_organization_chart_image_url || "";
 
     if (isLoading) {
         return (
@@ -78,7 +81,7 @@ export default function AboutPage() {
                 <div className="about-hero__image" aria-hidden="true" />
                 <div className="about-hero__content">
                     <p>Tentang desa wisata</p>
-                    <h1>{villageName}</h1>
+                    <h1>Desa Wisata Karang Sidemen</h1>
                     <div className="about-hero__bottom">
                         <span>POKDARWIS Karang Sidemen</span>
                         <p>
@@ -90,10 +93,19 @@ export default function AboutPage() {
             </section>
 
             <section className="about-shell">
-                <section className={storyImage ? "about-story about-story--with-image" : "about-story"}>
+                <section
+                    className={
+                        storyImage
+                            ? "about-story about-story--with-image"
+                            : "about-story"
+                    }
+                >
                     <div>
                         <p>Tentang pengelolaan</p>
-                        <h2>Wisata desa harus terasa hidup karena orang-orang lokalnya ikut hadir.</h2>
+                        <h2>
+                            Wisata desa harus terasa hidup karena orang-orang
+                            lokalnya ikut hadir.
+                        </h2>
                     </div>
                     <div className="about-story__body">
                         {storyImage && (
@@ -105,12 +117,17 @@ export default function AboutPage() {
                         )}
                         <article className="about-story__editorial-card">
                             <p>Sudut pandang lokal</p>
-                            <h3>Website ini menjadi jembatan antara cerita warga dan rencana perjalanan pengunjung.</h3>
+                            <h3>
+                                Karang Sidemen menjadi jembatan antara cerita
+                                warga dan rencana perjalanan pengunjung.
+                            </h3>
+
                             <span>
-                                Karang Sidemen dipresentasikan sebagai desa wisata, bukan
-                                satu destinasi tunggal. Pengunjung bisa memahami pilihan
-                                pengalaman, melihat review, menghubungi pengelola, dan
-                                menemukan cerita yang tepat sebelum datang.
+                                Karang Sidemen dipresentasikan sebagai desa
+                                wisata, bukan satu destinasi tunggal. Pengunjung
+                                bisa memahami pilihan pengalaman, melihat
+                                review, menghubungi pengelola, dan menemukan
+                                cerita yang tepat sebelum datang.
                             </span>
                         </article>
                     </div>
@@ -123,8 +140,9 @@ export default function AboutPage() {
                     </article>
                     <article>
                         <span>{reviewTotal}</span>
-                        <p>Review disetujui</p>
+                        <p>Ulasan terkurasi</p>
                     </article>
+
                     <article>
                         <span>1</span>
                         <p>Desa wisata utama</p>
@@ -143,7 +161,10 @@ export default function AboutPage() {
                 <section className="about-contact">
                     <div>
                         <p>Kontak dan lokasi</p>
-                        <h2>Mulai dari chat singkat, lalu susun rencana kunjungan.</h2>
+                        <h2>
+                            Mulai dari chat singkat, lalu susun rencana
+                            kunjungan.
+                        </h2>
                     </div>
                     <div className="about-contact__panel">
                         {settings.global_whatsapp && (
@@ -189,7 +210,10 @@ export default function AboutPage() {
                                     "Struktur Organisasi POKDARWIS"}
                             </h2>
                         </div>
-                        <img src={organizationImage} alt="Struktur organisasi POKDARWIS" />
+                        <img
+                            src={organizationImage}
+                            alt="Struktur organisasi POKDARWIS"
+                        />
                     </section>
                 )}
 

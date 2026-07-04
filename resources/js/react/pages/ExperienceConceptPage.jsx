@@ -48,9 +48,15 @@ const normalizeHomepageZoomItems = (value) => {
             title: item.title || "",
             description: item.description || item.subtitle || "",
             zoomOutImage:
-                item.zoom_out_image_url || item.zoomOutImage || item.zoom_out_image || "",
+                item.zoom_out_image_url ||
+                item.zoomOutImage ||
+                item.zoom_out_image ||
+                "",
             zoomInImage:
-                item.zoom_in_image_url || item.zoomInImage || item.zoom_in_image || "",
+                item.zoom_in_image_url ||
+                item.zoomInImage ||
+                item.zoom_in_image ||
+                "",
             displayOrder: Number.isFinite(Number(item.display_order))
                 ? Number(item.display_order)
                 : index + 1,
@@ -64,7 +70,8 @@ const normalizeHomepageZoomItems = (value) => {
         )
         .sort(
             (a, b) =>
-                a.displayOrder - b.displayOrder || a.title.localeCompare(b.title),
+                a.displayOrder - b.displayOrder ||
+                a.title.localeCompare(b.title),
         );
 };
 
@@ -83,7 +90,8 @@ const normalizeHomepageHorizontalItems = (value) => {
         .filter((item) => item.title || item.description || item.imageUrl)
         .sort(
             (a, b) =>
-                a.displayOrder - b.displayOrder || a.title.localeCompare(b.title),
+                a.displayOrder - b.displayOrder ||
+                a.title.localeCompare(b.title),
         );
 };
 
@@ -158,7 +166,9 @@ const usePageProgress = () => {
         const update = () => {
             const scrollable =
                 document.documentElement.scrollHeight - window.innerHeight;
-            setProgress(scrollable > 0 ? clamp(window.scrollY / scrollable, 0, 1) : 0);
+            setProgress(
+                scrollable > 0 ? clamp(window.scrollY / scrollable, 0, 1) : 0,
+            );
         };
 
         update();
@@ -224,7 +234,10 @@ const useHorizontalInterruption = () => {
                 ".concept-horizontal__panel",
             );
             const panelWidth = firstPanel?.getBoundingClientRect().width ?? 0;
-            const centeredEdge = Math.max((window.innerWidth - panelWidth) / 2, 24);
+            const centeredEdge = Math.max(
+                (window.innerWidth - panelWidth) / 2,
+                24,
+            );
             const maxOffset = Math.max(
                 trackRef.current.scrollWidth - window.innerWidth + centeredEdge,
                 0,
@@ -342,10 +355,12 @@ export default function ExperienceConceptPage() {
     const [horizontalSectionRef, horizontalTrackRef] =
         useHorizontalInterruption();
     const { data: settingsData } = usePublicSettings();
-    const { data: destinationsData, isLoading: destinationsLoading } = useQuery({
-        queryKey: ["destinations", "experience-concept"],
-        queryFn: getDestinations,
-    });
+    const { data: destinationsData, isLoading: destinationsLoading } = useQuery(
+        {
+            queryKey: ["destinations", "experience-concept"],
+            queryFn: getDestinations,
+        },
+    );
     const { data: promosData } = useQuery({
         queryKey: ["events", "homepage-feature"],
         queryFn: getPromos,
@@ -386,7 +401,8 @@ export default function ExperienceConceptPage() {
         const homepageItems = destinationItems
             .filter(
                 (destination) =>
-                    destination.is_featured_homepage && getImageUrl(destination),
+                    destination.is_featured_homepage &&
+                    getImageUrl(destination),
             )
             .sort(
                 (a, b) =>
@@ -399,8 +415,9 @@ export default function ExperienceConceptPage() {
                 ...homepageItems,
                 ...destinationItems.filter(
                     (destination) =>
-                        !homepageItems.some((item) => item.id === destination.id) &&
-                        getImageUrl(destination),
+                        !homepageItems.some(
+                            (item) => item.id === destination.id,
+                        ) && getImageUrl(destination),
                 ),
             ];
         }
@@ -433,16 +450,22 @@ export default function ExperienceConceptPage() {
         getDestinationBySlug(destinationItems, "danau-biru") ||
         featuredDestinations[0];
     const breathingTitle =
-        settings.homepage_breathing_title || breathingDestination?.name || "Karang Sidemen";
+        settings.homepage_breathing_title ||
+        breathingDestination?.name ||
+        "Karang Sidemen";
     const breathingBody =
         settings.homepage_breathing_body ||
         breathingDestination?.short_description ||
         breathingDestination?.tourism_vibe ||
         "Ruang jeda untuk merasakan lanskap Karang Sidemen sebelum lanjut mengeksplorasi cerita berikutnya.";
     const breathingImage =
-        settings.media_homepage_breathing_image_url || getImageUrl(breathingDestination);
+        settings.media_homepage_breathing_image_url ||
+        getImageUrl(breathingDestination);
     const managedHorizontalItems = useMemo(
-        () => normalizeHomepageHorizontalItems(settings?.homepage_horizontal_items),
+        () =>
+            normalizeHomepageHorizontalItems(
+                settings?.homepage_horizontal_items,
+            ),
         [settings?.homepage_horizontal_items],
     );
     const fallbackHorizontalItems = useMemo(() => {
@@ -463,7 +486,10 @@ export default function ExperienceConceptPage() {
 
     const zoomItemCount = Math.max(zoomItems.length, 1);
     const activeZoomIndex = zoomItems.length
-        ? Math.min(zoomItems.length - 1, Math.floor(zoomProgress * zoomItems.length))
+        ? Math.min(
+              zoomItems.length - 1,
+              Math.floor(zoomProgress * zoomItems.length),
+          )
         : 0;
     const activeZoomItem = zoomItems[activeZoomIndex];
     const nextZoomItem = zoomItems[(activeZoomIndex + 1) % zoomItems.length];
@@ -485,7 +511,7 @@ export default function ExperienceConceptPage() {
     return (
         <>
             <main
-                className="concept-page"
+                className={`concept-page${reviewItems.length === 0 ? " concept-page--no-reviews" : ""}`}
                 style={{
                     "--page-progress": pageProgress,
                     "--zoom-progress": zoomProgress,
@@ -509,374 +535,433 @@ export default function ExperienceConceptPage() {
                         : "none",
                 }}
             >
-            <Navbar />
+                <Navbar />
 
-            <section className="concept-hero">
-                <div className="concept-hero__image" aria-hidden="true" />
-                <div className="concept-hero__shade" aria-hidden="true" />
-                <div className="concept-hero__content">
-                    <p>
-                        {settingValue(
-                            settings,
-                            "homepage_hero_eyebrow",
-                            "POKDARWIS Karang Sidemen",
-                        )}
-                    </p>
-                    <h1>
-                        <span>
-                            {settingValue(settings, "homepage_hero_title_line_1", "Karang")}
-                        </span>
-                        <span>
-                            {settingValue(settings, "homepage_hero_title_line_2", "Sidemen")}
-                        </span>
-                    </h1>
-                <div className="concept-hero__bottom">
-                    <p>
-                        {settings?.tagline ||
-                                "Desa wisata alam di kaki Rinjani dengan danau, air terjun, hutan, budaya lokal, dan pengalaman camping."}
-                        </p>
-                    </div>
-                </div>
-
-                {activeEvent && (
-                    <Link
-                        to={`/event/${activeEvent.id}`}
-                        className={
-                            activeEvent.image_url
-                                ? "concept-event-card"
-                                : "concept-event-card concept-event-card--no-image"
-                        }
-                        aria-label={`Buka event ${activeEvent.title}`}
-                    >
-                        {activeEvent.image_url && (
-                            <img src={activeEvent.image_url} alt="" />
-                        )}
-                        <div>
-                            <span>Event aktif</span>
-                            <strong>{activeEvent.title}</strong>
-                            {activeEvent.description && (
-                                <p>{activeEvent.description}</p>
-                            )}
-                        </div>
-                    </Link>
-                )}
-
-                {featuredDestinations.slice(0, 2).map((destination, index) => (
-                    <Link
-                        to={`/destinasi/${destination.id}`}
-                        className={`concept-floating-card concept-floating-card--${
-                            index === 0 ? "one" : "two"
-                        }`}
-                        key={destination.id}
-                        aria-label={`Buka detail ${destination.name}`}
-                    >
-                        <img src={getImageUrl(destination)} alt="" />
-                        <span>{destination.name}</span>
-                    </Link>
-                ))}
-            </section>
-
-            <section id="reels" className="concept-reel" ref={reelRef}>
-                <div className="concept-section-title">
-                    <p className="concept-kicker">
-                        {settingValue(
-                            settings,
-                            "homepage_reel_eyebrow",
-                            "Desa wisata, bukan satu spot",
-                        )}
-                    </p>
-                    <h2>
-                        {settingValue(
-                            settings,
-                            "homepage_reel_title",
-                            "Karang Sidemen punya beberapa pengalaman alam yang saling nyambung.",
-                        )}
-                    </h2>
-                    <span className="concept-swipe-hint">Geser</span>
-                </div>
-                {destinationsLoading ? (
-                    <div className="concept-loading">Memuat destinasi...</div>
-                ) : (
-                    <div className="concept-reel__track" aria-label="Destinasi Karang Sidemen">
-                        {[...featuredDestinations, ...featuredDestinations].map(
-                            (destination, index) => (
-                                <figure key={`${destination.id}-${index}`}>
-                                    <img src={getImageUrl(destination)} alt="" />
-                                    <figcaption>{destination.name}</figcaption>
-                                </figure>
-                            ),
-                        )}
-                    </div>
-                )}
-            </section>
-
-            <section
-                id="portal"
-                ref={zoomRef}
-                className={`concept-portal-section${
-                    zoomItems.length === 0 ? " concept-portal-section--empty" : ""
-                }`}
-            >
-                <div className="concept-portal">
-                    {zoomItems.length > 0 ? (
-                        <>
-                            <div className="concept-portal__copy">
-                                <p className="concept-kicker">
-                                    {settingValue(
-                                        settings,
-                                        "homepage_portal_eyebrow",
-                                        "Scroll zoom moment",
-                                    )}
-                                </p>
-                                <h2>{activeZoomItem.title}</h2>
-                                <p>
-                                    {activeZoomItem.description ||
-                                        settingValue(
-                                            settings,
-                                            "homepage_portal_body",
-                                            "Momen ini menjaga interaksi cinematic: visual membesar saat scroll, lalu mengecil lagi untuk membuka cerita berikutnya.",
-                                        )}
-                                </p>
-                            </div>
-                            <div className="concept-portal__frame">
-                                <div
-                                    className="concept-portal__image concept-portal__image--out"
-                                    aria-hidden="true"
-                                />
-                                <div
-                                    className="concept-portal__image concept-portal__image--in"
-                                    aria-hidden="true"
-                                />
-                                {nextZoomItem && zoomItems.length > 1 && (
-                                    <div className="concept-portal__next">
-                                        <span>next scene</span>
-                                        <strong>{nextZoomItem.title}</strong>
-                                    </div>
-                                )}
-                            </div>
-                        </>
-                    ) : (
-                        <div className="concept-portal__empty">
-                            <p className="concept-kicker">Scroll zoom moment</p>
-                            <h2>Zoom story belum dikurasi.</h2>
-                            <p>Tambahkan momen Zoom dari Pengaturan Halaman Utama.</p>
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {(breathingTitle || breathingBody || breathingImage) && (
-                <section className="concept-breathing">
-                    <div className="concept-breathing__image" aria-hidden="true" />
-                    <div className="concept-breathing__content">
-                        <p className="concept-kicker">
+                <section className="concept-hero">
+                    <div className="concept-hero__image" aria-hidden="true" />
+                    <div className="concept-hero__shade" aria-hidden="true" />
+                    <div className="concept-hero__content">
+                        <p>
                             {settingValue(
                                 settings,
-                                "homepage_breathing_eyebrow",
-                                "Tarik napas sebentar",
+                                "homepage_hero_eyebrow",
+                                "POKDARWIS Karang Sidemen",
                             )}
                         </p>
-                        <h2>{breathingTitle}</h2>
-                        <p>{breathingBody}</p>
-                    </div>
-                </section>
-            )}
-
-            {horizontalItems.length > 0 && (
-                <section
-                    className="concept-horizontal"
-                    ref={horizontalSectionRef}
-                    aria-label="Explore Karang Sidemen"
-                >
-                    <div className="concept-horizontal__sticky">
-                        <div className="concept-horizontal__intro">
-                            <p className="concept-kicker">
+                        <h1>
+                            <span>
                                 {settingValue(
                                     settings,
-                                    "homepage_horizontal_eyebrow",
-                                    "Explore Karang Sidemen",
-                                )}
-                            </p>
-                            <h2>
-                                {settingValue(
-                                    settings,
-                                    "homepage_horizontal_title",
-                                    "Geser vertikal, tapi rasanya masuk ke rute tersembunyi.",
-                                )}
-                            </h2>
-                            <span className="concept-horizontal__hint">
-                                {settingValue(
-                                    settings,
-                                    "homepage_horizontal_hint",
-                                    "Scroll down to move sideways",
+                                    "homepage_hero_title_line_1",
+                                    "Karang",
                                 )}
                             </span>
-                            <span className="concept-swipe-hint">Geser</span>
-                        </div>
-                        <div
-                            className="concept-horizontal__track"
-                            ref={horizontalTrackRef}
-                        >
-                            {horizontalItems.map((item, index) => (
-                                <HorizontalStoryPanel
-                                    item={item}
-                                    index={index}
-                                    key={`${item.title}-${index}`}
-                                />
-                            ))}
-                        </div>
-                        <div className="concept-horizontal__meter" aria-hidden="true">
-                            <span />
+                            <span>
+                                {settingValue(
+                                    settings,
+                                    "homepage_hero_title_line_2",
+                                    "Sidemen",
+                                )}
+                            </span>
+                        </h1>
+                        <div className="concept-hero__bottom">
+                            <p>
+                                {settings?.tagline ||
+                                    "Desa wisata alam di kaki Rinjani dengan danau, air terjun, hutan, budaya lokal, dan pengalaman camping."}
+                            </p>
                         </div>
                     </div>
-                </section>
-            )}
 
-            <section id="experiences" className="concept-experiences">
-                <div className="concept-section-title">
-                    <p className="concept-kicker">
-                        {settingValue(
-                            settings,
-                            "homepage_experience_eyebrow",
-                            "Database-driven experiences",
-                        )}
-                    </p>
-                    <h2>
-                        {settingValue(
-                            settings,
-                            "homepage_experience_title",
-                            "Setiap kartu datang dari data destinasi yang bisa dikelola admin.",
-                        )}
-                    </h2>
-                    <span className="concept-swipe-hint">Geser</span>
-                </div>
-                <div className="concept-experience-grid">
-                    {featuredDestinations.slice(0, 8).map((destination, index) => (
+                    {activeEvent && (
                         <Link
-                            to={`/destinasi/${destination.id}`}
-                            className="concept-experience-card"
-                            key={destination.id}
-                            aria-label={`Buka detail ${destination.name}`}
+                            to={`/event/${activeEvent.id}`}
+                            className={
+                                activeEvent.image_url
+                                    ? "concept-event-card"
+                                    : "concept-event-card concept-event-card--no-image"
+                            }
+                            aria-label={`Buka event ${activeEvent.title}`}
                         >
-                            <img src={getImageUrl(destination)} alt="" />
+                            {activeEvent.image_url && (
+                                <img src={activeEvent.image_url} alt="" />
+                            )}
                             <div>
-                                <span>{String(index + 1).padStart(2, "0")}</span>
-                                <h3>{destination.name}</h3>
-                                <p>
-                                    {destination.short_description ||
-                                        destination.tourism_vibe ||
-                                        destination.description}
-                                </p>
+                                <span>Event aktif</span>
+                                <strong>{activeEvent.title}</strong>
+                                {activeEvent.description && (
+                                    <p>{activeEvent.description}</p>
+                                )}
                             </div>
                         </Link>
-                    ))}
-                </div>
-            </section>
+                    )}
 
-            <section className="concept-split">
-                <div>
-                    <p className="concept-kicker">
-                        {settingValue(
-                            settings,
-                            "homepage_highlight_eyebrow",
-                            "Highlight terverifikasi",
-                        )}
-                    </p>
-                    <h2>
-                        {settingValue(
-                            settings,
-                            "homepage_highlight_title",
-                            "Air, hutan, camping, budaya, dan edukasi jadi cerita besar desa.",
-                        )}
-                    </h2>
-                    <div className="concept-tags">
-                        {Array.from(
-                                new Set(
-                                    destinationItems
-                                    .flatMap((destination) =>
-                                        normalizeList(destination.activity_keywords),
-                                    )
-                                    .slice(0, 14),
-                            ),
-                        ).map((tag) => (
-                            <span key={tag}>{tag}</span>
+                    {featuredDestinations
+                        .slice(0, 2)
+                        .map((destination, index) => (
+                            <Link
+                                to={`/destinasi/${destination.id}`}
+                                className={`concept-floating-card concept-floating-card--${
+                                    index === 0 ? "one" : "two"
+                                }`}
+                                key={destination.id}
+                                aria-label={`Buka detail ${destination.name}`}
+                            >
+                                <img src={getImageUrl(destination)} alt="" />
+                                <span>{destination.name}</span>
+                            </Link>
                         ))}
-                    </div>
-                </div>
-                <div className="concept-split__visual">
-                    {featuredDestinations.slice(0, 3).map((destination) => (
-                        <img
-                            src={getImageUrl(destination)}
-                            alt=""
-                            key={destination.id}
-                        />
-                    ))}
-                </div>
-            </section>
+                </section>
 
-            {reviewItems.length > 0 && (
-                <section className="concept-reviews">
+                <section id="reels" className="concept-reel" ref={reelRef}>
                     <div className="concept-section-title">
                         <p className="concept-kicker">
                             {settingValue(
                                 settings,
-                                "homepage_reviews_eyebrow",
-                                "Suara pengunjung",
+                                "homepage_reel_eyebrow",
+                                "Desa wisata, bukan satu spot",
                             )}
                         </p>
                         <h2>
                             {settingValue(
                                 settings,
-                                "homepage_reviews_title",
-                                "Review dibuat pendek, lokal, dan masuk akal.",
+                                "homepage_reel_title",
+                                "Karang Sidemen punya beberapa pengalaman alam yang saling nyambung.",
                             )}
                         </h2>
                         <span className="concept-swipe-hint">Geser</span>
                     </div>
-                    <div className="concept-review-grid">
-                        {reviewItems.slice(0, 3).map((review) => (
-                            <article key={review.id}>
-                                {review.photo_url && (
+                    {destinationsLoading ? (
+                        <div className="concept-loading">
+                            Memuat destinasi...
+                        </div>
+                    ) : (
+                        <div
+                            className="concept-reel__track"
+                            aria-label="Destinasi Karang Sidemen"
+                        >
+                            {[
+                                ...featuredDestinations,
+                                ...featuredDestinations,
+                            ].map((destination, index) => (
+                                <figure key={`${destination.id}-${index}`}>
                                     <img
-                                        className="concept-review-card__photo"
-                                        src={review.photo_url}
+                                        src={getImageUrl(destination)}
                                         alt=""
                                     />
-                                )}
-                                <div className="concept-review-card__meta">
-                                    <span>{getRatingStars(review.rating)}</span>
-                                    {review.destination?.name && (
-                                        <strong>{review.destination.name}</strong>
+                                    <figcaption>{destination.name}</figcaption>
+                                </figure>
+                            ))}
+                        </div>
+                    )}
+                </section>
+
+                <section
+                    id="portal"
+                    ref={zoomRef}
+                    className={`concept-portal-section${
+                        zoomItems.length === 0
+                            ? " concept-portal-section--empty"
+                            : ""
+                    }`}
+                >
+                    <div className="concept-portal">
+                        {zoomItems.length > 0 ? (
+                            <>
+                                <div className="concept-portal__copy">
+                                    <p className="concept-kicker">
+                                        {settingValue(
+                                            settings,
+                                            "homepage_portal_eyebrow",
+                                            "Scroll zoom moment",
+                                        )}
+                                    </p>
+                                    <h2>{activeZoomItem.title}</h2>
+                                    <p>
+                                        {activeZoomItem.description ||
+                                            settingValue(
+                                                settings,
+                                                "homepage_portal_body",
+                                                "Momen ini menjaga interaksi cinematic: visual membesar saat scroll, lalu mengecil lagi untuk membuka cerita berikutnya.",
+                                            )}
+                                    </p>
+                                </div>
+                                <div className="concept-portal__frame">
+                                    <div
+                                        className="concept-portal__image concept-portal__image--out"
+                                        aria-hidden="true"
+                                    />
+                                    <div
+                                        className="concept-portal__image concept-portal__image--in"
+                                        aria-hidden="true"
+                                    />
+                                    {nextZoomItem && zoomItems.length > 1 && (
+                                        <div className="concept-portal__next">
+                                            <span>next scene</span>
+                                            <strong>
+                                                {nextZoomItem.title}
+                                            </strong>
+                                        </div>
                                     )}
                                 </div>
-                                <p>"{review.review_text}"</p>
-                                <div className="concept-review-card__person">
-                                    <span>{review.reviewer_name}</span>
-                                    {review.origin_city && <small>{review.origin_city}</small>}
-                                </div>
-                            </article>
+                            </>
+                        ) : (
+                            <div className="concept-portal__empty">
+                                <p className="concept-kicker">
+                                    Scroll zoom moment
+                                </p>
+                                <h2>Zoom story belum dikurasi.</h2>
+                                <p>
+                                    Tambahkan momen Zoom dari Pengaturan Halaman
+                                    Utama.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                {(breathingTitle || breathingBody || breathingImage) && (
+                    <section className="concept-breathing">
+                        <div
+                            className="concept-breathing__image"
+                            aria-hidden="true"
+                        />
+                        <div className="concept-breathing__content">
+                            <p className="concept-kicker">
+                                {settingValue(
+                                    settings,
+                                    "homepage_breathing_eyebrow",
+                                    "Tarik napas sebentar",
+                                )}
+                            </p>
+                            <h2>{breathingTitle}</h2>
+                            <p>{breathingBody}</p>
+                        </div>
+                    </section>
+                )}
+
+                {horizontalItems.length > 0 && (
+                    <section
+                        className="concept-horizontal"
+                        ref={horizontalSectionRef}
+                        aria-label="Explore Karang Sidemen"
+                    >
+                        <div className="concept-horizontal__sticky">
+                            <div className="concept-horizontal__intro">
+                                <p className="concept-kicker">
+                                    {settingValue(
+                                        settings,
+                                        "homepage_horizontal_eyebrow",
+                                        "Explore Karang Sidemen",
+                                    )}
+                                </p>
+                                <h2>
+                                    {settingValue(
+                                        settings,
+                                        "homepage_horizontal_title",
+                                        "Geser vertikal, tapi rasanya masuk ke rute tersembunyi.",
+                                    )}
+                                </h2>
+                                <span className="concept-horizontal__hint">
+                                    {settingValue(
+                                        settings,
+                                        "homepage_horizontal_hint",
+                                        "Scroll down to move sideways",
+                                    )}
+                                </span>
+                                <span className="concept-swipe-hint">
+                                    Geser
+                                </span>
+                            </div>
+                            <div
+                                className="concept-horizontal__track"
+                                ref={horizontalTrackRef}
+                            >
+                                {horizontalItems.map((item, index) => (
+                                    <HorizontalStoryPanel
+                                        item={item}
+                                        index={index}
+                                        key={`${item.title}-${index}`}
+                                    />
+                                ))}
+                            </div>
+                            <div
+                                className="concept-horizontal__meter"
+                                aria-hidden="true"
+                            >
+                                <span />
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                <section id="experiences" className="concept-experiences">
+                    <div className="concept-section-title">
+                        <p className="concept-kicker">
+                            {settingValue(
+                                settings,
+                                "homepage_experience_eyebrow",
+                                "Database-driven experiences",
+                            )}
+                        </p>
+                        <h2>
+                            {settingValue(
+                                settings,
+                                "homepage_experience_title",
+                                "Setiap kartu datang dari data destinasi yang bisa dikelola admin.",
+                            )}
+                        </h2>
+                        <span className="concept-swipe-hint">Geser</span>
+                    </div>
+                    <div className="concept-experience-grid">
+                        {featuredDestinations
+                            .slice(0, 8)
+                            .map((destination, index) => (
+                                <Link
+                                    to={`/destinasi/${destination.id}`}
+                                    className="concept-experience-card"
+                                    key={destination.id}
+                                    aria-label={`Buka detail ${destination.name}`}
+                                >
+                                    <img
+                                        src={getImageUrl(destination)}
+                                        alt=""
+                                    />
+                                    <div>
+                                        <span>
+                                            {String(index + 1).padStart(2, "0")}
+                                        </span>
+                                        <h3>{destination.name}</h3>
+                                        <p>
+                                            {destination.short_description ||
+                                                destination.tourism_vibe ||
+                                                destination.description}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))}
+                    </div>
+                </section>
+
+                <section className="concept-split">
+                    <div>
+                        <p className="concept-kicker">
+                            {settingValue(
+                                settings,
+                                "homepage_highlight_eyebrow",
+                                "Highlight terverifikasi",
+                            )}
+                        </p>
+                        <h2>
+                            {settingValue(
+                                settings,
+                                "homepage_highlight_title",
+                                "Air, hutan, camping, budaya, dan edukasi jadi cerita besar desa.",
+                            )}
+                        </h2>
+                        <div className="concept-tags">
+                            {Array.from(
+                                new Set(
+                                    destinationItems
+                                        .flatMap((destination) =>
+                                            normalizeList(
+                                                destination.activity_keywords,
+                                            ),
+                                        )
+                                        .slice(0, 14),
+                                ),
+                            ).map((tag) => (
+                                <span key={tag}>{tag}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="concept-split__visual">
+                        {featuredDestinations.slice(0, 3).map((destination) => (
+                            <img
+                                src={getImageUrl(destination)}
+                                alt=""
+                                key={destination.id}
+                            />
                         ))}
                     </div>
                 </section>
-            )}
 
-            <section className="concept-final">
-                <div>
-                    <p className="concept-kicker">
-                        {settingValue(settings, "homepage_final_eyebrow", "Final pull")}
-                    </p>
-                    <h2>
+                {reviewItems.length > 0 && (
+                    <section className="concept-reviews">
+                        <div className="concept-section-title">
+                            <p className="concept-kicker">
+                                {settingValue(
+                                    settings,
+                                    "homepage_reviews_eyebrow",
+                                    "Suara pengunjung",
+                                )}
+                            </p>
+                            <h2>
+                                {settingValue(
+                                    settings,
+                                    "homepage_reviews_title",
+                                    "Review dibuat pendek, lokal, dan masuk akal.",
+                                )}
+                            </h2>
+                            <span className="concept-swipe-hint">Geser</span>
+                        </div>
+                        <div className="concept-review-grid">
+                            {reviewItems.slice(0, 3).map((review) => (
+                                <article key={review.id}>
+                                    {review.photo_url && (
+                                        <img
+                                            className="concept-review-card__photo"
+                                            src={review.photo_url}
+                                            alt=""
+                                        />
+                                    )}
+                                    <div className="concept-review-card__meta">
+                                        <span>
+                                            {getRatingStars(review.rating)}
+                                        </span>
+                                        {review.destination?.name && (
+                                            <strong>
+                                                {review.destination.name}
+                                            </strong>
+                                        )}
+                                    </div>
+                                    <p>"{review.review_text}"</p>
+                                    <div className="concept-review-card__person">
+                                        <span>{review.reviewer_name}</span>
+                                        {review.origin_city && (
+                                            <small>{review.origin_city}</small>
+                                        )}
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                <section className="concept-final">
+                    <div>
+                        <p className="concept-kicker">
+                            {settingValue(
+                                settings,
+                                "homepage_final_eyebrow",
+                                "Final pull",
+                            )}
+                        </p>
+                        <h2>
+                            {settingValue(
+                                settings,
+                                "homepage_final_title",
+                                "Karang Sidemen harus terasa sebagai desa wisata hidup, bukan halaman destinasi tunggal.",
+                            )}
+                        </h2>
+                    </div>
+                    <Link to="/destinasi">
                         {settingValue(
                             settings,
-                            "homepage_final_title",
-                            "Karang Sidemen harus terasa sebagai desa wisata hidup, bukan halaman destinasi tunggal.",
+                            "homepage_final_cta_label",
+                            "Lihat destinasi",
                         )}
-                    </h2>
-                </div>
-                <Link to="/destinasi">
-                    {settingValue(settings, "homepage_final_cta_label", "Lihat destinasi")}
-                </Link>
-            </section>
+                    </Link>
+                </section>
             </main>
             <Footer />
             <FloatingWhatsApp />

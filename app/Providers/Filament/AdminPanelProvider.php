@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             ->brandName('POKDARWIS Karang Sidemen')
+            ->favicon(asset('favicon.png'))
             ->colors([
                 'primary' => Color::hex('#18593f'),
                 'success' => Color::Green,
